@@ -1,14 +1,14 @@
 package user
 
 import (
-	"github.com/dkhaii/warehouse-api/domain/user"
+	"github.com/dkhaii/warehouse-api/model"
 	"github.com/google/uuid"
 )
 
 type UserService interface {
-	Create(user *user.UserEntity) error
-	FindByID(id uuid.UUID) (*user.UserEntity, error)
-	FindByName(name string) (*user.UserEntity, error)
-	Update(user *user.UserEntity) error
+	Create(request model.CreateUserRequest) (model.CreateUserResponse, error)
+	GetByID(id uuid.UUID) (model.GetUserResponse, error)
+	GetByName(name string) ([]model.GetUserResponse, error)
+	Update(request model.CreateUserRequest) error
 	Delete(id uuid.UUID) error
 }
