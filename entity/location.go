@@ -1,4 +1,4 @@
-package location
+package entity
 
 import (
 	"time"

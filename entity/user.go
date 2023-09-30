@@ -1,4 +1,4 @@
-package user
+package entity
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserEntity struct {
+type User struct {
 	ID        uuid.UUID
 	Name      string
 	Contact   string

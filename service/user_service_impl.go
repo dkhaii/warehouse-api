@@ -1,11 +1,9 @@
-package user
+package service
 
 import (
-	"time"
-
-	"github.com/dkhaii/warehouse-api/domain/user"
-	"github.com/dkhaii/warehouse-api/domain/user/repository"
+	"github.com/dkhaii/warehouse-api/entity"
 	"github.com/dkhaii/warehouse-api/model"
+	"github.com/dkhaii/warehouse-api/repository"
 	"github.com/google/uuid"
 )
 
@@ -20,15 +18,13 @@ func NewUserService(userRepository repository.UserRepository) *UserServiceImpl {
 }
 
 func (service *UserServiceImpl) Create(request model.CreateUserRequest) (model.CreateUserResponse, error) {
-	createdAt := time.Now()
-
-	user := user.UserEntity{
+	user := entity.User{
 		ID:        request.ID,
 		Name:      request.Name,
 		Contact:   request.Contact,
 		Role:      request.Role,
-		CreatedAt: createdAt,
-		UpdatedAt: createdAt,
+		CreatedAt: request.CreatedAt,
+		UpdatedAt: request.UpdatedAt,
 	}
 
 	_, err := service.userRepository.Insert(&user)
@@ -40,6 +36,7 @@ func (service *UserServiceImpl) Create(request model.CreateUserRequest) (model.C
 		ID:        user.ID,
 		Name:      user.Name,
 		Contact:   user.Contact,
+		Role:      user.Role,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}
@@ -82,16 +79,21 @@ func (service *UserServiceImpl) GetByName(name string) ([]model.GetUserResponse,
 }
 
 func (service *UserServiceImpl) Update(request model.CreateUserRequest) error {
-	updatedAt := time.Now()
+	isUser, err := service.userRepository.FindByID(request.ID)
+	if err != nil {
+		return err
+	}
 
-	user := user.UserEntity{
+	updatedUser := entity.User{
+		ID:        isUser.ID,
 		Name:      request.Name,
 		Contact:   request.Contact,
 		Role:      request.Role,
-		UpdatedAt: updatedAt,
+		CreatedAt: isUser.CreatedAt,
+		UpdatedAt: request.UpdatedAt,
 	}
 
-	err := service.userRepository.Update(&user)
+	err = service.userRepository.Update(&updatedUser)
 	if err != nil {
 		return err
 	}

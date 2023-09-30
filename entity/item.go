@@ -1,4 +1,5 @@
-package item
+package entity
+
 
 import (
 	"time"

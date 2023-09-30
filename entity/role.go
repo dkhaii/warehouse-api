@@ -1,4 +1,4 @@
-package role
+package entity
 
 import "time"
 

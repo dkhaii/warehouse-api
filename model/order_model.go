@@ -1,4 +1,4 @@
-package order
+package model
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Order struct {
+type CreateOrderRequest struct {
 	ID                  uuid.UUID `json:"id"`
 	ItemID              uuid.UUID `json:"item_id"`
 	UserID              uuid.UUID `json:"user_id"`

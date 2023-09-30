@@ -1,4 +1,4 @@
-package transfer_order
+package entity
 
 import (
 	"time"
