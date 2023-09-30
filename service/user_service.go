@@ -7,9 +7,9 @@ import (
 
 type UserService interface {
 	Create(request model.CreateUserRequest) (model.CreateUserResponse, error)
-	GetByID(id uuid.UUID) (model.GetUserResponse, error)
-	GetByName(name string) ([]model.GetUserResponse, error)
+	GetByID(usrID uuid.UUID) (model.GetUserResponse, error)
+	GetByUsername(name string) ([]model.GetUserResponse, error)
 	Update(request model.CreateUserRequest) error
-	Delete(id uuid.UUID) error
-	Login(request model.LoginUserRequest) (model.LoginUserResponse, error)
+	Delete(usrID uuid.UUID) error
+	// Login(request model.LoginUserRequest) (model.LoginUserResponse, error)
 }

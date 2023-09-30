@@ -14,9 +14,9 @@ type UserController struct {
 	UserService service.UserService
 }
 
-func NewUserController(userService *service.UserService) UserController {
+func NewUserController(userService service.UserService) UserController {
 	return UserController{
-		UserService: *userService,
+		UserService: userService,
 	}
 }
 
@@ -42,7 +42,7 @@ func (controller *UserController) Create(app echo.Context) error {
 		return app.JSON(http.StatusBadRequest, model.WebResponse{
 			Code:   http.StatusBadRequest,
 			Status: "FAIL",
-			Data:   err,
+			Data:   err.Error(),
 		})
 	}
 

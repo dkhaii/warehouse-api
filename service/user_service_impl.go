@@ -59,7 +59,7 @@ func (service *UserServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse,
 	}, nil
 }
 
-func (service *UserServiceImpl) GetByName(name string) ([]model.GetUserResponse, error) {
+func (service *UserServiceImpl) GetByUsername(name string) ([]model.GetUserResponse, error) {
 	users, err := service.userRepository.FindByUsername(name)
 	if err != nil {
 		return nil, err

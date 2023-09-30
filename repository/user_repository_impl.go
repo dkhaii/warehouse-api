@@ -14,13 +14,13 @@ type userRepositoryImpl struct {
 	database *sql.DB
 }
 
-func NewUserRepository(database *sql.DB) *userRepositoryImpl {
+func NewUserRepository(database *sql.DB) UserRepository {
 	return &userRepositoryImpl{
 		database: database,
 	}
 }
 
-func (repository *userRepositoryImpl) Insert(usr entity.User) (entity.User, error) {
+func (repository *userRepositoryImpl) Insert(usr *entity.User) (*entity.User, error) {
 	query := "INSERT INTO users (id, username, password, contact, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
 	_, err := repository.database.Exec(
@@ -34,13 +34,13 @@ func (repository *userRepositoryImpl) Insert(usr entity.User) (entity.User, erro
 		usr.UpdatedAt,
 	)
 	if err != nil {
-		return entity.User{}, err
+		return &entity.User{}, err
 	}
 
 	return usr, nil
 }
 
-func (repository *userRepositoryImpl) FindAll() ([]entity.User, error) {
+func (repository *userRepositoryImpl) FindAll() ([]*entity.User, error) {
 	query := "SELECT * FROM users"
 
 	users, err := repository.database.Query(query)
@@ -49,7 +49,7 @@ func (repository *userRepositoryImpl) FindAll() ([]entity.User, error) {
 	}
 	defer users.Close()
 
-	var listOfUsers []entity.User
+	var listOfUsers []*entity.User
 
 	for users.Next() {
 		var u entity.User
@@ -59,7 +59,7 @@ func (repository *userRepositoryImpl) FindAll() ([]entity.User, error) {
 			return nil, err
 		}
 
-		listOfUsers = append(listOfUsers, u)
+		listOfUsers = append(listOfUsers, &u)
 	}
 
 	err = users.Err()
@@ -70,7 +70,7 @@ func (repository *userRepositoryImpl) FindAll() ([]entity.User, error) {
 	return listOfUsers, nil
 }
 
-func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (entity.User, error) {
+func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (*entity.User, error) {
 	query := "SELECT * FROM users WHERE id = ?"
 
 	sqlResult := repository.database.QueryRow(query, usrID)
@@ -79,15 +79,15 @@ func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (entity.User, er
 	err := sqlResult.Scan(&user.ID, &user.Username, &user.Password,  &user.Contact, &user.Contact, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user, ErrUserNotFound
+			return &user, ErrUserNotFound
 		}
-		return user, err
+		return &user, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
-func (repository *userRepositoryImpl) FindByUsername(name string) ([]entity.User, error) {
+func (repository *userRepositoryImpl) FindByUsername(name string) ([]*entity.User, error) {
 	query := "SELECT * FROM users WHERE username = ?"
 
 	users, err := repository.database.Query(query, name)
@@ -99,7 +99,7 @@ func (repository *userRepositoryImpl) FindByUsername(name string) ([]entity.User
 	}
 	defer users.Close()
 
-	var listOfUsers []entity.User
+	var listOfUsers []*entity.User
 
 	for users.Next() {
 		var u entity.User
@@ -109,7 +109,7 @@ func (repository *userRepositoryImpl) FindByUsername(name string) ([]entity.User
 			return nil, err
 		}
 
-		listOfUsers = append(listOfUsers, u)
+		listOfUsers = append(listOfUsers, &u)
 	}
 
 	err = users.Err()
@@ -120,7 +120,7 @@ func (repository *userRepositoryImpl) FindByUsername(name string) ([]entity.User
 	return listOfUsers, nil
 }
 
-func (repository *userRepositoryImpl) Update(usr entity.User) error {
+func (repository *userRepositoryImpl) Update(usr *entity.User) error {
 	query := "UPDATE users SET username = ?, password = ?, contact = ?, role = ?, updated_at = ? WHERE id = ?"
 
 	_, err := repository.database.Exec(query, usr.Username, usr.Password, usr.Contact, usr.Role, usr.UpdatedAt, usr.ID)
@@ -135,7 +135,7 @@ func (repository *userRepositoryImpl) Update(usr entity.User) error {
 	return nil
 }
 
-func (repository *userRepositoryImpl) Delete(usrID entity.User) error {
+func (repository *userRepositoryImpl) Delete(usrID uuid.UUID) error {
 	query := "DELETE FROM users WHERE id = ?"
 
 	_, err := repository.database.Exec(query, usrID)
