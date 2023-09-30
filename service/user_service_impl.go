@@ -20,7 +20,8 @@ func NewUserService(userRepository repository.UserRepository) *UserServiceImpl {
 func (service *UserServiceImpl) Create(request model.CreateUserRequest) (model.CreateUserResponse, error) {
 	user := entity.User{
 		ID:        request.ID,
-		Name:      request.Name,
+		Username:  request.Username,
+		Password:  request.Password,
 		Contact:   request.Contact,
 		Role:      request.Role,
 		CreatedAt: request.CreatedAt,
@@ -34,7 +35,7 @@ func (service *UserServiceImpl) Create(request model.CreateUserRequest) (model.C
 
 	response := model.CreateUserResponse{
 		ID:        user.ID,
-		Name:      user.Name,
+		Username:  user.Username,
 		Contact:   user.Contact,
 		Role:      user.Role,
 		CreatedAt: user.CreatedAt,
@@ -51,15 +52,15 @@ func (service *UserServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse,
 	}
 
 	return model.GetUserResponse{
-		ID:      user.ID,
-		Name:    user.Name,
-		Contact: user.Contact,
-		Role:    user.Role,
+		ID:       user.ID,
+		Username: user.Username,
+		Contact:  user.Contact,
+		Role:     user.Role,
 	}, nil
 }
 
 func (service *UserServiceImpl) GetByName(name string) ([]model.GetUserResponse, error) {
-	users, err := service.userRepository.FindByName(name)
+	users, err := service.userRepository.FindByUsername(name)
 	if err != nil {
 		return nil, err
 	}
@@ -68,10 +69,10 @@ func (service *UserServiceImpl) GetByName(name string) ([]model.GetUserResponse,
 
 	for key, user := range users {
 		responses[key] = model.GetUserResponse{
-			ID:      user.ID,
-			Name:    user.Name,
-			Contact: user.Contact,
-			Role:    user.Role,
+			ID:       user.ID,
+			Username: user.Username,
+			Contact:  user.Contact,
+			Role:     user.Role,
 		}
 	}
 
@@ -86,7 +87,8 @@ func (service *UserServiceImpl) Update(request model.CreateUserRequest) error {
 
 	updatedUser := entity.User{
 		ID:        isUser.ID,
-		Name:      request.Name,
+		Username:  request.Username,
+		Password:  request.Password,
 		Contact:   request.Contact,
 		Role:      request.Role,
 		CreatedAt: isUser.CreatedAt,
@@ -114,3 +116,6 @@ func (service *UserServiceImpl) Delete(usrID uuid.UUID) error {
 
 	return nil
 }
+
+// func (service *UserServiceImpl) Login(request model.LoginUserRequest) (model.LoginUserResponse, error) {
+// }

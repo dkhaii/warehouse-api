@@ -8,7 +8,8 @@ import (
 
 type User struct {
 	ID        uuid.UUID
-	Name      string
+	Username  string
+	Password  string
 	Contact   string
 	Role      int
 	CreatedAt time.Time

@@ -11,4 +11,5 @@ type UserService interface {
 	GetByName(name string) ([]model.GetUserResponse, error)
 	Update(request model.CreateUserRequest) error
 	Delete(id uuid.UUID) error
+	Login(request model.LoginUserRequest) (model.LoginUserResponse, error)
 }
