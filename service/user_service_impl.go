@@ -7,17 +7,17 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserServiceImpl struct {
+type userServiceImpl struct {
 	userRepository repository.UserRepository
 }
 
-func NewUserService(userRepository repository.UserRepository) *UserServiceImpl {
-	return &UserServiceImpl{
+func NewUserService(userRepository repository.UserRepository) UserService {
+	return &userServiceImpl{
 		userRepository: userRepository,
 	}
 }
 
-func (service *UserServiceImpl) Create(request model.CreateUserRequest) (model.CreateUserResponse, error) {
+func (service *userServiceImpl) Create(request model.CreateUserRequest) (model.CreateUserResponse, error) {
 	user := entity.User{
 		ID:        request.ID,
 		Username:  request.Username,
@@ -45,21 +45,23 @@ func (service *UserServiceImpl) Create(request model.CreateUserRequest) (model.C
 	return response, nil
 }
 
-func (service *UserServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse, error) {
+func (service *userServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse, error) {
 	user, err := service.userRepository.FindByID(usrID)
 	if err != nil {
 		return model.GetUserResponse{}, err
 	}
 
-	return model.GetUserResponse{
+	response := model.GetUserResponse{
 		ID:       user.ID,
 		Username: user.Username,
 		Contact:  user.Contact,
 		Role:     user.Role,
-	}, nil
+	}
+
+	return response, nil
 }
 
-func (service *UserServiceImpl) GetByUsername(name string) ([]model.GetUserResponse, error) {
+func (service *userServiceImpl) GetByUsername(name string) ([]model.GetUserResponse, error) {
 	users, err := service.userRepository.FindByUsername(name)
 	if err != nil {
 		return nil, err
@@ -79,7 +81,7 @@ func (service *UserServiceImpl) GetByUsername(name string) ([]model.GetUserRespo
 	return responses, nil
 }
 
-func (service *UserServiceImpl) Update(request model.CreateUserRequest) error {
+func (service *userServiceImpl) Update(request model.CreateUserRequest) error {
 	isUser, err := service.userRepository.FindByID(request.ID)
 	if err != nil {
 		return err
@@ -103,7 +105,7 @@ func (service *UserServiceImpl) Update(request model.CreateUserRequest) error {
 	return nil
 }
 
-func (service *UserServiceImpl) Delete(usrID uuid.UUID) error {
+func (service *userServiceImpl) Delete(usrID uuid.UUID) error {
 	user, err := service.userRepository.FindByID(usrID)
 	if err != nil {
 		return err

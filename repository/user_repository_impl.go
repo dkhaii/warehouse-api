@@ -54,7 +54,15 @@ func (repository *userRepositoryImpl) FindAll() ([]*entity.User, error) {
 	for users.Next() {
 		var u entity.User
 
-		err := users.Scan(&u.ID, &u.Username, &u.Password, &u.Contact, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+		err := users.Scan(
+			&u.ID,
+			&u.Username,
+			&u.Password,
+			&u.Contact,
+			&u.Role,
+			&u.CreatedAt,
+			&u.UpdatedAt,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +84,15 @@ func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (*entity.User, e
 	sqlResult := repository.database.QueryRow(query, usrID)
 
 	var user entity.User
-	err := sqlResult.Scan(&user.ID, &user.Username, &user.Password,  &user.Contact, &user.Contact, &user.CreatedAt, &user.UpdatedAt)
+	err := sqlResult.Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.Contact,
+		&user.Contact,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &user, ErrUserNotFound
@@ -104,7 +120,15 @@ func (repository *userRepositoryImpl) FindByUsername(name string) ([]*entity.Use
 	for users.Next() {
 		var u entity.User
 
-		err := users.Scan(&u.ID, &u.Username, &u.Password,  &u.Contact, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+		err := users.Scan(
+			&u.ID,
+			&u.Username,
+			&u.Password,
+			&u.Contact,
+			&u.Role,
+			&u.CreatedAt,
+			&u.UpdatedAt,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -123,7 +147,15 @@ func (repository *userRepositoryImpl) FindByUsername(name string) ([]*entity.Use
 func (repository *userRepositoryImpl) Update(usr *entity.User) error {
 	query := "UPDATE users SET username = ?, password = ?, contact = ?, role = ?, updated_at = ? WHERE id = ?"
 
-	_, err := repository.database.Exec(query, usr.Username, usr.Password, usr.Contact, usr.Role, usr.UpdatedAt, usr.ID)
+	_, err := repository.database.Exec(
+		query,
+		usr.Username,
+		usr.Password,
+		usr.Contact,
+		usr.Role,
+		usr.UpdatedAt,
+		usr.ID,
+	)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ErrUserNotFound

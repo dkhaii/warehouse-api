@@ -57,7 +57,18 @@ func (repository *itemRepositoryImpl) FindAll() ([]*entity.Item, error) {
 	for items.Next() {
 		var i entity.Item
 
-		err := items.Scan(&i.ID, &i.Name, &i.Description, &i.Quantity, &i.Availability, &i.LocationID, &i.CategoryID, &i.UserID, &i.CreatedAt, &i.UpdatedAt)
+		err := items.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Quantity,
+			&i.Availability,
+			&i.LocationID,
+			&i.CategoryID,
+			&i.UserID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -79,7 +90,18 @@ func (repository *itemRepositoryImpl) FindByID(itmID uuid.UUID) (*entity.Item, e
 	sqlResult := repository.database.QueryRow(query, itmID)
 
 	var item entity.Item
-	err := sqlResult.Scan(&item.ID, &item.Name, &item.Description, &item.Quantity, &item.Availability, &item.LocationID, &item.CategoryID, &item.UserID, &item.CreatedAt, &item.UpdatedAt)
+	err := sqlResult.Scan(
+		&item.ID,
+		&item.Name,
+		&item.Description,
+		&item.Quantity,
+		&item.Availability,
+		&item.LocationID,
+		&item.CategoryID,
+		&item.UserID,
+		&item.CreatedAt,
+		&item.UpdatedAt,
+	)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &item, ErrItemNotFound
@@ -109,7 +131,18 @@ func (repository *itemRepositoryImpl) FindByName(name string) ([]*entity.Item, e
 	for items.Next() {
 		var i entity.Item
 
-		err := items.Scan(&i.ID, &i.Name, &i.Description, &i.Quantity, &i.Availability, &i.LocationID, &i.CategoryID, &i.UserID, &i.CreatedAt, &i.UpdatedAt)
+		err := items.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Quantity,
+			&i.Availability,
+			&i.LocationID,
+			&i.CategoryID,
+			&i.UserID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		)
 		if err != nil {
 			return nil, err
 		}
