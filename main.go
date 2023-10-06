@@ -8,6 +8,7 @@ import (
 	"github.com/dkhaii/warehouse-api/repository"
 	"github.com/dkhaii/warehouse-api/service"
 	"github.com/labstack/echo/v4"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -20,12 +21,16 @@ func main() {
 	database, err := config.NewMySQLDatabase(configuration)
 	if err != nil {
 		fmt.Println("error:", err)
+		return
 	}
 
+	// repository implementation
 	userRepository := repository.NewUserRepository(database)
 
+	// service implementation
 	userService := service.NewUserService(userRepository)
 
+	// controller implementation
 	userController := controller.NewUserController(userService)
 
 	app := echo.New()

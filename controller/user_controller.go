@@ -27,6 +27,17 @@ func (controller *UserController) Routes(app *echo.Echo) {
 func (controller *UserController) Create(app echo.Context) error {
 	var request model.CreateUserRequest
 
+	defer func() {
+		err := recover()
+		if err != nil {
+			app.JSON(http.StatusInternalServerError, model.WebResponse{
+				Code:   http.StatusInternalServerError,
+				Status: "FAIL",
+				Data:   err,
+			})
+		}
+	}()
+
 	err := app.Bind(&request)
 	if err != nil {
 		return err
@@ -48,7 +59,7 @@ func (controller *UserController) Create(app echo.Context) error {
 
 	return app.JSON(http.StatusOK, model.WebResponse{
 		Code:   http.StatusOK,
-		Status: "OK",
+		Status: "SUCCESS",
 		Data:   response,
 	})
 }

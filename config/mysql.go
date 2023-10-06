@@ -37,3 +37,5 @@ func NewMySQLDatabase(configuration Config) (*sql.DB, error) {
 
 	return dbConn, nil
 }
+
+// migrate -database "mysql://development:development@tcp(localhost:3306)/cozy_warehouse" -path database/migrations up
