@@ -1,6 +1,5 @@
 package entity
 
-
 import (
 	"time"
 
@@ -8,14 +7,14 @@ import (
 )
 
 type Item struct {
-	ID           uuid.UUID `json:"id"`
-	Name         string    `json:"name"`
-	Description  string    `json:"description"`
-	Quantity     int       `json:"quantity"`
-	Availability bool      `json:"availability"`
-	LocationID   uuid.UUID `json:"location_id"`
-	CategoryID   int       `json:"category_id"`
-	UserID       uuid.UUID `json:"category"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID           uuid.UUID
+	Name         string
+	Description  string
+	Quantity     int
+	Availability bool
+	LocationID   uuid.UUID
+	CategoryID   int
+	UserID       uuid.UUID
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
