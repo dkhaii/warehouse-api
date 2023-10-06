@@ -7,8 +7,8 @@ import (
 	"github.com/dkhaii/warehouse-api/controller"
 	"github.com/dkhaii/warehouse-api/repository"
 	"github.com/dkhaii/warehouse-api/service"
-	"github.com/labstack/echo/v4"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
@@ -24,18 +24,22 @@ func main() {
 		return
 	}
 
-	// repository implementation
+	// repository dependency injection
 	userRepository := repository.NewUserRepository(database)
+	itemRepository := repository.NewItemRepository(database)
 
-	// service implementation
+	// service dependency injection
 	userService := service.NewUserService(userRepository)
+	itemService := service.NewItemService(itemRepository)
 
-	// controller implementation
+	// controller dependency injection
 	userController := controller.NewUserController(userService)
+	itemController := controller.NewItemController(itemService)
 
 	app := echo.New()
 
 	userController.Routes(app)
+	itemController.Routes(app)
 
 	app.Logger.Fatal(app.Start(":8080"))
 }
