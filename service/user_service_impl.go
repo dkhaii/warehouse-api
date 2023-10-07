@@ -45,6 +45,28 @@ func (service *userServiceImpl) Create(request model.CreateUserRequest) (model.C
 	return response, nil
 }
 
+func (service *userServiceImpl) GetAll() ([]model.GetUserResponse, error) {
+	users, err := service.userRepository.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]model.GetUserResponse, len(users))
+
+	for key, user := range users {
+		responses[key] = model.GetUserResponse{
+			ID:        user.ID,
+			Username:  user.Username,
+			Contact:   user.Contact,
+			Role:      user.Role,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+	}
+
+	return responses, nil
+}
+
 func (service *userServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse, error) {
 	user, err := service.userRepository.FindByID(usrID)
 	if err != nil {

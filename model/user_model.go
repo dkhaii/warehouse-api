@@ -46,3 +46,8 @@ type LoginUserResponse struct {
 type GetUserIDRequest struct {
 	ID uuid.UUID `param:"id"`
 }
+
+type GetUserRequest struct {
+	ID       uuid.UUID `query:"id"`
+	Username string    `query:"username"`
+}

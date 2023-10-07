@@ -7,6 +7,7 @@ import (
 
 type UserService interface {
 	Create(request model.CreateUserRequest) (model.CreateUserResponse, error)
+	GetAll() ([]model.GetUserResponse, error)
 	GetByID(usrID uuid.UUID) (model.GetUserResponse, error)
 	GetByUsername(name string) ([]model.GetUserResponse, error)
 	Update(request model.CreateUserRequest) error

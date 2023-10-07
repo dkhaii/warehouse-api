@@ -21,8 +21,9 @@ func NewUserController(userService service.UserService) UserController {
 }
 
 func (controller *UserController) Routes(app *echo.Echo) {
-	app.POST("/api/user/register", controller.Create)
-	app.GET("/api/user/:id", controller.GetByID)
+	app.POST("/api/users/register", controller.Create)
+	// app.GET("/api/user/:id", controller.GetByID)
+	app.GET("/api/users", controller.GetWithOptions)
 }
 
 func (controller *UserController) Create(app echo.Context) error {
@@ -47,7 +48,7 @@ func (controller *UserController) Create(app echo.Context) error {
 			Data:   err.Error(),
 		})
 	}
-	
+
 	userID := uuid.New()
 	createdAt := time.Now()
 
@@ -72,8 +73,8 @@ func (controller *UserController) Create(app echo.Context) error {
 	})
 }
 
-func (controller *UserController) GetByID(app echo.Context) error {
-	var urlParam model.GetUserIDRequest
+func (controller *UserController) GetWithOptions(app echo.Context) error {
+	var queryParam model.GetUserRequest
 
 	defer func() {
 		err := recover()
@@ -86,7 +87,7 @@ func (controller *UserController) GetByID(app echo.Context) error {
 		}
 	}()
 
-	err := app.Bind(&urlParam)
+	err := app.Bind(&queryParam)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, model.WebResponse{
 			Code:   http.StatusBadRequest,
@@ -95,25 +96,51 @@ func (controller *UserController) GetByID(app echo.Context) error {
 		})
 	}
 
+	if queryParam.ID != uuid.Nil {
+		response, err := controller.UserService.GetByID(queryParam.ID)
+		if err != nil {
+			return app.JSON(http.StatusNotFound, model.WebResponse{
+				Code:   http.StatusNotFound,
+				Status: "FAIL",
+				Data:   err.Error(),
+			})
+		}
+
+		return app.JSON(http.StatusFound, model.WebResponse{
+			Code:   http.StatusFound,
+			Status: "SUCCESS",
+			Data:   response,
+		})
+	}
+
+	if queryParam.Username != "" {
+		response, err := controller.UserService.GetByUsername(queryParam.Username)
+		if err != nil {
+			return app.JSON(http.StatusNotFound, model.WebResponse{
+				Code:   http.StatusNotFound,
+				Status: "FAIL",
+				Data:   err.Error(),
+			})
+		}
+
+		return app.JSON(http.StatusFound, model.WebResponse{
+			Code:   http.StatusFound,
+			Status: "SUCCESS",
+			Data:   response,
+		})
+	}
+
+	response, err := controller.UserService.GetAll()
 	if err != nil {
-		return app.JSON(http.StatusBadRequest, model.WebResponse{
-			Code:   http.StatusBadRequest,
+		return app.JSON(http.StatusNotFound, model.WebResponse{
+			Code:   http.StatusNotFound,
 			Status: "FAIL",
 			Data:   err.Error(),
 		})
 	}
 
-	response, err := controller.UserService.GetByID(urlParam.ID)
-	if err != nil {
-		return app.JSON(http.StatusBadRequest, model.WebResponse{
-			Code:   http.StatusBadRequest,
-			Status: "FAIL",
-			Data:   err.Error(),
-		})
-	}
-
-	return app.JSON(http.StatusOK, model.WebResponse{
-		Code:   http.StatusOK,
+	return app.JSON(http.StatusFound, model.WebResponse{
+		Code:   http.StatusFound,
 		Status: "SUCCESS",
 		Data:   response,
 	})
