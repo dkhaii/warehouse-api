@@ -42,3 +42,7 @@ type LoginUserRequest struct {
 type LoginUserResponse struct {
 	Token string `json:"token"`
 }
+
+type GetUserIDRequest struct {
+	ID uuid.UUID `param:"id"`
+}

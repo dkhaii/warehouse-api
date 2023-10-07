@@ -89,7 +89,7 @@ func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (*entity.User, e
 		&user.Username,
 		&user.Password,
 		&user.Contact,
-		&user.Contact,
+		&user.Role,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)

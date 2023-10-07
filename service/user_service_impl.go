@@ -52,10 +52,12 @@ func (service *userServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse,
 	}
 
 	response := model.GetUserResponse{
-		ID:       user.ID,
-		Username: user.Username,
-		Contact:  user.Contact,
-		Role:     user.Role,
+		ID:        user.ID,
+		Username:  user.Username,
+		Contact:   user.Contact,
+		Role:      user.Role,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 
 	return response, nil

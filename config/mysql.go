@@ -19,7 +19,7 @@ func NewMySQLDatabase(configuration Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", username, password, host, port, dbName)
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", username, password, host, port, dbName)
 
 	dbConn, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
