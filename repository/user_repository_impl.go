@@ -104,7 +104,8 @@ func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (*entity.User, e
 }
 
 func (repository *userRepositoryImpl) FindByUsername(name string) ([]*entity.User, error) {
-	query := "SELECT * FROM users WHERE username = ?"
+	query := "SELECT * FROM users WHERE username LIKE ?"
+	name = name + "%"
 
 	users, err := repository.database.Query(query, name)
 	if err != nil {

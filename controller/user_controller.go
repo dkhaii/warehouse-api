@@ -22,7 +22,6 @@ func NewUserController(userService service.UserService) UserController {
 
 func (controller *UserController) Routes(app *echo.Echo) {
 	app.POST("/api/users/register", controller.Create)
-	// app.GET("/api/user/:id", controller.GetByID)
 	app.GET("/api/users", controller.GetWithOptions)
 }
 
