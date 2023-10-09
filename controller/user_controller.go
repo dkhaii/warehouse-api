@@ -23,11 +23,10 @@ func NewUserController(userService service.UserService) UserController {
 func (controller *UserController) Routes(app *echo.Echo) {
 	app.POST("/api/users/register", controller.Create)
 	app.GET("/api/users", controller.GetWithOptions)
+	app.PUT("/api/users/:id", controller.Update)
 }
 
 func (controller *UserController) Create(app echo.Context) error {
-	var request model.CreateUserRequest
-
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -39,6 +38,7 @@ func (controller *UserController) Create(app echo.Context) error {
 		}
 	}()
 
+	var request model.CreateUserRequest
 	err := app.Bind(&request)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, model.WebResponse{
@@ -73,8 +73,6 @@ func (controller *UserController) Create(app echo.Context) error {
 }
 
 func (controller *UserController) GetWithOptions(app echo.Context) error {
-	var queryParam model.GetUserRequest
-
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -86,6 +84,7 @@ func (controller *UserController) GetWithOptions(app echo.Context) error {
 		}
 	}()
 
+	var queryParam model.GetUserRequest
 	err := app.Bind(&queryParam)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, model.WebResponse{
@@ -142,5 +141,46 @@ func (controller *UserController) GetWithOptions(app echo.Context) error {
 		Code:   http.StatusFound,
 		Status: "SUCCESS",
 		Data:   response,
+	})
+}
+
+func (controller *UserController) Update(app echo.Context) error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			app.JSON(http.StatusInternalServerError, model.WebResponse{
+				Code:   http.StatusInternalServerError,
+				Status: "FAIL",
+				Data:   err,
+			})
+		}
+	}()
+
+	var request model.UpdateUserRequest
+	err := app.Bind(&request)
+	if err != nil {
+		return app.JSON(http.StatusBadRequest, model.WebResponse{
+			Code:   http.StatusBadRequest,
+			Status: "FAIL",
+			Data:   err.Error(),
+		})
+	}
+
+	updatedAt := time.Now()
+	request.UpdatedAt = updatedAt
+
+	err = controller.UserService.Update(request)
+	if err != nil {
+		return app.JSON(http.StatusNotFound, model.WebResponse{
+			Code:   http.StatusNotFound,
+			Status: "FAIL",
+			Data:   err.Error(),
+		})
+	}
+
+	return app.JSON(http.StatusOK, model.WebResponse{
+		Code:   http.StatusOK,
+		Status: "SUCCESS",
+		Data:   request,
 	})
 }

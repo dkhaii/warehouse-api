@@ -51,3 +51,12 @@ type GetUserRequest struct {
 	ID       uuid.UUID `query:"id"`
 	Username string    `query:"username"`
 }
+
+type UpdateUserRequest struct {
+	ID        uuid.UUID `param:"id"`
+	Username  string    `json:"username"`
+	Password  string    `json:"password"`
+	Contact   string    `json:"contact"`
+	Role      int       `json:"role"`
+	UpdatedAt time.Time `json:"updated_at"`
+}

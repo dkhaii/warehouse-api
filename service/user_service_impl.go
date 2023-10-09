@@ -105,7 +105,7 @@ func (service *userServiceImpl) GetByUsername(name string) ([]model.GetUserRespo
 	return responses, nil
 }
 
-func (service *userServiceImpl) Update(request model.CreateUserRequest) error {
+func (service *userServiceImpl) Update(request model.UpdateUserRequest) error {
 	isUser, err := service.userRepository.FindByID(request.ID)
 	if err != nil {
 		return err
