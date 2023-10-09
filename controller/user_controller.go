@@ -24,6 +24,7 @@ func (controller *UserController) Routes(app *echo.Echo) {
 	app.POST("/api/users/register", controller.Create)
 	app.GET("/api/users", controller.GetWithOptions)
 	app.PUT("/api/users/:id", controller.Update)
+	app.DELETE("/api/users/:id", controller.Delete)
 }
 
 func (controller *UserController) Create(app echo.Context) error {
@@ -182,5 +183,43 @@ func (controller *UserController) Update(app echo.Context) error {
 		Code:   http.StatusOK,
 		Status: "SUCCESS",
 		Data:   request,
+	})
+}
+
+func (controller *UserController) Delete(app echo.Context) error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			app.JSON(http.StatusInternalServerError, model.WebResponse{
+				Code:   http.StatusInternalServerError,
+				Status: "FAIL",
+				Data:   err,
+			})
+		}
+	}()
+
+	var urlParam model.GetUserIDRequest
+	err := app.Bind(&urlParam)
+	if err != nil {
+		return app.JSON(http.StatusBadRequest, model.WebResponse{
+			Code:   http.StatusBadRequest,
+			Status: "FAIL",
+			Data:   err.Error(),
+		})
+	}
+
+	err = controller.UserService.Delete(urlParam.ID)
+	if err != nil {
+		return app.JSON(http.StatusBadRequest, model.WebResponse{
+			Code:   http.StatusBadRequest,
+			Status: "FAIL",
+			Data:   err.Error(),
+		})
+	}
+
+	return app.JSON(http.StatusOK, model.WebResponse{
+		Code:   http.StatusOK,
+		Status: "SUCCESS",
+		Data:   "",
 	})
 }
