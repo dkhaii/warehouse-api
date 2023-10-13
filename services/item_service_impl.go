@@ -1,23 +1,23 @@
-package service
+package services
 
 import (
 	"github.com/dkhaii/warehouse-api/entity"
-	"github.com/dkhaii/warehouse-api/model"
-	"github.com/dkhaii/warehouse-api/repository"
+	"github.com/dkhaii/warehouse-api/models"
+	"github.com/dkhaii/warehouse-api/repositories"
 	"github.com/google/uuid"
 )
 
 type itemServiceImpl struct {
-	itemRepository repository.ItemRepository
+	itemRepository repositories.ItemRepository
 }
 
-func NewItemService(itemRepository repository.ItemRepository) ItemService {
+func NewItemService(itemRepository repositories.ItemRepository) ItemService {
 	return &itemServiceImpl{
 		itemRepository: itemRepository,
 	}
 }
 
-func (service *itemServiceImpl) Create(request model.CreateItemRequest) (model.CreateItemResponse, error) {
+func (service *itemServiceImpl) Create(request models.CreateItemRequest) (models.CreateItemResponse, error) {
 	item := entity.Item{
 		ID:           request.ID,
 		Name:         request.Name,
@@ -33,10 +33,10 @@ func (service *itemServiceImpl) Create(request model.CreateItemRequest) (model.C
 
 	_, err := service.itemRepository.Insert(&item)
 	if err != nil {
-		return model.CreateItemResponse{}, err
+		return models.CreateItemResponse{}, err
 	}
 
-	response := model.CreateItemResponse{
+	response := models.CreateItemResponse{
 		ID:           item.ID,
 		Name:         item.Name,
 		Description:  item.Description,
@@ -52,16 +52,16 @@ func (service *itemServiceImpl) Create(request model.CreateItemRequest) (model.C
 	return response, nil
 }
 
-func (service *itemServiceImpl) GetAll() ([]model.GetItemResponse, error) {
+func (service *itemServiceImpl) GetAll() ([]models.GetItemResponse, error) {
 	items, err := service.itemRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	responses := make([]model.GetItemResponse, len(items))
+	responses := make([]models.GetItemResponse, len(items))
 
 	for key, item := range items {
-		responses[key] = model.GetItemResponse{
+		responses[key] = models.GetItemResponse{
 			ID:           item.ID,
 			Name:         item.Name,
 			Description:  item.Description,
@@ -78,13 +78,13 @@ func (service *itemServiceImpl) GetAll() ([]model.GetItemResponse, error) {
 	return responses, nil
 }
 
-func (service *itemServiceImpl) GetByID(itmID uuid.UUID) (model.GetItemResponse, error) {
+func (service *itemServiceImpl) GetByID(itmID uuid.UUID) (models.GetItemResponse, error) {
 	item, err := service.itemRepository.FindByID(itmID)
 	if err != nil {
-		return model.GetItemResponse{}, err
+		return models.GetItemResponse{}, err
 	}
 
-	response := model.GetItemResponse{
+	response := models.GetItemResponse{
 		ID:           item.ID,
 		Name:         item.Name,
 		Description:  item.Description,
@@ -100,16 +100,16 @@ func (service *itemServiceImpl) GetByID(itmID uuid.UUID) (model.GetItemResponse,
 	return response, nil
 }
 
-func (service *itemServiceImpl) GetByName(name string) ([]model.GetItemResponse, error) {
+func (service *itemServiceImpl) GetByName(name string) ([]models.GetItemResponse, error) {
 	items, err := service.itemRepository.FindByName(name)
 	if err != nil {
 		return nil, err
 	}
 
-	responses := make([]model.GetItemResponse, len(items))
+	responses := make([]models.GetItemResponse, len(items))
 
 	for key, item := range items {
-		responses[key] = model.GetItemResponse{
+		responses[key] = models.GetItemResponse{
 			ID:           item.ID,
 			Name:         item.Name,
 			Description:  item.Description,
@@ -126,10 +126,10 @@ func (service *itemServiceImpl) GetByName(name string) ([]model.GetItemResponse,
 	return responses, nil
 }
 
-func (service *itemServiceImpl) Update(request model.CreateItemRequest) (model.CreateItemResponse, error) {
+func (service *itemServiceImpl) Update(request models.CreateItemRequest) (models.CreateItemResponse, error) {
 	isItem, err := service.itemRepository.FindByID(request.ID)
 	if err != nil {
-		return model.CreateItemResponse{}, err
+		return models.CreateItemResponse{}, err
 	}
 
 	updatedItem := entity.Item{
@@ -147,10 +147,10 @@ func (service *itemServiceImpl) Update(request model.CreateItemRequest) (model.C
 
 	err = service.itemRepository.Update(&updatedItem)
 	if err != nil {
-		return model.CreateItemResponse{}, err
+		return models.CreateItemResponse{}, err
 	}
 
-	response := model.CreateItemResponse{
+	response := models.CreateItemResponse{
 		ID:           updatedItem.ID,
 		Name:         updatedItem.Name,
 		Description:  updatedItem.Description,

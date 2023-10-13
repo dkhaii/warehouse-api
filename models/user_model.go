@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	"time"
@@ -39,7 +39,7 @@ type LoginUserRequest struct {
 	Password string `json:"password"`
 }
 
-type LoginUserResponse struct {
+type TokenResponse struct {
 	Token string `json:"token"`
 }
 

@@ -1,4 +1,4 @@
-package repository
+package repositories
 
 import (
 	"database/sql"
@@ -103,7 +103,7 @@ func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (*entity.User, e
 	return &user, nil
 }
 
-func (repository *userRepositoryImpl) FindByUsername(name string) ([]*entity.User, error) {
+func (repository *userRepositoryImpl) GetByUsername(name string) ([]*entity.User, error) {
 	query := "SELECT * FROM users WHERE username LIKE ?"
 	name = name + "%"
 
@@ -143,6 +143,31 @@ func (repository *userRepositoryImpl) FindByUsername(name string) ([]*entity.Use
 	}
 
 	return listOfUsers, nil
+}
+
+func (repository *userRepositoryImpl) FindByUsername(name string) (*entity.User, error) {
+	query := "SELECT * FROM users WHERE username = ?"
+
+	sqlResult := repository.database.QueryRow(query, name)
+
+	var user entity.User
+	err := sqlResult.Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.Contact,
+		&user.Role,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &user, ErrUserNotFound
+		}
+		return &user, err
+	}
+
+	return &user, nil
 }
 
 func (repository *userRepositoryImpl) Update(usr *entity.User) error {

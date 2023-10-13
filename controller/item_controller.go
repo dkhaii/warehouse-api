@@ -4,33 +4,31 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dkhaii/warehouse-api/model"
-	"github.com/dkhaii/warehouse-api/service"
+	"github.com/dkhaii/warehouse-api/models"
+	"github.com/dkhaii/warehouse-api/services"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type ItemController struct {
-	ItemService service.ItemService
+	ItemService services.ItemService
 }
 
-func NewItemController(itemService service.ItemService) ItemController {
+func NewItemController(itemService services.ItemService) ItemController {
 	return ItemController{
 		ItemService: itemService,
 	}
 }
 
 func (controller *ItemController) Routes(app *echo.Echo) {
-	app.POST("/api/item", controller.Create)
+	app.POST("/api/items/add", controller.Create)
 }
 
 func (controller *ItemController) Create(app echo.Context) error {
-	var request model.CreateItemRequest
-
 	defer func() {
 		err := recover()
 		if err != nil {
-			app.JSON(http.StatusInternalServerError, model.WebResponse{
+			app.JSON(http.StatusInternalServerError, models.WebResponse{
 				Code:   http.StatusInternalServerError,
 				Status: "FAIL",
 				Data:   err,
@@ -38,6 +36,7 @@ func (controller *ItemController) Create(app echo.Context) error {
 		}
 	}()
 
+	var request models.CreateItemRequest
 	err := app.Bind(&request)
 	if err != nil {
 		return err
@@ -49,15 +48,87 @@ func (controller *ItemController) Create(app echo.Context) error {
 
 	response, err := controller.ItemService.Create(request)
 	if err != nil {
-		return app.JSON(http.StatusBadRequest, model.WebResponse{
+		return app.JSON(http.StatusBadRequest, models.WebResponse{
 			Code:   http.StatusBadRequest,
 			Status: "FAIL",
 			Data:   err.Error(),
 		})
 	}
 
-	return app.JSON(http.StatusOK, model.WebResponse{
+	return app.JSON(http.StatusOK, models.WebResponse{
 		Code:   http.StatusOK,
+		Status: "SUCCESS",
+		Data:   response,
+	})
+}
+
+func (controller *ItemController) GetItem(app echo.Context) error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			app.JSON(http.StatusInternalServerError, models.WebResponse{
+				Code:   http.StatusInternalServerError,
+				Status: "FAIL",
+				Data:   err,
+			})
+		}
+	}()
+
+	var queryParam models.GetItemRequest
+	err := app.Bind(&queryParam)
+	if err != nil {
+		return app.JSON(http.StatusBadRequest, models.WebResponse{
+			Code:   http.StatusBadRequest,
+			Status: "FAIL",
+			Data:   err.Error(),
+		})
+	}
+
+	if queryParam.ID != uuid.Nil {
+		response, err := controller.ItemService.GetByID(queryParam.ID)
+		if err != nil {
+			return app.JSON(http.StatusInternalServerError, models.WebResponse{
+				Code:   http.StatusInternalServerError,
+				Status: "FAIL",
+				Data:   err.Error(),
+			})
+		}
+
+		return app.JSON(http.StatusFound, models.WebResponse{
+			Code:   http.StatusFound,
+			Status: "SUCCESS",
+			Data:   response,
+		})
+	}
+
+	if queryParam.Name != "" {
+		response, err := controller.ItemService.GetByName(queryParam.Name)
+		if err != nil {
+			return app.JSON(http.StatusInternalServerError, models.WebResponse{
+				Code:   http.StatusInternalServerError,
+				Status: "FAIL",
+				Data:   err.Error(),
+			})
+		}
+
+		return app.JSON(http.StatusFound, models.WebResponse{
+			Code:   http.StatusFound,
+			Status: "SUCCESS",
+			Data:   response,
+		})
+	}
+
+	response, err := controller.ItemService.GetAll()
+	if err != nil {
+		return app.JSON(http.StatusInternalServerError, models.WebResponse{
+			Code:   http.StatusInternalServerError,
+			Status: "FAIL",
+			Data:   err.Error(),
+		})
+	}
+
+	return app.JSON(http.StatusFound, models.WebResponse{
+		Code:   http.StatusFound,
 		Status: "SUCCESS",
 		Data:   response,
 	})

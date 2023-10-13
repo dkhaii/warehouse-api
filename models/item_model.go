@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	"time"
@@ -30,6 +30,11 @@ type CreateItemResponse struct {
 	UserID       uuid.UUID `json:"category"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type GetItemRequest struct {
+	ID   uuid.UUID `query:"id"`
+	Name string    `query:"name"`
 }
 
 type GetItemResponse struct {

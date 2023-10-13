@@ -1,23 +1,29 @@
-package service
+package services
 
 import (
+	"crypto/subtle"
+	// "fmt"
+
+	"github.com/dkhaii/warehouse-api/config"
 	"github.com/dkhaii/warehouse-api/entity"
-	"github.com/dkhaii/warehouse-api/model"
-	"github.com/dkhaii/warehouse-api/repository"
+	"github.com/dkhaii/warehouse-api/internal/tokenutil"
+	"github.com/dkhaii/warehouse-api/models"
+	"github.com/dkhaii/warehouse-api/repositories"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
 type userServiceImpl struct {
-	userRepository repository.UserRepository
+	userRepository repositories.UserRepository
 }
 
-func NewUserService(userRepository repository.UserRepository) UserService {
+func NewUserService(userRepository repositories.UserRepository) UserService {
 	return &userServiceImpl{
 		userRepository: userRepository,
 	}
 }
 
-func (service *userServiceImpl) Create(request model.CreateUserRequest) (model.CreateUserResponse, error) {
+func (service *userServiceImpl) Create(request models.CreateUserRequest) (models.CreateUserResponse, error) {
 	user := entity.User{
 		ID:        request.ID,
 		Username:  request.Username,
@@ -30,10 +36,10 @@ func (service *userServiceImpl) Create(request model.CreateUserRequest) (model.C
 
 	_, err := service.userRepository.Insert(&user)
 	if err != nil {
-		return model.CreateUserResponse{}, err
+		return models.CreateUserResponse{}, err
 	}
 
-	response := model.CreateUserResponse{
+	response := models.CreateUserResponse{
 		ID:        user.ID,
 		Username:  user.Username,
 		Contact:   user.Contact,
@@ -45,16 +51,16 @@ func (service *userServiceImpl) Create(request model.CreateUserRequest) (model.C
 	return response, nil
 }
 
-func (service *userServiceImpl) GetAll() ([]model.GetUserResponse, error) {
+func (service *userServiceImpl) GetAll() ([]models.GetUserResponse, error) {
 	users, err := service.userRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	responses := make([]model.GetUserResponse, len(users))
+	responses := make([]models.GetUserResponse, len(users))
 
 	for key, user := range users {
-		responses[key] = model.GetUserResponse{
+		responses[key] = models.GetUserResponse{
 			ID:        user.ID,
 			Username:  user.Username,
 			Contact:   user.Contact,
@@ -67,13 +73,13 @@ func (service *userServiceImpl) GetAll() ([]model.GetUserResponse, error) {
 	return responses, nil
 }
 
-func (service *userServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse, error) {
+func (service *userServiceImpl) GetByID(usrID uuid.UUID) (models.GetUserResponse, error) {
 	user, err := service.userRepository.FindByID(usrID)
 	if err != nil {
-		return model.GetUserResponse{}, err
+		return models.GetUserResponse{}, err
 	}
 
-	response := model.GetUserResponse{
+	response := models.GetUserResponse{
 		ID:        user.ID,
 		Username:  user.Username,
 		Contact:   user.Contact,
@@ -85,16 +91,16 @@ func (service *userServiceImpl) GetByID(usrID uuid.UUID) (model.GetUserResponse,
 	return response, nil
 }
 
-func (service *userServiceImpl) GetByUsername(name string) ([]model.GetUserResponse, error) {
-	users, err := service.userRepository.FindByUsername(name)
+func (service *userServiceImpl) GetByUsername(name string) ([]models.GetUserResponse, error) {
+	users, err := service.userRepository.GetByUsername(name)
 	if err != nil {
 		return nil, err
 	}
 
-	responses := make([]model.GetUserResponse, len(users))
+	responses := make([]models.GetUserResponse, len(users))
 
 	for key, user := range users {
-		responses[key] = model.GetUserResponse{
+		responses[key] = models.GetUserResponse{
 			ID:       user.ID,
 			Username: user.Username,
 			Contact:  user.Contact,
@@ -105,7 +111,7 @@ func (service *userServiceImpl) GetByUsername(name string) ([]model.GetUserRespo
 	return responses, nil
 }
 
-func (service *userServiceImpl) Update(request model.UpdateUserRequest) error {
+func (service *userServiceImpl) Update(request models.UpdateUserRequest) error {
 	isUser, err := service.userRepository.FindByID(request.ID)
 	if err != nil {
 		return err
@@ -143,5 +149,29 @@ func (service *userServiceImpl) Delete(usrID uuid.UUID) error {
 	return nil
 }
 
-// func (service *UserServiceImpl) Login(request model.LoginUserRequest) (model.LoginUserResponse, error) {
-// }
+func (service *userServiceImpl) Login(request models.LoginUserRequest) (models.TokenResponse, error) {
+	user, err := service.userRepository.FindByUsername(request.Username)
+	if err != nil {
+		return models.TokenResponse{}, err
+	}
+
+	if subtle.ConstantTimeCompare([]byte(request.Username), []byte(user.Username)) == 1 && subtle.ConstantTimeCompare([]byte(request.Password), []byte(user.Password)) == 1 {
+		config, err := config.New()
+		if err != nil {
+			return models.TokenResponse{}, err
+		}
+
+		jwtSecret := config.Get("JWT_SECRET")
+
+		token, err := tokenutil.CreateAccessToken(user, jwtSecret, 24)
+		if err != nil {
+			return models.TokenResponse{}, err
+		}
+
+		return models.TokenResponse{
+			Token: token,
+		}, nil
+	}
+
+	return models.TokenResponse{}, jwt.ErrTokenMalformed
+}

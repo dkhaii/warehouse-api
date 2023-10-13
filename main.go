@@ -5,8 +5,9 @@ import (
 
 	"github.com/dkhaii/warehouse-api/config"
 	"github.com/dkhaii/warehouse-api/controller"
-	"github.com/dkhaii/warehouse-api/repository"
-	"github.com/dkhaii/warehouse-api/service"
+	"github.com/dkhaii/warehouse-api/repositories"
+	"github.com/dkhaii/warehouse-api/routes"
+	"github.com/dkhaii/warehouse-api/services"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 )
@@ -25,12 +26,12 @@ func main() {
 	}
 
 	// repository dependency injection
-	userRepository := repository.NewUserRepository(database)
-	itemRepository := repository.NewItemRepository(database)
+	userRepository := repositories.NewUserRepository(database)
+	itemRepository := repositories.NewItemRepository(database)
 
 	// service dependency injection
-	userService := service.NewUserService(userRepository)
-	itemService := service.NewItemService(itemRepository)
+	userService := services.NewUserService(userRepository)
+	itemService := services.NewItemService(itemRepository)
 
 	// controller dependency injection
 	userController := controller.NewUserController(userService)
@@ -38,7 +39,8 @@ func main() {
 
 	app := echo.New()
 
-	userController.Routes(app)
+	// router
+	routes.RegisterUserRoutes(app, &userController)
 	itemController.Routes(app)
 
 	app.Logger.Fatal(app.Start(":8080"))
