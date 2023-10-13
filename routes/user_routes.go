@@ -8,9 +8,9 @@ import (
 )
 
 func RegisterUserRoutes(app *echo.Echo, controller *controller.UserController) {
-	app.POST("api/v1/login", controller.Login)
+	app.POST("api/v1/users/login", controller.Login)
 
-	routes := app.Group("api/v1/users")
+	routes := app.Group("api/v1/auth/users")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
