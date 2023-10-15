@@ -7,15 +7,19 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func RegisterUserRoutes(app *echo.Echo, controller *controller.UserController) {
-	app.POST("api/v1/users/login", controller.Login)
+func PublicUserRoutes(app *echo.Echo, controller *controller.UserController) {
+	routes := app.Group("api/v1/users")
 
+	routes.POST("/login", controller.Login)
+	routes.POST("/register", controller.Create)
+}
+
+func AuthenticatedUserRoutes(app *echo.Echo, controller *controller.UserController) {
 	routes := app.Group("api/v1/auth/users")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
 
-	routes.POST("/register", controller.Create)
 	routes.GET("/find", controller.GetUser)
 	routes.PUT("update/:id", controller.Update)
 	routes.DELETE("delete/:id", controller.Delete)

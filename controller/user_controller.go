@@ -31,14 +31,6 @@ func (controller *UserController) Create(app echo.Context) error {
 		})
 	}
 
-	userID := uuid.New()
-	createdAt := time.Now()
-
-	request.ID = userID
-	request.Role = 1
-	request.CreatedAt = createdAt
-	request.UpdatedAt = request.CreatedAt
-
 	response, err := controller.UserService.Create(request)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, models.WebResponse{

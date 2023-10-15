@@ -185,7 +185,7 @@ func (repository *itemRepositoryImpl) Update(itm *entity.Item) error {
 }
 
 func (repository *itemRepositoryImpl) Delete(itmID uuid.UUID) error {
-	query := "DELETE FROM users WHERE id = ?"
+	query := "DELETE FROM items WHERE id = ?"
 
 	_, err := repository.database.Exec(query, itmID)
 	if err != nil {

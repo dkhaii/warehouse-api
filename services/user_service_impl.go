@@ -2,10 +2,13 @@ package services
 
 import (
 	"crypto/subtle"
+	"time"
+
 	// "fmt"
 
 	"github.com/dkhaii/warehouse-api/config"
 	"github.com/dkhaii/warehouse-api/entity"
+	"github.com/dkhaii/warehouse-api/internal/hashutil"
 	"github.com/dkhaii/warehouse-api/internal/tokenutil"
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/dkhaii/warehouse-api/repositories"
@@ -24,6 +27,20 @@ func NewUserService(userRepository repositories.UserRepository) UserService {
 }
 
 func (service *userServiceImpl) Create(request models.CreateUserRequest) (models.CreateUserResponse, error) {
+	userID := uuid.New()
+	createdAt := time.Now()
+
+	request.ID = userID
+	request.Role = 1
+	request.CreatedAt = createdAt
+	request.UpdatedAt = request.CreatedAt
+
+	hashedPassword, err := hashutil.HashPassword(request.Password)
+	if err != nil {
+		return models.CreateUserResponse{}, err
+	}
+	request.Password = hashedPassword
+
 	user := entity.User{
 		ID:        request.ID,
 		Username:  request.Username,
@@ -34,7 +51,7 @@ func (service *userServiceImpl) Create(request models.CreateUserRequest) (models
 		UpdatedAt: request.UpdatedAt,
 	}
 
-	_, err := service.userRepository.Insert(&user)
+	_, err = service.userRepository.Insert(&user)
 	if err != nil {
 		return models.CreateUserResponse{}, err
 	}
@@ -155,7 +172,7 @@ func (service *userServiceImpl) Login(request models.LoginUserRequest) (models.T
 		return models.TokenResponse{}, err
 	}
 
-	if subtle.ConstantTimeCompare([]byte(request.Username), []byte(user.Username)) == 1 && subtle.ConstantTimeCompare([]byte(request.Password), []byte(user.Password)) == 1 {
+	if subtle.ConstantTimeCompare([]byte(request.Username), []byte(user.Username)) == 1 && hashutil.ComparePassword(user.Password, request.Password) {
 		config, err := config.New()
 		if err != nil {
 			return models.TokenResponse{}, err

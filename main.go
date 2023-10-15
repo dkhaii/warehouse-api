@@ -40,7 +40,8 @@ func main() {
 	app := echo.New()
 
 	// router
-	routes.RegisterUserRoutes(app, &userController)
+	routes.PublicUserRoutes(app, &userController)
+	routes.AuthenticatedUserRoutes(app, &userController)
 	itemController.Routes(app)
 
 	app.Logger.Fatal(app.Start(":8080"))
