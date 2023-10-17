@@ -55,7 +55,7 @@ func (service *locationServiceImpl) Create(request models.CreateLocationRequest)
 	return response, nil
 }
 
-func (service *locationServiceImpl) FindAll() ([]models.GetLocationResponse, error) {
+func (service *locationServiceImpl) GetAll() ([]models.GetLocationResponse, error) {
 	rows, err := service.locationRepository.FindAll()
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func (service *locationServiceImpl) FindAll() ([]models.GetLocationResponse, err
 	return locations, nil
 }
 
-func (service *locationServiceImpl) FindCompleteByID(locID string) (models.GetCompleteLocationByIDResponse, error) {
+func (service *locationServiceImpl) GetCompleteByID(locID string) (models.GetCompleteLocationByIDResponse, error) {
 	location, err := service.locationRepository.FindCompleteByIDWithJoin(locID)
 	if err != nil {
 		return models.GetCompleteLocationByIDResponse{}, err

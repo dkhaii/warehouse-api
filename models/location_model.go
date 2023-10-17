@@ -30,7 +30,11 @@ type GetLocationResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type GetLocationByIDRequest struct {
+type GetLocationByIDQueryRequest struct {
+	ID string `query:"id"`
+}
+
+type GetLocationByIDParamRequest struct {
 	ID string `param:"id"`
 }
 
