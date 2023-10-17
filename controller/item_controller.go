@@ -25,17 +25,6 @@ func (controller *ItemController) Routes(app *echo.Echo) {
 }
 
 func (controller *ItemController) Create(app echo.Context) error {
-	defer func() {
-		err := recover()
-		if err != nil {
-			app.JSON(http.StatusInternalServerError, models.WebResponse{
-				Code:   http.StatusInternalServerError,
-				Status: "FAIL",
-				Data:   err,
-			})
-		}
-	}()
-
 	var request models.CreateItemRequest
 	err := app.Bind(&request)
 	if err != nil {
@@ -63,17 +52,6 @@ func (controller *ItemController) Create(app echo.Context) error {
 }
 
 func (controller *ItemController) GetItem(app echo.Context) error {
-	defer func() {
-		err := recover()
-		if err != nil {
-			app.JSON(http.StatusInternalServerError, models.WebResponse{
-				Code:   http.StatusInternalServerError,
-				Status: "FAIL",
-				Data:   err,
-			})
-		}
-	}()
-
 	var queryParam models.GetItemRequest
 	err := app.Bind(&queryParam)
 	if err != nil {

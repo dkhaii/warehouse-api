@@ -10,6 +10,7 @@ import (
 	"github.com/dkhaii/warehouse-api/entity"
 	"github.com/dkhaii/warehouse-api/internal/hashutil"
 	"github.com/dkhaii/warehouse-api/internal/tokenutil"
+	"github.com/dkhaii/warehouse-api/internal/validationutil"
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/dkhaii/warehouse-api/repositories"
 	"github.com/golang-jwt/jwt/v5"
@@ -27,6 +28,11 @@ func NewUserService(userRepository repositories.UserRepository) UserService {
 }
 
 func (service *userServiceImpl) Create(request models.CreateUserRequest) (models.CreateUserResponse, error) {
+	err := validationutil.ValidateRequest(request)
+	if err != nil {
+		return models.CreateUserResponse{}, err
+	}
+
 	userID := uuid.New()
 	createdAt := time.Now()
 
@@ -129,10 +135,17 @@ func (service *userServiceImpl) GetByUsername(name string) ([]models.GetUserResp
 }
 
 func (service *userServiceImpl) Update(request models.UpdateUserRequest) error {
+	err := validationutil.ValidateRequest(request)
+	if err != nil {
+		return err
+	}
+
 	isUser, err := service.userRepository.FindByID(request.ID)
 	if err != nil {
 		return err
 	}
+
+	request.UpdatedAt = time.Now()
 
 	updatedUser := entity.User{
 		ID:        isUser.ID,
@@ -167,6 +180,11 @@ func (service *userServiceImpl) Delete(usrID uuid.UUID) error {
 }
 
 func (service *userServiceImpl) Login(request models.LoginUserRequest) (models.TokenResponse, error) {
+	err := validationutil.ValidateRequest(request)
+	if err != nil {
+		return models.TokenResponse{}, err
+	}
+
 	user, err := service.userRepository.FindByUsername(request.Username)
 	if err != nil {
 		return models.TokenResponse{}, err

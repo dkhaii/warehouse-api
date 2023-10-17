@@ -28,21 +28,25 @@ func main() {
 	// repository dependency injection
 	userRepository := repositories.NewUserRepository(database)
 	itemRepository := repositories.NewItemRepository(database)
+	categoryRepository := repositories.NewCategoryRepository(database)
 
 	// service dependency injection
 	userService := services.NewUserService(userRepository)
 	itemService := services.NewItemService(itemRepository)
+	categoryService := services.NewCategoryService(categoryRepository)
 
 	// controller dependency injection
 	userController := controller.NewUserController(userService)
 	itemController := controller.NewItemController(itemService)
+	categoryController := controller.NewCategoryController(categoryService)
 
 	app := echo.New()
 
 	// router
 	routes.PublicUserRoutes(app, &userController)
-	routes.AuthenticatedUserRoutes(app, &userController)
+	routes.ProtectedUserRoutes(app, &userController)
 	itemController.Routes(app)
+	routes.ProtectedCategoryRoutes(app, &categoryController)
 
 	app.Logger.Fatal(app.Start(":8080"))
 }

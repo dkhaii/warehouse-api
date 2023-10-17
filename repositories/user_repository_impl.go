@@ -47,7 +47,7 @@ func (repository *userRepositoryImpl) FindAll() ([]*entity.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer users.Close()
+	// defer users.Close()
 
 	var listOfUsers []*entity.User
 
@@ -114,7 +114,7 @@ func (repository *userRepositoryImpl) GetByUsername(name string) ([]*entity.User
 		}
 		return nil, err
 	}
-	defer users.Close()
+	// defer users.Close()
 
 	var listOfUsers []*entity.User
 
@@ -188,7 +188,7 @@ func (repository *userRepositoryImpl) Update(usr *entity.User) error {
 		}
 		return err
 	}
-	defer repository.database.Close()
+	// defer repository.database.Close()
 
 	return nil
 }
@@ -204,7 +204,7 @@ func (repository *userRepositoryImpl) Delete(usrID uuid.UUID) error {
 		return nil
 	}
 
-	defer repository.database.Close()
+	// defer repository.database.Close()
 
 	return nil
 }

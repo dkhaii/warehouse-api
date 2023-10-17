@@ -12,8 +12,8 @@ type Item struct {
 	Description  string
 	Quantity     int
 	Availability bool
-	LocationID   uuid.UUID
-	CategoryID   int
+	LocationID   string
+	CategoryID   string
 	UserID       uuid.UUID
 	CreatedAt    time.Time
 	UpdatedAt    time.Time

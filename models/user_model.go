@@ -7,11 +7,11 @@ import (
 )
 
 type CreateUserRequest struct {
-	ID        uuid.UUID `json:"id"`
-	Username  string    `json:"username"`
-	Password  string    `json:"password"`
-	Contact   string    `json:"contact"`
-	Role      int       `json:"role"`
+	ID        uuid.UUID `json:"id" validate:"required"`
+	Username  string    `json:"username" validate:"required"`
+	Password  string    `json:"password" validate:"required"`
+	Contact   string    `json:"contact" validate:"required"`
+	Role      int       `json:"role" validate:"required"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -35,8 +35,8 @@ type GetUserResponse struct {
 }
 
 type LoginUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type TokenResponse struct {
@@ -54,9 +54,9 @@ type GetUserRequest struct {
 
 type UpdateUserRequest struct {
 	ID        uuid.UUID `param:"id"`
-	Username  string    `json:"username"`
-	Password  string    `json:"password"`
-	Contact   string    `json:"contact"`
-	Role      int       `json:"role"`
+	Username  string    `json:"username" validate:"required"`
+	Password  string    `json:"password" validate:"required"`
+	Contact   string    `json:"contact" validate:"required"`
+	Role      int       `json:"role" validate:"required"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

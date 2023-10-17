@@ -7,26 +7,26 @@ import (
 )
 
 type CreateItemRequest struct {
-	ID           uuid.UUID `json:"id"`
-	Name         string    `json:"name"`
-	Description  string    `json:"description"`
-	Quantity     int       `json:"quantity"`
-	Availability bool      `json:"availability"`
-	LocationID   uuid.UUID `json:"location_id"`
-	CategoryID   int       `json:"category_id"`
-	UserID       uuid.UUID `json:"category"`
+	ID           uuid.UUID `json:"id" validate:"required"`
+	Name         string    `json:"name" validate:"required"`
+	Description  string    `json:"description" validate:"required"`
+	Quantity     int       `json:"quantity" validate:"required"`
+	Availability bool      `json:"availability" validate:"required"`
+	LocationID   string    `json:"location_id" validate:"required"`
+	CategoryID   string    `json:"category_id" validate:"required"`
+	UserID       uuid.UUID `json:"category" validate:"required"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type CreateItemResponse struct {
-	ID           uuid.UUID `json:"id"`
+	ID           uuid.UUID `param:"id"`
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`
 	Quantity     int       `json:"quantity"`
 	Availability bool      `json:"availability"`
-	LocationID   uuid.UUID `json:"location_id"`
-	CategoryID   int       `json:"category_id"`
+	LocationID   string    `json:"location_id"`
+	CategoryID   string    `json:"category_id"`
 	UserID       uuid.UUID `json:"category"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
@@ -43,8 +43,8 @@ type GetItemResponse struct {
 	Description  string    `json:"description"`
 	Quantity     int       `json:"quantity"`
 	Availability bool      `json:"availability"`
-	LocationID   uuid.UUID `json:"location_id"`
-	CategoryID   int       `json:"category_id"`
+	LocationID   string    `json:"location_id"`
+	CategoryID   string    `json:"category_id"`
 	UserID       uuid.UUID `json:"category"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`

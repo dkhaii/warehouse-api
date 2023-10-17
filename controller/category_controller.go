@@ -5,22 +5,21 @@ import (
 
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/dkhaii/warehouse-api/services"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-type UserController struct {
-	UserService services.UserService
+type CategoryController struct {
+	CategoryService services.CategoryService
 }
 
-func NewUserController(userService services.UserService) UserController {
-	return UserController{
-		UserService: userService,
+func NewCategoryController(categoryService services.CategoryService) CategoryController {
+	return CategoryController{
+		CategoryService: categoryService,
 	}
 }
 
-func (controller *UserController) Create(app echo.Context) error {
-	var request models.CreateUserRequest
+func (controller *CategoryController) Create(app echo.Context) error {
+	var request models.CreateCategoryRequest
 	err := app.Bind(&request)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, models.WebResponse{
@@ -30,24 +29,24 @@ func (controller *UserController) Create(app echo.Context) error {
 		})
 	}
 
-	response, err := controller.UserService.Create(request)
+	response, err := controller.CategoryService.Create(request)
 	if err != nil {
-		return app.JSON(http.StatusBadRequest, models.WebResponse{
-			Code:   http.StatusBadRequest,
+		return app.JSON(http.StatusInternalServerError, models.WebResponse{
+			Code:   http.StatusInternalServerError,
 			Status: "FAIL",
 			Data:   err.Error(),
 		})
 	}
 
-	return app.JSON(http.StatusOK, models.WebResponse{
-		Code:   http.StatusOK,
+	return app.JSON(http.StatusCreated, models.WebResponse{
+		Code:   http.StatusCreated,
 		Status: "SUCCESS",
 		Data:   response,
 	})
 }
 
-func (controller *UserController) GetUser(app echo.Context) error {
-	var queryParam models.GetUserRequest
+func (controller *CategoryController) GetCategory(app echo.Context) error {
+	var queryParam models.GetCategoryRequest
 	err := app.Bind(&queryParam)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, models.WebResponse{
@@ -57,8 +56,8 @@ func (controller *UserController) GetUser(app echo.Context) error {
 		})
 	}
 
-	if queryParam.ID != uuid.Nil {
-		response, err := controller.UserService.GetByID(queryParam.ID)
+	if queryParam.ID != "" {
+		response, err := controller.CategoryService.GetByID(queryParam.ID)
 		if err != nil {
 			return app.JSON(http.StatusNotFound, models.WebResponse{
 				Code:   http.StatusNotFound,
@@ -74,8 +73,8 @@ func (controller *UserController) GetUser(app echo.Context) error {
 		})
 	}
 
-	if queryParam.Username != "" {
-		response, err := controller.UserService.GetByUsername(queryParam.Username)
+	if queryParam.Name != "" {
+		response, err := controller.CategoryService.GetByName(queryParam.Name)
 		if err != nil {
 			return app.JSON(http.StatusNotFound, models.WebResponse{
 				Code:   http.StatusNotFound,
@@ -91,7 +90,7 @@ func (controller *UserController) GetUser(app echo.Context) error {
 		})
 	}
 
-	response, err := controller.UserService.GetAll()
+	response, err := controller.CategoryService.GetAll()
 	if err != nil {
 		return app.JSON(http.StatusNotFound, models.WebResponse{
 			Code:   http.StatusNotFound,
@@ -107,8 +106,8 @@ func (controller *UserController) GetUser(app echo.Context) error {
 	})
 }
 
-func (controller *UserController) Update(app echo.Context) error {
-	var request models.UpdateUserRequest
+func (controller *CategoryController) Update(app echo.Context) error {
+	var request models.UpdateCategoryRequest
 	err := app.Bind(&request)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, models.WebResponse{
@@ -118,7 +117,7 @@ func (controller *UserController) Update(app echo.Context) error {
 		})
 	}
 
-	err = controller.UserService.Update(request)
+	err = controller.CategoryService.Update(request)
 	if err != nil {
 		return app.JSON(http.StatusNotFound, models.WebResponse{
 			Code:   http.StatusNotFound,
@@ -134,8 +133,8 @@ func (controller *UserController) Update(app echo.Context) error {
 	})
 }
 
-func (controller *UserController) Delete(app echo.Context) error {
-	var urlParam models.GetUserIDRequest
+func (controller *CategoryController) Delete(app echo.Context) error {
+	var urlParam models.GetCategoryIDRequest
 	err := app.Bind(&urlParam)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, models.WebResponse{
@@ -145,10 +144,10 @@ func (controller *UserController) Delete(app echo.Context) error {
 		})
 	}
 
-	err = controller.UserService.Delete(urlParam.ID)
+	err = controller.CategoryService.Delete(urlParam.ID)
 	if err != nil {
-		return app.JSON(http.StatusBadRequest, models.WebResponse{
-			Code:   http.StatusBadRequest,
+		return app.JSON(http.StatusInternalServerError, models.WebResponse{
+			Code:   http.StatusInternalServerError,
 			Status: "FAIL",
 			Data:   err.Error(),
 		})
@@ -158,33 +157,5 @@ func (controller *UserController) Delete(app echo.Context) error {
 		Code:   http.StatusOK,
 		Status: "SUCCESS",
 		Data:   "",
-	})
-}
-
-func (controller *UserController) Login(app echo.Context) error {
-	var request models.LoginUserRequest
-
-	err := app.Bind(&request)
-	if err != nil {
-		return app.JSON(http.StatusBadRequest, models.WebResponse{
-			Code:   http.StatusBadRequest,
-			Status: "FAIL",
-			Data:   err.Error(),
-		})
-	}
-
-	tokenResponse, err := controller.UserService.Login(request)
-	if err != nil {
-		return app.JSON(http.StatusUnauthorized, models.WebResponse{
-			Code:   http.StatusUnauthorized,
-			Status: "FAIL",
-			Data:   err.Error(),
-		})
-	}
-
-	return app.JSON(http.StatusOK, models.WebResponse{
-		Code:   http.StatusOK,
-		Status: "SUCCESS",
-		Data:   tokenResponse,
 	})
 }
