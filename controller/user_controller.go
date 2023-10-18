@@ -130,7 +130,7 @@ func (controller *UserController) Update(app echo.Context) error {
 	return app.JSON(http.StatusOK, models.WebResponse{
 		Code:   http.StatusOK,
 		Status: "SUCCESS",
-		Data:   request,
+		Data:   nil,
 	})
 }
 
@@ -157,7 +157,7 @@ func (controller *UserController) Delete(app echo.Context) error {
 	return app.JSON(http.StatusOK, models.WebResponse{
 		Code:   http.StatusOK,
 		Status: "SUCCESS",
-		Data:   "",
+		Data:   nil,
 	})
 }
 

@@ -7,11 +7,11 @@ import (
 )
 
 type CreateUserRequest struct {
-	ID        uuid.UUID `json:"id" validate:"required"`
+	ID        uuid.UUID `json:"id"`
 	Username  string    `json:"username" validate:"required"`
 	Password  string    `json:"password" validate:"required"`
 	Contact   string    `json:"contact" validate:"required"`
-	Role      int       `json:"role" validate:"required"`
+	Role      int       `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/dkhaii/warehouse-api/entity"
 )
@@ -34,7 +33,7 @@ func (repository *locationRepositoryImpl) Insert(loc *entity.Location) (*entity.
 		loc.UpdatedAt,
 	)
 	if err != nil {
-		return &entity.Location{}, err
+		return nil, err
 	}
 
 	return loc, nil
@@ -62,16 +61,15 @@ func (repository *locationRepositoryImpl) FindAll() ([]*entity.Location, error) 
 			&location.UpdatedAt,
 		)
 		if err != nil {
-			log.Fatal(err)
 			return nil, err
 		}
 
 		listOfLocations = append(listOfLocations, &location)
 	}
-	rerr := rows.Close()
-	if rerr != nil {
-		return nil, err
-	}
+	// rerr := rows.Close()
+	// if rerr != nil {
+	// 	return nil, err
+	// }
 
 	err = rows.Err()
 	if err != nil {
@@ -93,7 +91,6 @@ func (repository *locationRepositoryImpl) FindByID(locID string) (*entity.Locati
 		&location.Description,
 		&location.CreatedAt,
 		&location.UpdatedAt,
-		&location.Category,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -113,7 +110,7 @@ func (repository *locationRepositoryImpl) FindCompleteByIDWithJoin(locID string)
 	SELECT loc.*, ctg.* FROM locations loc 
 	LEFT JOIN categories ctg 
 	on ctg.id = loc.category_id 
-	WHERE id = ?
+	WHERE loc.id = ?
 	`
 
 	err := repository.database.QueryRow(query, locID).Scan(
@@ -143,8 +140,7 @@ func (repository *locationRepositoryImpl) FindCompleteByIDWithJoin(locID string)
 func (repository *locationRepositoryImpl) Update(loc *entity.Location) error {
 	query := `
 	UPDATE locations 
-	SET 
-	category_id = ?, description = ?, updated_at = ? 
+	SET category_id = ?, description = ?, updated_at = ? 
 	WHERE id = ?
 	`
 
@@ -153,6 +149,7 @@ func (repository *locationRepositoryImpl) Update(loc *entity.Location) error {
 		loc.CategoryID,
 		loc.Description,
 		loc.UpdatedAt,
+		loc.ID,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {

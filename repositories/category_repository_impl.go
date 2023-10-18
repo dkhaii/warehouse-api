@@ -17,7 +17,12 @@ func NewCategoryRepository(database *sql.DB) CategoryRepository {
 }
 
 func (repository *categoryRepositoryImpl) Insert(ctg *entity.Category) (*entity.Category, error) {
-	query := "INSERT INTO categories (id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
+	query := `
+	INSERT INTO categories 
+	(id, name, description, created_at, updated_at) 
+	VALUES 
+	(?, ?, ?, ?, ?)
+	`
 
 	_, err := repository.database.Exec(
 		query,
@@ -28,7 +33,7 @@ func (repository *categoryRepositoryImpl) Insert(ctg *entity.Category) (*entity.
 		ctg.UpdatedAt,
 	)
 	if err != nil {
-		return &entity.Category{}, err
+		return nil, err
 	}
 
 	return ctg, nil
@@ -37,32 +42,36 @@ func (repository *categoryRepositoryImpl) Insert(ctg *entity.Category) (*entity.
 func (respository *categoryRepositoryImpl) FindAll() ([]*entity.Category, error) {
 	query := "SELECT * FROM categories"
 
-	categories, err := respository.database.Query(query)
+	rows, err := respository.database.Query(query)
 	if err != nil {
 		return nil, err
 	}
-	defer categories.Close()
+	defer rows.Close()
 
 	var listOfCategories []*entity.Category
 
-	for categories.Next() {
-		var c entity.Category
+	for rows.Next() {
+		var category entity.Category
 
-		err := categories.Scan(
-			&c.ID,
-			&c.Name,
-			&c.Description,
-			&c.CreatedAt,
-			&c.UpdatedAt,
+		err := rows.Scan(
+			&category.ID,
+			&category.Name,
+			&category.Description,
+			&category.CreatedAt,
+			&category.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		listOfCategories = append(listOfCategories, &c)
+		listOfCategories = append(listOfCategories, &category)
 	}
+	// rerr := rows.Close()
+	// if rerr != nil {
+	// 	return nil, err
+	// }
 
-	err = categories.Err()
+	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
@@ -73,10 +82,10 @@ func (respository *categoryRepositoryImpl) FindAll() ([]*entity.Category, error)
 func (repository *categoryRepositoryImpl) FindByID(ctgID string) (*entity.Category, error) {
 	query := "SELECT * FROM categories WHERE id = ?"
 
-	sqlResult := repository.database.QueryRow(query, ctgID)
+	row := repository.database.QueryRow(query, ctgID)
 
 	var category entity.Category
-	err := sqlResult.Scan(
+	err := row.Scan(
 		&category.ID,
 		&category.Name,
 		&category.Description,
@@ -97,41 +106,51 @@ func (repository *categoryRepositoryImpl) FindByName(name string) ([]*entity.Cat
 	query := "SELECT * FROM categories WHERE name LIKE ?"
 	name = name + "%"
 
-	categories, err := repository.database.Query(query, name)
+	rows, err := repository.database.Query(query, name)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrCategoryNotFound
+		}
 		return nil, err
 	}
-	defer categories.Close()
+	defer rows.Close()
 
 	var listOfCategories []*entity.Category
 
-	for categories.Next() {
-		var c entity.Category
+	for rows.Next() {
+		var category entity.Category
 
-		err := categories.Scan(
-			&c.ID,
-			&c.Name,
-			&c.Description,
-			&c.CreatedAt,
-			&c.UpdatedAt,
+		err := rows.Scan(
+			&category.ID,
+			&category.Name,
+			&category.Description,
+			&category.CreatedAt,
+			&category.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		listOfCategories = append(listOfCategories, &c)
+		listOfCategories = append(listOfCategories, &category)
 	}
+	// rerr := rows.Close()
+	// if rerr != nil {
+	// 	return nil, err
+	// }
 
-	err = categories.Err()
+	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
 
-	return listOfCategories, err
+	return listOfCategories, nil
 }
 
 func (repository *categoryRepositoryImpl) Update(ctg *entity.Category) error {
-	query := "UPDATE categories SET name = ?, description = ?, updated_at = ? WHERE id = ?"
+	query := `UPDATE categories 
+	SET name = ?, description = ?, updated_at = ? 
+	WHERE id = ?
+	`
 
 	_, err := repository.database.Exec(
 		query,

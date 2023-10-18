@@ -7,7 +7,7 @@ import (
 )
 
 type CreateLocationRequest struct {
-	ID          string    `json:"id"`
+	ID          string    `json:"id" validate:"required"`
 	CategoryID  string    `json:"category_id" validate:"required"`
 	Description string    `json:"description" validate:"required"`
 	CreatedAt   time.Time `json:"created_at"`

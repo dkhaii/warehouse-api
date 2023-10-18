@@ -138,7 +138,7 @@ func (controller *LocationController) Delete(app echo.Context) error {
 
 	return app.JSON(http.StatusOK, models.WebResponse{
 		Code:   http.StatusOK,
-		Status: "FAIL",
+		Status: "SUCCESS",
 		Data:   nil,
 	})
 }
