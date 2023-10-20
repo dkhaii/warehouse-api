@@ -1,14 +1,14 @@
 package services
 
 import (
+	"context"
 	"crypto/subtle"
+	"database/sql"
 	"time"
 
 	"github.com/dkhaii/warehouse-api/config"
 	"github.com/dkhaii/warehouse-api/entity"
-	"github.com/dkhaii/warehouse-api/internal/hashutil"
-	"github.com/dkhaii/warehouse-api/internal/tokenutil"
-	"github.com/dkhaii/warehouse-api/internal/validationutil"
+	"github.com/dkhaii/warehouse-api/helpers"
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/dkhaii/warehouse-api/repositories"
 	"github.com/golang-jwt/jwt/v5"
@@ -17,29 +17,36 @@ import (
 
 type userServiceImpl struct {
 	userRepository repositories.UserRepository
+	database       *sql.DB
 }
 
-func NewUserService(userRepository repositories.UserRepository) UserService {
+func NewUserService(userRepository repositories.UserRepository, database *sql.DB) UserService {
 	return &userServiceImpl{
 		userRepository: userRepository,
+		database:       database,
 	}
 }
 
-func (service *userServiceImpl) Create(request models.CreateUserRequest) (models.CreateUserResponse, error) {
-	err := validationutil.ValidateRequest(request)
+func (service *userServiceImpl) Create(ctx context.Context, request models.CreateUserRequest) (models.CreateUserResponse, error) {
+	err := helpers.ValidateRequest(request)
 	if err != nil {
 		return models.CreateUserResponse{}, err
 	}
+
+	tx, err := service.database.Begin()
+	if err != nil {
+		return models.CreateUserResponse{}, err
+	}
+	defer helpers.CommitOrRollBack(tx)
 
 	userID := uuid.New()
 	createdAt := time.Now()
 
 	request.ID = userID
-	request.Role = 1
 	request.CreatedAt = createdAt
 	request.UpdatedAt = request.CreatedAt
 
-	hashedPassword, err := hashutil.HashPassword(request.Password)
+	hashedPassword, err := helpers.HashPassword(request.Password)
 	if err != nil {
 		return models.CreateUserResponse{}, err
 	}
@@ -50,112 +57,149 @@ func (service *userServiceImpl) Create(request models.CreateUserRequest) (models
 		Username:  request.Username,
 		Password:  request.Password,
 		Contact:   request.Contact,
-		Role:      request.Role,
+		RoleID:    request.RoleID,
 		CreatedAt: request.CreatedAt,
 		UpdatedAt: request.UpdatedAt,
+		Role:      nil,
 	}
 
-	_, err = service.userRepository.Insert(&user)
+	createdUser, err := service.userRepository.Insert(ctx, tx, &user)
 	if err != nil {
 		return models.CreateUserResponse{}, err
 	}
 
 	response := models.CreateUserResponse{
-		ID:        user.ID,
-		Username:  user.Username,
-		Contact:   user.Contact,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+		ID:        createdUser.ID,
+		Username:  createdUser.Username,
+		Contact:   createdUser.Contact,
+		RoleID:    createdUser.RoleID,
+		CreatedAt: createdUser.CreatedAt,
+		UpdatedAt: createdUser.UpdatedAt,
 	}
 
 	return response, nil
 }
 
-func (service *userServiceImpl) GetAll() ([]models.GetUserResponse, error) {
-	users, err := service.userRepository.FindAll()
+func (service *userServiceImpl) GetAll(ctx context.Context) ([]models.GetUserResponse, error) {
+	rows, err := service.userRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	responses := make([]models.GetUserResponse, len(users))
+	users := make([]models.GetUserResponse, len(rows))
 
-	for key, user := range users {
-		responses[key] = models.GetUserResponse{
+	for key, user := range rows {
+		users[key] = models.GetUserResponse{
 			ID:        user.ID,
 			Username:  user.Username,
 			Contact:   user.Contact,
-			Role:      user.Role,
+			RoleID:    user.RoleID,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 		}
 	}
 
-	return responses, nil
+	return users, nil
 }
 
-func (service *userServiceImpl) GetByID(usrID uuid.UUID) (models.GetUserResponse, error) {
-	user, err := service.userRepository.FindByID(usrID)
+func (service *userServiceImpl) GetCompleteByID(ctx context.Context, usrID uuid.UUID) (models.GetCompleteUserResponse, error) {
+	user, err := service.userRepository.FindCompleteByID(ctx, usrID)
 	if err != nil {
-		return models.GetUserResponse{}, err
+		return models.GetCompleteUserResponse{}, err
 	}
 
-	response := models.GetUserResponse{
+	response := models.GetCompleteUserResponse{
 		ID:        user.ID,
 		Username:  user.Username,
 		Contact:   user.Contact,
-		Role:      user.Role,
+		RoleID:    user.RoleID,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
+		Role:      user.Role,
 	}
 
 	return response, nil
 }
 
-func (service *userServiceImpl) GetByUsername(name string) ([]models.GetUserResponse, error) {
-	users, err := service.userRepository.GetByUsername(name)
+func (service *userServiceImpl) GetByUsername(ctx context.Context, name string) ([]models.GetUserResponse, error) {
+	rows, err := service.userRepository.GetByUsername(ctx, name)
 	if err != nil {
 		return nil, err
 	}
 
-	responses := make([]models.GetUserResponse, len(users))
+	users := make([]models.GetUserResponse, len(rows))
 
-	for key, user := range users {
-		responses[key] = models.GetUserResponse{
+	for key, user := range rows {
+		users[key] = models.GetUserResponse{
 			ID:       user.ID,
 			Username: user.Username,
 			Contact:  user.Contact,
-			Role:     user.Role,
+			RoleID:   user.RoleID,
 		}
 	}
 
-	return responses, nil
+	return users, nil
 }
 
-func (service *userServiceImpl) Update(request models.UpdateUserRequest) error {
-	err := validationutil.ValidateRequest(request)
+func (service *userServiceImpl) Update(ctx context.Context, request models.UpdateUserRequest) (models.CreateUserResponse, error) {
+	err := helpers.ValidateRequest(request)
 	if err != nil {
-		return err
+		return models.CreateUserResponse{}, err
 	}
 
-	isUser, err := service.userRepository.FindByID(request.ID)
+	user, err := service.userRepository.FindByID(ctx, request.ID)
 	if err != nil {
-		return err
+		return models.CreateUserResponse{}, err
 	}
+
+	tx, err := service.database.Begin()
+	if err != nil {
+		return models.CreateUserResponse{}, err
+	}
+	defer helpers.CommitOrRollBack(tx)
 
 	request.UpdatedAt = time.Now()
 
 	updatedUser := entity.User{
-		ID:        isUser.ID,
+		ID:        user.ID,
 		Username:  request.Username,
 		Password:  request.Password,
 		Contact:   request.Contact,
-		Role:      request.Role,
-		CreatedAt: isUser.CreatedAt,
+		RoleID:    request.RoleID,
+		CreatedAt: user.CreatedAt,
 		UpdatedAt: request.UpdatedAt,
 	}
 
-	err = service.userRepository.Update(&updatedUser)
+	userData, err := service.userRepository.Update(ctx, tx, &updatedUser)
+	if err != nil {
+		return models.CreateUserResponse{}, err
+	}
+
+	response := models.CreateUserResponse{
+		ID:        userData.ID,
+		Username:  userData.Username,
+		Contact:   userData.Contact,
+		RoleID:    userData.RoleID,
+		CreatedAt: userData.CreatedAt,
+		UpdatedAt: userData.UpdatedAt,
+	}
+
+	return response, nil
+}
+
+func (service *userServiceImpl) Delete(ctx context.Context, usrID uuid.UUID) error {
+	user, err := service.userRepository.FindByID(ctx, usrID)
+	if err != nil {
+		return err
+	}
+
+	tx, err := service.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer helpers.CommitOrRollBack(tx)
+
+	err = service.userRepository.Delete(ctx, tx, user.ID)
 	if err != nil {
 		return err
 	}
@@ -163,32 +207,18 @@ func (service *userServiceImpl) Update(request models.UpdateUserRequest) error {
 	return nil
 }
 
-func (service *userServiceImpl) Delete(usrID uuid.UUID) error {
-	user, err := service.userRepository.FindByID(usrID)
-	if err != nil {
-		return err
-	}
-
-	err = service.userRepository.Delete(user.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (service *userServiceImpl) Login(request models.LoginUserRequest) (models.TokenResponse, error) {
-	err := validationutil.ValidateRequest(request)
+func (service *userServiceImpl) Login(ctx context.Context, request models.LoginUserRequest) (models.TokenResponse, error) {
+	err := helpers.ValidateRequest(request)
 	if err != nil {
 		return models.TokenResponse{}, err
 	}
 
-	user, err := service.userRepository.FindByUsername(request.Username)
+	user, err := service.userRepository.FindByUsername(ctx, request.Username)
 	if err != nil {
 		return models.TokenResponse{}, err
 	}
 
-	if subtle.ConstantTimeCompare([]byte(request.Username), []byte(user.Username)) == 1 && hashutil.ComparePassword(user.Password, request.Password) {
+	if subtle.ConstantTimeCompare([]byte(request.Username), []byte(user.Username)) == 1 && helpers.ComparePassword(user.Password, request.Password) {
 		config, err := config.New()
 		if err != nil {
 			return models.TokenResponse{}, err
@@ -196,7 +226,7 @@ func (service *userServiceImpl) Login(request models.LoginUserRequest) (models.T
 
 		jwtSecret := config.Get("JWT_SECRET")
 
-		token, err := tokenutil.CreateAccessToken(user, jwtSecret, 24)
+		token, err := helpers.CreateAccessToken(user, jwtSecret, 24)
 		if err != nil {
 			return models.TokenResponse{}, err
 		}

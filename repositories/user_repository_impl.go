@@ -44,7 +44,7 @@ func (repository *userRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, us
 	return usr, nil
 }
 
-func (repository *userRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*entity.User, error) {
+func (repository *userRepositoryImpl) FindAll(ctx context.Context) ([]*entity.User, error) {
 	query := "SELECT * FROM users"
 
 	rows, err := repository.database.QueryContext(ctx, query)
@@ -82,7 +82,7 @@ func (repository *userRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) (
 	return listOfUsers, nil
 }
 
-func (repository *userRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, usrID uuid.UUID) (*entity.User, error) {
+func (repository *userRepositoryImpl) FindByID(ctx context.Context, usrID uuid.UUID) (*entity.User, error) {
 	var user entity.User
 
 	query := "SELECT * FROM users WHERE id = ?"
@@ -106,12 +106,12 @@ func (repository *userRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, 
 	return &user, nil
 }
 
-func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, tx *sql.Tx, usrID uuid.UUID) (*entity.User, error) {
+func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, usrID uuid.UUID) (*entity.User, error) {
 	var user entity.User
 	var role entity.Role
 
 	query := `
-	SELECT usr.*, r.id, r.name FROM users usr
+	SELECT usr.*, r.* FROM users usr
 	LEFT JOIN roles r
 	ON r.id = usr.role_id
 	WHERE usr.id = ?
@@ -126,6 +126,8 @@ func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, tx *
 		&user.UpdatedAt,
 		&role.ID,
 		&role.Name,
+		&role.CreatedAt,
+		&role.UpdatedAt,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -139,7 +141,7 @@ func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, tx *
 	return &user, nil
 }
 
-func (repository *userRepositoryImpl) GetByUsername(ctx context.Context, tx *sql.Tx, name string) ([]*entity.User, error) {
+func (repository *userRepositoryImpl) GetByUsername(ctx context.Context, name string) ([]*entity.User, error) {
 	query := "SELECT * FROM users WHERE username LIKE ?"
 	name = name + "%"
 
@@ -180,7 +182,7 @@ func (repository *userRepositoryImpl) GetByUsername(ctx context.Context, tx *sql
 	return listOfUsers, nil
 }
 
-func (repository *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, name string) (*entity.User, error) {
+func (repository *userRepositoryImpl) FindByUsername(ctx context.Context, name string) (*entity.User, error) {
 	query := "SELECT * FROM users WHERE username = ?"
 
 	rows := repository.database.QueryRowContext(ctx, query, name)

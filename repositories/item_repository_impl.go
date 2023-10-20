@@ -1,209 +1,209 @@
 package repositories
 
-import (
-	"database/sql"
+// import (
+// 	"database/sql"
 
-	"github.com/dkhaii/warehouse-api/entity"
-	"github.com/google/uuid"
-)
+// 	"github.com/dkhaii/warehouse-api/entity"
+// 	"github.com/google/uuid"
+// )
 
-type itemRepositoryImpl struct {
-	database *sql.DB
-}
+// type itemRepositoryImpl struct {
+// 	database *sql.DB
+// }
 
-func NewItemRepository(database *sql.DB) ItemRepository {
-	return &itemRepositoryImpl{
-		database: database,
-	}
-}
+// func NewItemRepository(database *sql.DB) ItemRepository {
+// 	return &itemRepositoryImpl{
+// 		database: database,
+// 	}
+// }
 
-func (repository *itemRepositoryImpl) Insert(itm *entity.Item) (*entity.Item, error) {
-	query := `INSERT INTO items 
-	(id, name, description, quantity, availability, location_id, category_id, user_id, created_at, updated_at) 
-	VALUES 
-	(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`
+// func (repository *itemRepositoryImpl) Insert(itm *entity.Item) (*entity.Item, error) {
+// 	query := `INSERT INTO items 
+// 	(id, name, description, quantity, availability, location_id, category_id, user_id, created_at, updated_at) 
+// 	VALUES 
+// 	(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+// 	`
 
-	_, err := repository.database.Exec(
-		query,
-		itm.ID,
-		itm.Name,
-		itm.Description,
-		itm.Quantity,
-		itm.Availability,
-		itm.LocationID,
-		itm.CategoryID,
-		itm.UserID,
-		itm.CreatedAt,
-		itm.UpdatedAt,
-	)
-	if err != nil {
-		return nil, err
-	}
+// 	_, err := repository.database.Exec(
+// 		query,
+// 		itm.ID,
+// 		itm.Name,
+// 		itm.Description,
+// 		itm.Quantity,
+// 		itm.Availability,
+// 		itm.LocationID,
+// 		itm.CategoryID,
+// 		itm.UserID,
+// 		itm.CreatedAt,
+// 		itm.UpdatedAt,
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return itm, nil
-}
+// 	return itm, nil
+// }
 
-func (repository *itemRepositoryImpl) FindAll() ([]*entity.Item, error) {
-	query := "SELECT * FROM items"
+// func (repository *itemRepositoryImpl) FindAll() ([]*entity.Item, error) {
+// 	query := "SELECT * FROM items"
 
-	rows, err := repository.database.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+// 	rows, err := repository.database.Query(query)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
 
-	var listOfItems []*entity.Item
+// 	var listOfItems []*entity.Item
 
-	for rows.Next() {
-		var item entity.Item
+// 	for rows.Next() {
+// 		var item entity.Item
 
-		err := rows.Scan(
-			&item.ID,
-			&item.Name,
-			&item.Description,
-			&item.Quantity,
-			&item.Availability,
-			&item.LocationID,
-			&item.CategoryID,
-			&item.UserID,
-			&item.CreatedAt,
-			&item.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
+// 		err := rows.Scan(
+// 			&item.ID,
+// 			&item.Name,
+// 			&item.Description,
+// 			&item.Quantity,
+// 			&item.Availability,
+// 			&item.LocationID,
+// 			&item.CategoryID,
+// 			&item.UserID,
+// 			&item.CreatedAt,
+// 			&item.UpdatedAt,
+// 		)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		listOfItems = append(listOfItems, &item)
-	}
+// 		listOfItems = append(listOfItems, &item)
+// 	}
 
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
+// 	err = rows.Err()
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return listOfItems, nil
-}
+// 	return listOfItems, nil
+// }
 
-func (repository *itemRepositoryImpl) FindByID(itmID uuid.UUID) (*entity.Item, error) {
-	query := "SELECT * FROM items WHERE id = ?"
+// func (repository *itemRepositoryImpl) FindByID(itmID uuid.UUID) (*entity.Item, error) {
+// 	query := "SELECT * FROM items WHERE id = ?"
 
-	sqlResult := repository.database.QueryRow(query, itmID)
+// 	sqlResult := repository.database.QueryRow(query, itmID)
 
-	var item entity.Item
-	err := sqlResult.Scan(
-		&item.ID,
-		&item.Name,
-		&item.Description,
-		&item.Quantity,
-		&item.Availability,
-		&item.LocationID,
-		&item.CategoryID,
-		&item.UserID,
-		&item.CreatedAt,
-		&item.UpdatedAt,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, ErrItemNotFound
-		}
+// 	var item entity.Item
+// 	err := sqlResult.Scan(
+// 		&item.ID,
+// 		&item.Name,
+// 		&item.Description,
+// 		&item.Quantity,
+// 		&item.Availability,
+// 		&item.LocationID,
+// 		&item.CategoryID,
+// 		&item.UserID,
+// 		&item.CreatedAt,
+// 		&item.UpdatedAt,
+// 	)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			return nil, ErrItemNotFound
+// 		}
 
-		return nil, err
-	}
+// 		return nil, err
+// 	}
 
-	return &item, nil
-}
+// 	return &item, nil
+// }
 
-func (repository *itemRepositoryImpl) FindByName(name string) ([]*entity.Item, error) {
-	query := "SELECT * FROM items WHERE name = ?"
+// func (repository *itemRepositoryImpl) FindByName(name string) ([]*entity.Item, error) {
+// 	query := "SELECT * FROM items WHERE name = ?"
 
-	rows, err := repository.database.Query(query, name)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, ErrItemNotFound
-		}
+// 	rows, err := repository.database.Query(query, name)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			return nil, ErrItemNotFound
+// 		}
 
-		return nil, err
-	}
-	defer rows.Close()
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
 
-	var listOfItems []*entity.Item
+// 	var listOfItems []*entity.Item
 
-	for rows.Next() {
-		var item entity.Item
+// 	for rows.Next() {
+// 		var item entity.Item
 
-		err := rows.Scan(
-			&item.ID,
-			&item.Name,
-			&item.Description,
-			&item.Quantity,
-			&item.Availability,
-			&item.LocationID,
-			&item.CategoryID,
-			&item.UserID,
-			&item.CreatedAt,
-			&item.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
+// 		err := rows.Scan(
+// 			&item.ID,
+// 			&item.Name,
+// 			&item.Description,
+// 			&item.Quantity,
+// 			&item.Availability,
+// 			&item.LocationID,
+// 			&item.CategoryID,
+// 			&item.UserID,
+// 			&item.CreatedAt,
+// 			&item.UpdatedAt,
+// 		)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		listOfItems = append(listOfItems, &item)
-	}
+// 		listOfItems = append(listOfItems, &item)
+// 	}
 
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
+// 	err = rows.Err()
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return listOfItems, nil
-}
+// 	return listOfItems, nil
+// }
 
-func (repository *itemRepositoryImpl) FindCompleteByIDWithJoin(itmID uuid.UUID) (*entity.Item, error) {
-	var item entity.Item
-	var location entity.Location
-	var category entity.Category
-	var user entity.User
-}
+// func (repository *itemRepositoryImpl) FindCompleteByIDWithJoin(itmID uuid.UUID) (*entity.Item, error) {
+// 	var item entity.Item
+// 	var location entity.Location
+// 	var category entity.Category
+// 	var user entity.User
+// }
 
-func (repository *itemRepositoryImpl) Update(itm *entity.Item) error {
-	query := "UPDATE items SET name = ?, description = ?, quantity = ?, availability = ?, location_id = ?, category_id = ?, user_id = ?, updated_at = ? WHERE id = ?"
+// func (repository *itemRepositoryImpl) Update(itm *entity.Item) error {
+// 	query := "UPDATE items SET name = ?, description = ?, quantity = ?, availability = ?, location_id = ?, category_id = ?, user_id = ?, updated_at = ? WHERE id = ?"
 
-	_, err := repository.database.Exec(
-		query,
-		itm.Name,
-		itm.Description,
-		itm.Quantity,
-		itm.Availability,
-		itm.LocationID,
-		itm.CategoryID,
-		itm.UserID,
-		itm.UpdatedAt,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ErrItemNotFound
-		}
+// 	_, err := repository.database.Exec(
+// 		query,
+// 		itm.Name,
+// 		itm.Description,
+// 		itm.Quantity,
+// 		itm.Availability,
+// 		itm.LocationID,
+// 		itm.CategoryID,
+// 		itm.UserID,
+// 		itm.UpdatedAt,
+// 	)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			return ErrItemNotFound
+// 		}
 
-		return err
-	}
-	defer repository.database.Close()
+// 		return err
+// 	}
+// 	defer repository.database.Close()
 
-	return nil
-}
+// 	return nil
+// }
 
-func (repository *itemRepositoryImpl) Delete(itmID uuid.UUID) error {
-	query := "DELETE FROM items WHERE id = ?"
+// func (repository *itemRepositoryImpl) Delete(itmID uuid.UUID) error {
+// 	query := "DELETE FROM items WHERE id = ?"
 
-	_, err := repository.database.Exec(query, itmID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ErrUserNotFound
-		}
-		return nil
-	}
+// 	_, err := repository.database.Exec(query, itmID)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			return ErrUserNotFound
+// 		}
+// 		return nil
+// 	}
 
-	defer repository.database.Close()
+// 	defer repository.database.Close()
 
-	return nil
-}
+// 	return nil
+// }

@@ -1,16 +1,18 @@
 package services
 
 import (
+	"context"
+
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/google/uuid"
 )
 
 type UserService interface {
-	Create(request models.CreateUserRequest) (models.CreateUserResponse, error)
-	GetAll() ([]models.GetUserResponse, error)
-	GetByID(usrID uuid.UUID) (models.GetUserResponse, error)
-	GetByUsername(name string) ([]models.GetUserResponse, error)
-	Update(request models.UpdateUserRequest) error
-	Delete(usrID uuid.UUID) error
-	Login(request models.LoginUserRequest) (models.TokenResponse, error)
+	Create(ctx context.Context, request models.CreateUserRequest) (models.CreateUserResponse, error)
+	GetAll(ctx context.Context) ([]models.GetUserResponse, error)
+	GetCompleteByID(ctx context.Context, usrID uuid.UUID) (models.GetCompleteUserResponse, error)
+	GetByUsername(ctx context.Context, name string) ([]models.GetUserResponse, error)
+	Update(ctx context.Context, request models.UpdateUserRequest) (models.CreateUserResponse, error)
+	Delete(ctx context.Context, usrID uuid.UUID) error
+	Login(ctx context.Context, request models.LoginUserRequest) (models.TokenResponse, error)
 }

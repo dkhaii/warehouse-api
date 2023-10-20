@@ -27,19 +27,19 @@ func main() {
 
 	// repository dependency injection
 	userRepository := repositories.NewUserRepository(database)
-	itemRepository := repositories.NewItemRepository(database)
+	// itemRepository := repositories.NewItemRepository(database)
 	categoryRepository := repositories.NewCategoryRepository(database)
 	locationRepository := repositories.NewLocationRepository(database)
 
 	// service dependency injection
-	userService := services.NewUserService(userRepository)
-	itemService := services.NewItemService(itemRepository)
+	userService := services.NewUserService(userRepository, database)
+	// itemService := services.NewItemService(itemRepository)
 	categoryService := services.NewCategoryService(categoryRepository, database)
 	locationService := services.NewLocationService(locationRepository, database)
 
 	// controller dependency injection
 	userController := controller.NewUserController(userService)
-	itemController := controller.NewItemController(itemService)
+	// itemController := controller.NewItemController(itemService)
 	categoryController := controller.NewCategoryController(categoryService)
 	locationController := controller.NewLocationController(locationService)
 
@@ -48,7 +48,7 @@ func main() {
 	// router
 	routes.PublicUserRoutes(app, &userController)
 	routes.ProtectedUserRoutes(app, &userController)
-	itemController.Routes(app)
+	// itemController.Routes(app)
 	routes.ProtectedCategoryRoutes(app, &categoryController)
 	routes.ProtectedLocationRoutes(app, &locationController)
 

@@ -82,13 +82,13 @@ func (service *locationServiceImpl) GetAll(ctx context.Context) ([]models.GetLoc
 	return locations, nil
 }
 
-func (service *locationServiceImpl) GetCompleteByID(ctx context.Context, locID string) (models.GetCompleteLocationByIDResponse, error) {
+func (service *locationServiceImpl) GetCompleteByID(ctx context.Context, locID string) (models.GetCompleteLocationResponse, error) {
 	location, err := service.locationRepository.FindCompleteByID(ctx, locID)
 	if err != nil {
-		return models.GetCompleteLocationByIDResponse{}, err
+		return models.GetCompleteLocationResponse{}, err
 	}
 
-	response := models.GetCompleteLocationByIDResponse{
+	response := models.GetCompleteLocationResponse{
 		ID:          location.ID,
 		Description: location.Description,
 		CreatedAt:   location.CreatedAt,
