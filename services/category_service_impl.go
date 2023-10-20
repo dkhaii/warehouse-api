@@ -1,32 +1,41 @@
 package services
 
 import (
+	"context"
+	"database/sql"
 	"time"
 
 	"github.com/dkhaii/warehouse-api/entity"
-	"github.com/dkhaii/warehouse-api/internal/validationutil"
+	"github.com/dkhaii/warehouse-api/helpers"
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/dkhaii/warehouse-api/repositories"
 )
 
 type categoryServiceImpl struct {
 	categoryRepository repositories.CategoryRepository
+	database           *sql.DB
 }
 
-func NewCategoryService(categoryRepository repositories.CategoryRepository) CategoryService {
+func NewCategoryService(categoryRepository repositories.CategoryRepository, database *sql.DB) CategoryService {
 	return &categoryServiceImpl{
 		categoryRepository: categoryRepository,
+		database:           database,
 	}
 }
 
-func (service *categoryServiceImpl) Create(request models.CreateCategoryRequest) (models.CreateCategoryResponse, error) {
-	err := validationutil.ValidateRequest(request)
+func (service *categoryServiceImpl) Create(ctx context.Context, request models.CreateCategoryRequest) (models.CreateCategoryResponse, error) {
+	err := helpers.ValidateRequest(request)
 	if err != nil {
 		return models.CreateCategoryResponse{}, err
 	}
 
-	createdAt := time.Now()
+	tx, err := service.database.Begin()
+	if err != nil {
+		return models.CreateCategoryResponse{}, err
+	}
+	defer helpers.CommitOrRollBack(tx)
 
+	createdAt := time.Now()
 	request.CreatedAt = createdAt
 	request.UpdatedAt = request.CreatedAt
 
@@ -36,26 +45,28 @@ func (service *categoryServiceImpl) Create(request models.CreateCategoryRequest)
 		Description: request.Description,
 		CreatedAt:   request.CreatedAt,
 		UpdatedAt:   request.UpdatedAt,
+		Location:    nil,
 	}
 
-	_, err = service.categoryRepository.Insert(&category)
+	createdCategory, err := service.categoryRepository.Insert(ctx, tx, &category)
 	if err != nil {
 		return models.CreateCategoryResponse{}, err
 	}
 
 	response := models.CreateCategoryResponse{
-		ID:          category.ID,
-		Name:        category.Name,
-		Description: category.Description,
-		CreatedAt:   category.CreatedAt,
-		UpdatedAt:   category.UpdatedAt,
+		ID:          createdCategory.ID,
+		Name:        createdCategory.Name,
+		Description: createdCategory.Description,
+		LocationID:  createdCategory.LocationID,
+		CreatedAt:   createdCategory.CreatedAt,
+		UpdatedAt:   createdCategory.UpdatedAt,
 	}
 
 	return response, nil
 }
 
-func (service *categoryServiceImpl) GetAll() ([]models.GetCategoryResponse, error) {
-	categories, err := service.categoryRepository.FindAll()
+func (service *categoryServiceImpl) GetAll(ctx context.Context) ([]models.GetCategoryResponse, error) {
+	categories, err := service.categoryRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +78,7 @@ func (service *categoryServiceImpl) GetAll() ([]models.GetCategoryResponse, erro
 			ID:          category.ID,
 			Name:        category.Name,
 			Description: category.Description,
+			LocationID:  category.LocationID,
 			CreatedAt:   category.CreatedAt,
 			UpdatedAt:   category.UpdatedAt,
 		}
@@ -75,8 +87,8 @@ func (service *categoryServiceImpl) GetAll() ([]models.GetCategoryResponse, erro
 	return responses, nil
 }
 
-func (service *categoryServiceImpl) GetByID(ctgID string) (models.GetCategoryResponse, error) {
-	category, err := service.categoryRepository.FindByID(ctgID)
+func (service *categoryServiceImpl) GetByID(ctx context.Context, ctgID string) (models.GetCategoryResponse, error) {
+	category, err := service.categoryRepository.FindByID(ctx, ctgID)
 	if err != nil {
 		return models.GetCategoryResponse{}, err
 	}
@@ -85,6 +97,7 @@ func (service *categoryServiceImpl) GetByID(ctgID string) (models.GetCategoryRes
 		ID:          category.ID,
 		Name:        category.Name,
 		Description: category.Description,
+		LocationID:  category.LocationID,
 		CreatedAt:   category.CreatedAt,
 		UpdatedAt:   category.UpdatedAt,
 	}
@@ -92,8 +105,8 @@ func (service *categoryServiceImpl) GetByID(ctgID string) (models.GetCategoryRes
 	return response, nil
 }
 
-func (service *categoryServiceImpl) GetByName(name string) ([]models.GetCategoryResponse, error) {
-	categories, err := service.categoryRepository.FindByName(name)
+func (service *categoryServiceImpl) GetByName(ctx context.Context, name string) ([]models.GetCategoryResponse, error) {
+	categories, err := service.categoryRepository.FindByName(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +118,7 @@ func (service *categoryServiceImpl) GetByName(name string) ([]models.GetCategory
 			ID:          category.ID,
 			Name:        category.Name,
 			Description: category.Description,
+			LocationID:  category.LocationID,
 			CreatedAt:   category.CreatedAt,
 			UpdatedAt:   category.UpdatedAt,
 		}
@@ -113,16 +127,22 @@ func (service *categoryServiceImpl) GetByName(name string) ([]models.GetCategory
 	return responses, nil
 }
 
-func (service *categoryServiceImpl) Update(request models.UpdateCategoryRequest) error {
-	err := validationutil.ValidateRequest(request)
+func (service *categoryServiceImpl) Update(ctx context.Context, request models.UpdateCategoryRequest) (models.CreateCategoryResponse, error) {
+	err := helpers.ValidateRequest(request)
 	if err != nil {
-		return err
+		return models.CreateCategoryResponse{}, err
 	}
 
-	category, err := service.categoryRepository.FindByID(request.ID)
+	category, err := service.categoryRepository.FindByID(ctx, request.ID)
 	if err != nil {
-		return err
+		return models.CreateCategoryResponse{}, err
 	}
+
+	tx, err := service.database.Begin()
+	if err != nil {
+		return models.CreateCategoryResponse{}, err
+	}
+	defer helpers.CommitOrRollBack(tx)
 
 	request.UpdatedAt = time.Now()
 
@@ -130,25 +150,41 @@ func (service *categoryServiceImpl) Update(request models.UpdateCategoryRequest)
 		ID:          category.ID,
 		Name:        request.Name,
 		Description: request.Description,
+		LocationID:  request.LocationID,
 		CreatedAt:   category.CreatedAt,
 		UpdatedAt:   request.UpdatedAt,
 	}
 
-	err = service.categoryRepository.Update(&updatedCategory)
+	categoryData, err := service.categoryRepository.Update(ctx, tx, &updatedCategory)
 	if err != nil {
-		return err
+		return models.CreateCategoryResponse{}, err
 	}
 
-	return nil
+	response := models.CreateCategoryResponse{
+		ID:          categoryData.ID,
+		Name:        categoryData.Name,
+		Description: categoryData.Description,
+		LocationID:  categoryData.LocationID,
+		CreatedAt:   categoryData.CreatedAt,
+		UpdatedAt:   categoryData.UpdatedAt,
+	}
+
+	return response, nil
 }
 
-func (service *categoryServiceImpl) Delete(ctgID string) error {
-	isCategory, err := service.categoryRepository.FindByID(ctgID)
+func (service *categoryServiceImpl) Delete(ctx context.Context, ctgID string) error {
+	category, err := service.categoryRepository.FindByID(ctx, ctgID)
 	if err != nil {
 		return err
 	}
 
-	err = service.categoryRepository.Delete(isCategory.ID)
+	tx, err := service.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer helpers.CommitOrRollBack(tx)
+
+	err = service.categoryRepository.Delete(ctx, tx, category.ID)
 	if err != nil {
 		return err
 	}

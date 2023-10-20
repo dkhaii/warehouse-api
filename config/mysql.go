@@ -27,8 +27,9 @@ func NewMySQLDatabase(configuration Config) (*sql.DB, error) {
 	}
 
 	dbConn.SetMaxOpenConns(10)
-	dbConn.SetMaxIdleConns(5)
-	dbConn.SetConnMaxLifetime(1 * time.Hour)
+	dbConn.SetMaxIdleConns(20)
+	dbConn.SetConnMaxIdleTime(15 * time.Minute)
+	dbConn.SetConnMaxLifetime(90 * time.Minute)
 
 	err = dbConn.Ping()
 	if err != nil {

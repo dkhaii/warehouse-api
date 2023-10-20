@@ -35,7 +35,7 @@ func main() {
 	userService := services.NewUserService(userRepository)
 	itemService := services.NewItemService(itemRepository)
 	categoryService := services.NewCategoryService(categoryRepository)
-	locationService := services.NewLocationService(locationRepository)
+	locationService := services.NewLocationService(locationRepository, database)
 
 	// controller dependency injection
 	userController := controller.NewUserController(userService)

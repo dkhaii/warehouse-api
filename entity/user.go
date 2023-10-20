@@ -11,7 +11,8 @@ type User struct {
 	Username  string
 	Password  string
 	Contact   string
-	Role      int
+	RoleID    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	Role      *Role
 }

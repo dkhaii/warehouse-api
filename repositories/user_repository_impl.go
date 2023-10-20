@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/dkhaii/warehouse-api/entity"
@@ -17,21 +18,22 @@ func NewUserRepository(database *sql.DB) UserRepository {
 	}
 }
 
-func (repository *userRepositoryImpl) Insert(usr *entity.User) (*entity.User, error) {
+func (repository *userRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, usr *entity.User) (*entity.User, error) {
 	query := `
 	INSERT INTO users 
-	(id, username, password, contact, role, created_at, updated_at) 
+	(id, username, password, contact, role_id, created_at, updated_at) 
 	VALUES 
 	(?, ?, ?, ?, ?, ?, ?)
 	`
 
-	_, err := repository.database.Exec(
+	_, err := repository.database.ExecContext(
+		ctx,
 		query,
 		usr.ID,
 		usr.Username,
 		usr.Password,
 		usr.Contact,
-		usr.Role,
+		usr.RoleID,
 		usr.CreatedAt,
 		usr.UpdatedAt,
 	)
@@ -42,10 +44,10 @@ func (repository *userRepositoryImpl) Insert(usr *entity.User) (*entity.User, er
 	return usr, nil
 }
 
-func (repository *userRepositoryImpl) FindAll() ([]*entity.User, error) {
+func (repository *userRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*entity.User, error) {
 	query := "SELECT * FROM users"
 
-	rows, err := repository.database.Query(query)
+	rows, err := repository.database.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +63,7 @@ func (repository *userRepositoryImpl) FindAll() ([]*entity.User, error) {
 			&user.Username,
 			&user.Password,
 			&user.Contact,
-			&user.Role,
+			&user.RoleID,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		)
@@ -71,10 +73,6 @@ func (repository *userRepositoryImpl) FindAll() ([]*entity.User, error) {
 
 		listOfUsers = append(listOfUsers, &user)
 	}
-	// rerr := rows.Close()
-	// if rerr != nil {
-	// 	return nil, err
-	// }
 
 	err = rows.Err()
 	if err != nil {
@@ -84,18 +82,17 @@ func (repository *userRepositoryImpl) FindAll() ([]*entity.User, error) {
 	return listOfUsers, nil
 }
 
-func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (*entity.User, error) {
+func (repository *userRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, usrID uuid.UUID) (*entity.User, error) {
+	var user entity.User
+
 	query := "SELECT * FROM users WHERE id = ?"
 
-	row := repository.database.QueryRow(query, usrID)
-
-	var user entity.User
-	err := row.Scan(
+	err := repository.database.QueryRowContext(ctx, query, usrID).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Password,
 		&user.Contact,
-		&user.Role,
+		&user.RoleID,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -109,11 +106,44 @@ func (repository *userRepositoryImpl) FindByID(usrID uuid.UUID) (*entity.User, e
 	return &user, nil
 }
 
-func (repository *userRepositoryImpl) GetByUsername(name string) ([]*entity.User, error) {
+func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, tx *sql.Tx, usrID uuid.UUID) (*entity.User, error) {
+	var user entity.User
+	var role entity.Role
+
+	query := `
+	SELECT usr.*, r.id, r.name FROM users usr
+	LEFT JOIN roles r
+	ON r.id = usr.role_id
+	WHERE usr.id = ?
+	`
+
+	err := repository.database.QueryRowContext(ctx, query, usrID).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Contact,
+		&user.RoleID,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&role.ID,
+		&role.Name,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	user.Role = &role
+
+	return &user, nil
+}
+
+func (repository *userRepositoryImpl) GetByUsername(ctx context.Context, tx *sql.Tx, name string) ([]*entity.User, error) {
 	query := "SELECT * FROM users WHERE username LIKE ?"
 	name = name + "%"
 
-	rows, err := repository.database.Query(query, name)
+	rows, err := repository.database.QueryContext(ctx, query, name)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrUserNotFound
@@ -131,7 +161,7 @@ func (repository *userRepositoryImpl) GetByUsername(name string) ([]*entity.User
 			&user.Username,
 			&user.Password,
 			&user.Contact,
-			&user.Role,
+			&user.RoleID,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		)
@@ -141,10 +171,6 @@ func (repository *userRepositoryImpl) GetByUsername(name string) ([]*entity.User
 
 		listOfUsers = append(listOfUsers, &user)
 	}
-	// rerr := rows.Close()
-	// if rerr != nil {
-	// 	return nil, err
-	// }
 
 	err = rows.Err()
 	if err != nil {
@@ -154,10 +180,10 @@ func (repository *userRepositoryImpl) GetByUsername(name string) ([]*entity.User
 	return listOfUsers, nil
 }
 
-func (repository *userRepositoryImpl) FindByUsername(name string) (*entity.User, error) {
+func (repository *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, name string) (*entity.User, error) {
 	query := "SELECT * FROM users WHERE username = ?"
 
-	rows := repository.database.QueryRow(query, name)
+	rows := repository.database.QueryRowContext(ctx, query, name)
 
 	var user entity.User
 	err := rows.Scan(
@@ -165,7 +191,7 @@ func (repository *userRepositoryImpl) FindByUsername(name string) (*entity.User,
 		&user.Username,
 		&user.Password,
 		&user.Contact,
-		&user.Role,
+		&user.RoleID,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -179,36 +205,37 @@ func (repository *userRepositoryImpl) FindByUsername(name string) (*entity.User,
 	return &user, nil
 }
 
-func (repository *userRepositoryImpl) Update(usr *entity.User) error {
+func (repository *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, usr *entity.User) (*entity.User, error) {
 	query := `
 	UPDATE users 
-	SET username = ?, password = ?, contact = ?, role = ?, updated_at = ? 
+	SET username = ?, password = ?, contact = ?, role_id = ?, updated_at = ? 
 	WHERE id = ?
 	`
 
-	_, err := repository.database.Exec(
+	_, err := repository.database.ExecContext(
+		ctx,
 		query,
 		usr.Username,
 		usr.Password,
 		usr.Contact,
-		usr.Role,
+		usr.RoleID,
 		usr.UpdatedAt,
 		usr.ID,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return ErrUserNotFound
+			return nil, ErrUserNotFound
 		}
-		return err
+		return nil, err
 	}
 
-	return nil
+	return usr, nil
 }
 
-func (repository *userRepositoryImpl) Delete(usrID uuid.UUID) error {
+func (repository *userRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, usrID uuid.UUID) error {
 	query := "DELETE FROM users WHERE id = ?"
 
-	_, err := repository.database.Exec(query, usrID)
+	_, err := repository.database.ExecContext(ctx, query, usrID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ErrUserNotFound

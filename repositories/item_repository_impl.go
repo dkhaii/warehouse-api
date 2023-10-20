@@ -18,7 +18,11 @@ func NewItemRepository(database *sql.DB) ItemRepository {
 }
 
 func (repository *itemRepositoryImpl) Insert(itm *entity.Item) (*entity.Item, error) {
-	query := "INSERT INTO items (id, name, description, quantity, availability, location_id, category_id, user_id, created_at, updated_at), VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	query := `INSERT INTO items 
+	(id, name, description, quantity, availability, location_id, category_id, user_id, created_at, updated_at) 
+	VALUES 
+	(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`
 
 	_, err := repository.database.Exec(
 		query,
@@ -34,7 +38,7 @@ func (repository *itemRepositoryImpl) Insert(itm *entity.Item) (*entity.Item, er
 		itm.UpdatedAt,
 	)
 	if err != nil {
-		return &entity.Item{}, err
+		return nil, err
 	}
 
 	return itm, nil
@@ -43,37 +47,37 @@ func (repository *itemRepositoryImpl) Insert(itm *entity.Item) (*entity.Item, er
 func (repository *itemRepositoryImpl) FindAll() ([]*entity.Item, error) {
 	query := "SELECT * FROM items"
 
-	items, err := repository.database.Query(query)
+	rows, err := repository.database.Query(query)
 	if err != nil {
 		return nil, err
 	}
-	defer items.Close()
+	defer rows.Close()
 
 	var listOfItems []*entity.Item
 
-	for items.Next() {
-		var i entity.Item
+	for rows.Next() {
+		var item entity.Item
 
-		err := items.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.Quantity,
-			&i.Availability,
-			&i.LocationID,
-			&i.CategoryID,
-			&i.UserID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
+		err := rows.Scan(
+			&item.ID,
+			&item.Name,
+			&item.Description,
+			&item.Quantity,
+			&item.Availability,
+			&item.LocationID,
+			&item.CategoryID,
+			&item.UserID,
+			&item.CreatedAt,
+			&item.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		listOfItems = append(listOfItems, &i)
+		listOfItems = append(listOfItems, &item)
 	}
 
-	err = items.Err()
+	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
@@ -101,10 +105,10 @@ func (repository *itemRepositoryImpl) FindByID(itmID uuid.UUID) (*entity.Item, e
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return &item, ErrItemNotFound
+			return nil, ErrItemNotFound
 		}
 
-		return &item, err
+		return nil, err
 	}
 
 	return &item, nil
@@ -113,7 +117,7 @@ func (repository *itemRepositoryImpl) FindByID(itmID uuid.UUID) (*entity.Item, e
 func (repository *itemRepositoryImpl) FindByName(name string) ([]*entity.Item, error) {
 	query := "SELECT * FROM items WHERE name = ?"
 
-	items, err := repository.database.Query(query, name)
+	rows, err := repository.database.Query(query, name)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrItemNotFound
@@ -121,38 +125,45 @@ func (repository *itemRepositoryImpl) FindByName(name string) ([]*entity.Item, e
 
 		return nil, err
 	}
-	defer items.Close()
+	defer rows.Close()
 
 	var listOfItems []*entity.Item
 
-	for items.Next() {
-		var i entity.Item
+	for rows.Next() {
+		var item entity.Item
 
-		err := items.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.Quantity,
-			&i.Availability,
-			&i.LocationID,
-			&i.CategoryID,
-			&i.UserID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
+		err := rows.Scan(
+			&item.ID,
+			&item.Name,
+			&item.Description,
+			&item.Quantity,
+			&item.Availability,
+			&item.LocationID,
+			&item.CategoryID,
+			&item.UserID,
+			&item.CreatedAt,
+			&item.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		listOfItems = append(listOfItems, &i)
+		listOfItems = append(listOfItems, &item)
 	}
 
-	err = items.Err()
+	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
 
 	return listOfItems, nil
+}
+
+func (repository *itemRepositoryImpl) FindCompleteByIDWithJoin(itmID uuid.UUID) (*entity.Item, error) {
+	var item entity.Item
+	var location entity.Location
+	var category entity.Category
+	var user entity.User
 }
 
 func (repository *itemRepositoryImpl) Update(itm *entity.Item) error {

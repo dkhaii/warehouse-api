@@ -17,4 +17,7 @@ type Item struct {
 	UserID       uuid.UUID
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+	Location     *Location // has one relation
+	Category     *Category // has one relation
+	User         *User // has one relation
 }

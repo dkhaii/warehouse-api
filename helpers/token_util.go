@@ -1,4 +1,4 @@
-package tokenutil
+package helpers
 
 import (
 	"time"
@@ -15,7 +15,7 @@ func CreateAccessToken(user *entity.User, jwtSecret string, expire int) (string,
 		ID:       user.ID,
 		Username: user.Username,
 		Contact:  user.Contact,
-		Role:     user.Role,
+		RoleID:   user.RoleID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(exp),
 		},

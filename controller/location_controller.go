@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"context"
 	"net/http"
+	"time"
 
+	"github.com/dkhaii/warehouse-api/helpers"
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/dkhaii/warehouse-api/services"
 	"github.com/labstack/echo/v4"
@@ -29,7 +32,7 @@ func (controller *LocationController) Create(app echo.Context) error {
 		})
 	}
 
-	response, err := controller.LocationService.Create(request)
+	response, err := controller.LocationService.Create(app.Request().Context(), request)
 	if err != nil {
 		return app.JSON(http.StatusNotFound, models.WebResponse{
 			Code:   http.StatusNotFound,
@@ -37,7 +40,6 @@ func (controller *LocationController) Create(app echo.Context) error {
 			Data:   err.Error(),
 		})
 	}
-
 	return app.JSON(http.StatusCreated, models.WebResponse{
 		Code:   http.StatusCreated,
 		Status: "SUCCESS",
@@ -56,16 +58,25 @@ func (controller *LocationController) GetLocation(app echo.Context) error {
 		})
 	}
 
+	ctx, cancel := context.WithTimeout(app.Request().Context(), 10*time.Second)
+	defer cancel()
+
 	if queryParam.ID == "" {
-		response, err := controller.LocationService.GetAll()
+		response, err := controller.LocationService.GetAll(ctx)
 		if err != nil {
+			if err == context.DeadlineExceeded {
+				return app.JSON(http.StatusRequestTimeout, models.WebResponse{
+					Code:   http.StatusRequestTimeout,
+					Status: "FAIL",
+					Data:   helpers.ErrRequestTimedOut,
+				})
+			}
 			return app.JSON(http.StatusNotFound, models.WebResponse{
 				Code:   http.StatusNotFound,
 				Status: "FAIL",
 				Data:   err.Error(),
 			})
 		}
-
 		return app.JSON(http.StatusFound, models.WebResponse{
 			Code:   http.StatusFound,
 			Status: "SUCCESS",
@@ -73,15 +84,21 @@ func (controller *LocationController) GetLocation(app echo.Context) error {
 		})
 	}
 
-	response, err := controller.LocationService.GetCompleteByID(queryParam.ID)
+	response, err := controller.LocationService.GetCompleteByID(ctx, queryParam.ID)
 	if err != nil {
+		if err == context.DeadlineExceeded {
+			return app.JSON(http.StatusRequestTimeout, models.WebResponse{
+				Code:   http.StatusRequestTimeout,
+				Status: "FAIL",
+				Data:   helpers.ErrRequestTimedOut,
+			})
+		}
 		return app.JSON(http.StatusNotFound, models.WebResponse{
 			Code:   http.StatusNotFound,
 			Status: "FAIL",
 			Data:   err.Error(),
 		})
 	}
-
 	return app.JSON(http.StatusFound, models.WebResponse{
 		Code:   http.StatusFound,
 		Status: "SUCCESS",
@@ -100,7 +117,7 @@ func (controller *LocationController) Update(app echo.Context) error {
 		})
 	}
 
-	err = controller.LocationService.Update(request)
+	response, err := controller.LocationService.Update(app.Request().Context(), request)
 	if err != nil {
 		return app.JSON(http.StatusNotFound, models.WebResponse{
 			Code:   http.StatusNotFound,
@@ -108,11 +125,10 @@ func (controller *LocationController) Update(app echo.Context) error {
 			Data:   err.Error(),
 		})
 	}
-
 	return app.JSON(http.StatusOK, models.WebResponse{
 		Code:   http.StatusOK,
 		Status: "SUCCESS",
-		Data:   nil,
+		Data:   response,
 	})
 }
 
@@ -127,7 +143,7 @@ func (controller *LocationController) Delete(app echo.Context) error {
 		})
 	}
 
-	err = controller.LocationService.Delete(urlParam.ID)
+	err = controller.LocationService.Delete(app.Request().Context(), urlParam.ID)
 	if err != nil {
 		return app.JSON(http.StatusBadRequest, models.WebResponse{
 			Code:   http.StatusBadRequest,

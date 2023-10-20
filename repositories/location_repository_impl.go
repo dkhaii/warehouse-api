@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/dkhaii/warehouse-api/entity"
@@ -16,7 +17,7 @@ func NewLocationRepository(database *sql.DB) LocationRepository {
 	}
 }
 
-func (repository *locationRepositoryImpl) Insert(loc *entity.Location) (*entity.Location, error) {
+func (repository *locationRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, loc *entity.Location) (*entity.Location, error) {
 	query := `
 	INSERT INTO locations 
 	(id, category_id, description, created_at, updated_at) 
@@ -24,10 +25,10 @@ func (repository *locationRepositoryImpl) Insert(loc *entity.Location) (*entity.
 	(?, ?, ?, ?, ?)
 	`
 
-	_, err := repository.database.Exec(
+	_, err := repository.database.ExecContext(
+		ctx,
 		query,
 		loc.ID,
-		loc.CategoryID,
 		loc.Description,
 		loc.CreatedAt,
 		loc.UpdatedAt,
@@ -39,10 +40,10 @@ func (repository *locationRepositoryImpl) Insert(loc *entity.Location) (*entity.
 	return loc, nil
 }
 
-func (repository *locationRepositoryImpl) FindAll() ([]*entity.Location, error) {
+func (repository *locationRepositoryImpl) FindAll(ctx context.Context) ([]*entity.Location, error) {
 	query := "SELECT * FROM locations"
 
-	rows, err := repository.database.Query(query)
+	rows, err := repository.database.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +56,6 @@ func (repository *locationRepositoryImpl) FindAll() ([]*entity.Location, error) 
 
 		err := rows.Scan(
 			&location.ID,
-			&location.CategoryID,
 			&location.Description,
 			&location.CreatedAt,
 			&location.UpdatedAt,
@@ -66,10 +66,6 @@ func (repository *locationRepositoryImpl) FindAll() ([]*entity.Location, error) 
 
 		listOfLocations = append(listOfLocations, &location)
 	}
-	// rerr := rows.Close()
-	// if rerr != nil {
-	// 	return nil, err
-	// }
 
 	err = rows.Err()
 	if err != nil {
@@ -79,15 +75,13 @@ func (repository *locationRepositoryImpl) FindAll() ([]*entity.Location, error) 
 	return listOfLocations, nil
 }
 
-func (repository *locationRepositoryImpl) FindByID(locID string) (*entity.Location, error) {
+func (repository *locationRepositoryImpl) FindByID(ctx context.Context, locID string) (*entity.Location, error) {
+	var location entity.Location
+
 	query := "SELECT * FROM locations WHERE id = ?"
 
-	row := repository.database.QueryRow(query, locID)
-
-	var location entity.Location
-	err := row.Scan(
+	err := repository.database.QueryRowContext(ctx, query, locID).Scan(
 		&location.ID,
-		&location.CategoryID,
 		&location.Description,
 		&location.CreatedAt,
 		&location.UpdatedAt,
@@ -102,42 +96,49 @@ func (repository *locationRepositoryImpl) FindByID(locID string) (*entity.Locati
 	return &location, nil
 }
 
-func (repository *locationRepositoryImpl) FindCompleteByIDWithJoin(locID string) (*entity.Location, error) {
+func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, locID string) (*entity.Location, error) {
 	var location entity.Location
-	var category entity.Category
+	var categories []entity.Category
 
 	query := `
-	SELECT loc.*, ctg.* FROM locations loc 
-	LEFT JOIN categories ctg 
-	on ctg.id = loc.category_id 
+	SELECT loc.*, ctg.id, ctg.name, ctg.description
+	FROM locations loc 
+	LEFT JOIN categories ctg
+	ON loc.id  = ctg.location_id
 	WHERE loc.id = ?
 	`
 
-	err := repository.database.QueryRow(query, locID).Scan(
-		&location.ID,
-		&location.CategoryID,
-		&location.Description,
-		&location.CreatedAt,
-		&location.CreatedAt,
-		&category.ID,
-		&category.Name,
-		&category.Description,
-		&category.CreatedAt,
-		&category.UpdatedAt,
-	)
+	rows, err := repository.database.QueryContext(ctx, query, locID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, ErrLocationNotFound
-		}
 		return nil, err
 	}
+	defer rows.Close()
 
-	location.Category = &category
+	for rows.Next() {
+		var category entity.Category
+
+		err := rows.Scan(
+			&location.ID,
+			&location.Description,
+			&location.CreatedAt,
+			&location.UpdatedAt,
+			&category.ID,
+			&category.Name,
+			&category.Description,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		categories = append(categories, category)
+	}
+
+	location.Category = categories
 
 	return &location, nil
 }
 
-func (repository *locationRepositoryImpl) Update(loc *entity.Location) error {
+func (repository *locationRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, loc *entity.Location) (*entity.Location, error) {
 	query := `
 	UPDATE locations 
 	SET category_id = ?, description = ?, updated_at = ? 
@@ -146,22 +147,21 @@ func (repository *locationRepositoryImpl) Update(loc *entity.Location) error {
 
 	_, err := repository.database.Exec(
 		query,
-		loc.CategoryID,
 		loc.Description,
 		loc.UpdatedAt,
 		loc.ID,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return ErrLocationNotFound
+			return nil, ErrLocationNotFound
 		}
-		return err
+		return nil, err
 	}
 
-	return nil
+	return loc, nil
 }
 
-func (repository *locationRepositoryImpl) Delete(locID string) error {
+func (repository *locationRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, locID string) error {
 	query := "DELETE FROM locations WHERE id = ?"
 
 	_, err := repository.database.Exec(query, locID)
