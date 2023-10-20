@@ -1,7 +1,9 @@
-package config
+package test
 
 import (
 	"testing"
+
+	"github.com/dkhaii/warehouse-api/config"
 )
 
 type mockConfig struct {
@@ -15,7 +17,7 @@ func (c mockConfig) Get(key string) string {
 func TestNewMySQLDatabase(t *testing.T) {
 	type testCase struct {
 		name          string
-		config        Config
+		config        config.Config
 		expectedError bool
 	}
 
@@ -50,7 +52,7 @@ func TestNewMySQLDatabase(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			dbConn, err := NewMySQLDatabase(tc.config)
+			dbConn, err := config.NewMySQLDatabase(tc.config)
 
 			if tc.expectedError && err == nil {
 				t.Error("Expected an error, but got nil")
