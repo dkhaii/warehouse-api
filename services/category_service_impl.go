@@ -43,6 +43,7 @@ func (service *categoryServiceImpl) Create(ctx context.Context, request models.C
 		ID:          request.ID,
 		Name:        request.Name,
 		Description: request.Description,
+		LocationID:  request.LocationID,
 		CreatedAt:   request.CreatedAt,
 		UpdatedAt:   request.UpdatedAt,
 		Location:    nil,

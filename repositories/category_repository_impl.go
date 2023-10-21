@@ -20,9 +20,9 @@ func NewCategoryRepository(database *sql.DB) CategoryRepository {
 func (repository *categoryRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, ctg *entity.Category) (*entity.Category, error) {
 	query := `
 	INSERT INTO categories 
-	(id, name, description, created_at, updated_at) 
+	(id, name, description, location_id, created_at, updated_at) 
 	VALUES 
-	(?, ?, ?, ?, ?)
+	(?, ?, ?, ?, ?, ?)
 	`
 
 	_, err := repository.database.ExecContext(
@@ -31,6 +31,7 @@ func (repository *categoryRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx
 		ctg.ID,
 		ctg.Name,
 		ctg.Description,
+		ctg.LocationID,
 		ctg.CreatedAt,
 		ctg.UpdatedAt,
 	)
@@ -59,6 +60,7 @@ func (respository *categoryRepositoryImpl) FindAll(ctx context.Context) ([]*enti
 			&category.ID,
 			&category.Name,
 			&category.Description,
+			&category.LocationID,
 			&category.CreatedAt,
 			&category.UpdatedAt,
 		)
@@ -86,6 +88,7 @@ func (repository *categoryRepositoryImpl) FindByID(ctx context.Context, ctgID st
 		&category.ID,
 		&category.Name,
 		&category.Description,
+		&category.LocationID,
 		&category.CreatedAt,
 		&category.UpdatedAt,
 	)
@@ -121,6 +124,7 @@ func (repository *categoryRepositoryImpl) FindByName(ctx context.Context, name s
 			&category.ID,
 			&category.Name,
 			&category.Description,
+			&category.LocationID,
 			&category.CreatedAt,
 			&category.UpdatedAt,
 		)
@@ -185,6 +189,7 @@ func (repository *categoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx
 		query,
 		ctg.Name,
 		ctg.Description,
+		ctg.LocationID,
 		ctg.UpdatedAt,
 		ctg.ID,
 	)

@@ -14,5 +14,5 @@ type User struct {
 	RoleID    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Role      *Role
+	Role      *RoleFiltered
 }

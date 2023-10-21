@@ -20,9 +20,9 @@ func NewLocationRepository(database *sql.DB) LocationRepository {
 func (repository *locationRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, loc *entity.Location) (*entity.Location, error) {
 	query := `
 	INSERT INTO locations 
-	(id, category_id, description, created_at, updated_at) 
+	(id, description, created_at, updated_at) 
 	VALUES 
-	(?, ?, ?, ?, ?)
+	(?, ?, ?, ?)
 	`
 
 	_, err := repository.database.ExecContext(

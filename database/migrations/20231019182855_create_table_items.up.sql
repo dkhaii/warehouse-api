@@ -1,6 +1,6 @@
 CREATE TABLE items
 (
-    id VARCHAR(255) NOT NULL PRIMARY KEY,
+    id VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     quantity INT NOT NULL,
@@ -9,6 +9,7 @@ CREATE TABLE items
     user_id VARCHAR(255) NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+    PRIMARY KEY (id),
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

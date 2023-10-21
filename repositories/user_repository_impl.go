@@ -108,10 +108,12 @@ func (repository *userRepositoryImpl) FindByID(ctx context.Context, usrID uuid.U
 
 func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, usrID uuid.UUID) (*entity.User, error) {
 	var user entity.User
-	var role entity.Role
+	var role entity.RoleFiltered
 
 	query := `
-	SELECT usr.*, r.* FROM users usr
+	SELECT usr.id, usr.username, usr.contact, usr.role_id, usr.created_at, usr. updated_at,
+	r.id, r.name 
+	FROM users usr
 	LEFT JOIN roles r
 	ON r.id = usr.role_id
 	WHERE usr.id = ?
@@ -126,8 +128,6 @@ func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, usrI
 		&user.UpdatedAt,
 		&role.ID,
 		&role.Name,
-		&role.CreatedAt,
-		&role.UpdatedAt,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {

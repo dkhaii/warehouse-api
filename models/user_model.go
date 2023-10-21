@@ -36,13 +36,13 @@ type GetUserResponse struct {
 }
 
 type GetCompleteUserResponse struct {
-	ID        uuid.UUID    `json:"id"`
-	Username  string       `json:"username"`
-	Contact   string       `json:"contact"`
-	RoleID    int          `json:"role_id"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	Role      *entity.Role `json:"role"`
+	ID        uuid.UUID            `json:"id"`
+	Username  string               `json:"username"`
+	Contact   string               `json:"contact"`
+	RoleID    int                  `json:"role_id"`
+	CreatedAt time.Time            `json:"created_at"`
+	UpdatedAt time.Time            `json:"updated_at"`
+	Role      *entity.RoleFiltered `json:"role"`
 }
 
 type LoginUserRequest struct {
