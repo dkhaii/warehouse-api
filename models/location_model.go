@@ -36,11 +36,11 @@ type GetLocationByIDParamRequest struct {
 }
 
 type GetCompleteLocationResponse struct {
-	ID          string            `json:"id"`
-	Description string            `json:"description"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
-	Category    []entity.Category `json:"category"`
+	ID          string                    `json:"id"`
+	Description string                    `json:"description"`
+	CreatedAt   time.Time                 `json:"created_at"`
+	UpdatedAt   time.Time                 `json:"updated_at"`
+	Category    []entity.CategoryFiltered `json:"category"`
 }
 
 type UpdateLocationRequest struct {

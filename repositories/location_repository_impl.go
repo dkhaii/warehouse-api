@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/dkhaii/warehouse-api/entity"
+	"github.com/dkhaii/warehouse-api/helpers"
 )
 
 type locationRepositoryImpl struct {
@@ -98,7 +99,7 @@ func (repository *locationRepositoryImpl) FindByID(ctx context.Context, locID st
 
 func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, locID string) (*entity.Location, error) {
 	var location entity.Location
-	var categories []entity.Category
+	var categories []entity.CategoryFiltered
 
 	query := `
 	SELECT loc.*, ctg.id, ctg.name, ctg.description
@@ -115,20 +116,25 @@ func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, 
 	defer rows.Close()
 
 	for rows.Next() {
-		var category entity.Category
+		var category entity.CategoryFiltered
+		var categoryID, categoryName, categoryDescription sql.NullString
 
 		err := rows.Scan(
 			&location.ID,
 			&location.Description,
 			&location.CreatedAt,
 			&location.UpdatedAt,
-			&category.ID,
-			&category.Name,
-			&category.Description,
+			&categoryID,
+			&categoryName,
+			&categoryDescription,
 		)
 		if err != nil {
 			return nil, err
 		}
+
+		category.ID = helpers.NullStringToString(categoryID)
+		category.Name = helpers.NullStringToString(categoryName)
+		category.Description = helpers.NullStringToString(categoryDescription)
 
 		categories = append(categories, category)
 	}

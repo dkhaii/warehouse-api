@@ -62,7 +62,7 @@ func (service *locationServiceImpl) Create(ctx context.Context, request models.C
 	return response, nil
 }
 
-func (service *locationServiceImpl) GetAll(ctx context.Context) ([]models.GetLocationResponse, error) {	
+func (service *locationServiceImpl) GetAll(ctx context.Context) ([]models.GetLocationResponse, error) {
 	rows, err := service.locationRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func (service *locationServiceImpl) Update(ctx context.Context, request models.U
 	if err != nil {
 		return models.CreateLocationResponse{}, err
 	}
-	
+
 	location, err := service.locationRepository.FindByID(ctx, request.ID)
 	if err != nil {
 		return models.CreateLocationResponse{}, err

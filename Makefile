@@ -1,5 +1,9 @@
 MIGRATION_DIR := database/migrations
 
+mysql-start:
+	sudo service mysql start
+	sudo mysql -u development -p
+
 run:
 	go run main.go
 
