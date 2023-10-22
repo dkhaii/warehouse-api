@@ -115,6 +115,8 @@ func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, 
 	}
 	defer rows.Close()
 
+	hasNonEmptyCategory := false
+
 	for rows.Next() {
 		var category entity.CategoryFiltered
 		var categoryID, categoryName, categoryDescription sql.NullString
@@ -136,10 +138,16 @@ func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, 
 		category.Name = helpers.NullStringToString(categoryName)
 		category.Description = helpers.NullStringToString(categoryDescription)
 
+		if category.ID != "" || category.Name != "" || category.Description != "" {
+			hasNonEmptyCategory = true
+		}	
+
 		categories = append(categories, category)
 	}
 
-	location.Category = categories
+	if hasNonEmptyCategory {
+		location.Category = categories
+	}
 
 	return &location, nil
 }
