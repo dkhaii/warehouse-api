@@ -11,8 +11,8 @@ type Order struct {
 	ItemID              uuid.UUID
 	UserID              uuid.UUID
 	Quantity            int
-	RequestTransferDate time.Time
 	Notes               string
+	RequestTransferDate time.Time
 	CreatedAt           time.Time
-	UpdatedAt           time.Time
+	Item                []Item
 }

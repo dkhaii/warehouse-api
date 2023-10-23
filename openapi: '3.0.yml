@@ -1,0 +1,29 @@
+openapi: '3.0.3'
+info:
+  title: Cozy Warehouse RESTful API
+  description: Inventory Management System
+  contact:
+    name: Mordekhai Gerin
+    email: mordekhaigerinlumangkun@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: '1.0'
+servers:
+  - url: https://{environment}.cozycosmetic.com/api/v1
+    description: Warehouse API Server
+    variables:
+      environment:
+        default: dev
+        description: Server environment
+        enum:
+          - "dev"
+          - "prod"
+paths:
+  /users/register:
+    post:
+      description: 'Register User'
+      parameters: []
+      responses:
+        '200':
+          description: OK

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/dkhaii/warehouse-api/entity"
+	"github.com/dkhaii/warehouse-api/helpers"
 )
 
 type categoryRepositoryImpl struct {
@@ -94,7 +95,7 @@ func (repository *categoryRepositoryImpl) FindByID(ctx context.Context, ctgID st
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrCategoryNotFound
+			return nil, helpers.ErrCategoryNotFound
 		}
 		return nil, err
 	}
@@ -109,7 +110,7 @@ func (repository *categoryRepositoryImpl) FindByName(ctx context.Context, name s
 	rows, err := repository.database.QueryContext(ctx, query, name)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrCategoryNotFound
+			return nil, helpers.ErrCategoryNotFound
 		}
 		return nil, err
 	}
@@ -167,7 +168,7 @@ func (repository *categoryRepositoryImpl) FindByIDWithJoin(ctx context.Context, 
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrCategoryNotFound
+			return nil, helpers.ErrCategoryNotFound
 		}
 		return nil, err
 	}
@@ -195,7 +196,7 @@ func (repository *categoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrCategoryNotFound
+			return nil, helpers.ErrCategoryNotFound
 		}
 		return nil, err
 	}
@@ -209,7 +210,7 @@ func (repository *categoryRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx
 	_, err := repository.database.ExecContext(ctx, query, ctgID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return ErrCategoryNotFound
+			return helpers.ErrCategoryNotFound
 		}
 		return err
 	}

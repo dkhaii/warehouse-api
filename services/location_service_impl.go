@@ -94,6 +94,7 @@ func (service *locationServiceImpl) GetCompleteByID(ctx context.Context, locID s
 		CreatedAt:   location.CreatedAt,
 		UpdatedAt:   location.UpdatedAt,
 		Category:    location.Category,
+		
 	}
 
 	return response, nil

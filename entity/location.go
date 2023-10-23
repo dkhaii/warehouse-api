@@ -11,3 +11,8 @@ type Location struct {
 	UpdatedAt   time.Time
 	Category    []CategoryFiltered
 }
+
+type LocationFiltered struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
+}

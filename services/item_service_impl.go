@@ -1,181 +1,248 @@
 package services
 
-// import (
-// 	"github.com/dkhaii/warehouse-api/entity"
-// 	"github.com/dkhaii/warehouse-api/models"
-// 	"github.com/dkhaii/warehouse-api/repositories"
-// 	"github.com/google/uuid"
-// )
+import (
+	"context"
+	"database/sql"
+	"time"
 
-// type itemServiceImpl struct {
-// 	itemRepository repositories.ItemRepository
-// }
+	"github.com/dkhaii/warehouse-api/entity"
+	"github.com/dkhaii/warehouse-api/helpers"
+	"github.com/dkhaii/warehouse-api/models"
+	"github.com/dkhaii/warehouse-api/repositories"
+	"github.com/google/uuid"
+)
 
-// func NewItemService(itemRepository repositories.ItemRepository) ItemService {
-// 	return &itemServiceImpl{
-// 		itemRepository: itemRepository,
-// 	}
-// }
+type itemServiceImpl struct {
+	itemRepository repositories.ItemRepository
+	database       *sql.DB
+}
 
-// func (service *itemServiceImpl) Create(request models.CreateItemRequest) (models.CreateItemResponse, error) {
-// 	item := entity.Item{
-// 		ID:           request.ID,
-// 		Name:         request.Name,
-// 		Description:  request.Description,
-// 		Quantity:     request.Quantity,
-// 		Availability: request.Availability,
-// 		LocationID:   request.LocationID,
-// 		CategoryID:   request.CategoryID,
-// 		UserID:       request.UserID,
-// 		CreatedAt:    request.CreatedAt,
-// 		UpdatedAt:    request.UpdatedAt,
-// 	}
+func NewItemService(itemRepository repositories.ItemRepository, database *sql.DB) ItemService {
+	return &itemServiceImpl{
+		itemRepository: itemRepository,
+		database:       database,
+	}
+}
 
-// 	_, err := service.itemRepository.Insert(&item)
-// 	if err != nil {
-// 		return models.CreateItemResponse{}, err
-// 	}
+func (service *itemServiceImpl) Create(ctx context.Context, request models.CreateItemRequest) (models.CreateItemResponse, error) {
+	err := helpers.ValidateRequest(request)
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
 
-// 	response := models.CreateItemResponse{
-// 		ID:           item.ID,
-// 		Name:         item.Name,
-// 		Description:  item.Description,
-// 		Quantity:     item.Quantity,
-// 		Availability: item.Availability,
-// 		LocationID:   item.LocationID,
-// 		CategoryID:   item.CategoryID,
-// 		UserID:       item.UserID,
-// 		CreatedAt:    item.CreatedAt,
-// 		UpdatedAt:    item.UpdatedAt,
-// 	}
+	tx, err := service.database.Begin()
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
+	defer helpers.CommitOrRollBack(tx)
 
-// 	return response, nil
-// }
+	itemID := uuid.New()
+	createdAt := time.Now()
+	request.ID = itemID
+	request.CreatedAt = createdAt
+	request.UpdatedAt = request.CreatedAt
 
-// func (service *itemServiceImpl) GetAll() ([]models.GetItemResponse, error) {
-// 	items, err := service.itemRepository.FindAll()
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	item := entity.Item{
+		ID:           request.ID,
+		Name:         request.Name,
+		Description:  request.Description,
+		Quantity:     request.Quantity,
+		Availability: request.Availability,
+		CategoryID:   request.CategoryID,
+		UserID:       request.UserID,
+		CreatedAt:    request.CreatedAt,
+		UpdatedAt:    request.UpdatedAt,
+		Category:     nil,
+		User:         nil,
+		Location:     nil,
+	}
 
-// 	responses := make([]models.GetItemResponse, len(items))
+	createdItem, err := service.itemRepository.Insert(ctx, tx, &item)
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
 
-// 	for key, item := range items {
-// 		responses[key] = models.GetItemResponse{
-// 			ID:           item.ID,
-// 			Name:         item.Name,
-// 			Description:  item.Description,
-// 			Quantity:     item.Quantity,
-// 			Availability: item.Availability,
-// 			LocationID:   item.LocationID,
-// 			CategoryID:   item.CategoryID,
-// 			UserID:       item.UserID,
-// 			CreatedAt:    item.CreatedAt,
-// 			UpdatedAt:    item.UpdatedAt,
-// 		}
-// 	}
+	response := models.CreateItemResponse{
+		ID:           createdItem.ID,
+		Name:         createdItem.Name,
+		Description:  createdItem.Description,
+		Quantity:     createdItem.Quantity,
+		Availability: createdItem.Availability,
+		CategoryID:   createdItem.CategoryID,
+		UserID:       createdItem.UserID,
+		CreatedAt:    createdItem.CreatedAt,
+		UpdatedAt:    createdItem.UpdatedAt,
+	}
 
-// 	return responses, nil
-// }
+	return response, nil
+}
 
-// func (service *itemServiceImpl) GetByID(itmID uuid.UUID) (models.GetItemResponse, error) {
-// 	item, err := service.itemRepository.FindByID(itmID)
-// 	if err != nil {
-// 		return models.GetItemResponse{}, err
-// 	}
+func (service *itemServiceImpl) GetAll(ctx context.Context) ([]models.GetItemResponse, error) {
+	rows, err := service.itemRepository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-// 	response := models.GetItemResponse{
-// 		ID:           item.ID,
-// 		Name:         item.Name,
-// 		Description:  item.Description,
-// 		Quantity:     item.Quantity,
-// 		Availability: item.Availability,
-// 		LocationID:   item.LocationID,
-// 		CategoryID:   item.CategoryID,
-// 		UserID:       item.UserID,
-// 		CreatedAt:    item.CreatedAt,
-// 		UpdatedAt:    item.UpdatedAt,
-// 	}
+	responses := make([]models.GetItemResponse, len(rows))
 
-// 	return response, nil
-// }
+	for key, item := range rows {
+		responses[key] = models.GetItemResponse{
+			ID:           item.ID,
+			Name:         item.Name,
+			Description:  item.Description,
+			Quantity:     item.Quantity,
+			Availability: item.Availability,
+			CategoryID:   item.CategoryID,
+			UserID:       item.UserID,
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+		}
+	}
 
-// func (service *itemServiceImpl) GetByName(name string) ([]models.GetItemResponse, error) {
-// 	items, err := service.itemRepository.FindByName(name)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	return responses, nil
+}
 
-// 	responses := make([]models.GetItemResponse, len(items))
+func (service *itemServiceImpl) GetByID(ctx context.Context, itmID uuid.UUID) (models.GetItemResponse, error) {
+	item, err := service.itemRepository.FindByID(ctx, itmID)
+	if err != nil {
+		return models.GetItemResponse{}, err
+	}
 
-// 	for key, item := range items {
-// 		responses[key] = models.GetItemResponse{
-// 			ID:           item.ID,
-// 			Name:         item.Name,
-// 			Description:  item.Description,
-// 			Quantity:     item.Quantity,
-// 			Availability: item.Availability,
-// 			LocationID:   item.LocationID,
-// 			CategoryID:   item.CategoryID,
-// 			UserID:       item.UserID,
-// 			CreatedAt:    item.CreatedAt,
-// 			UpdatedAt:    item.UpdatedAt,
-// 		}
-// 	}
+	response := models.GetItemResponse{
+		ID:           item.ID,
+		Name:         item.Name,
+		Description:  item.Description,
+		Quantity:     item.Quantity,
+		Availability: item.Availability,
+		CategoryID:   item.CategoryID,
+		UserID:       item.UserID,
+		CreatedAt:    item.CreatedAt,
+		UpdatedAt:    item.UpdatedAt,
+	}
 
-// 	return responses, nil
-// }
+	return response, nil
+}
 
-// func (service *itemServiceImpl) Update(request models.CreateItemRequest) (models.CreateItemResponse, error) {
-// 	isItem, err := service.itemRepository.FindByID(request.ID)
-// 	if err != nil {
-// 		return models.CreateItemResponse{}, err
-// 	}
+func (service *itemServiceImpl) GetByName(ctx context.Context, name string) ([]models.GetItemResponse, error) {
+	rows, err := service.itemRepository.FindByName(ctx, name)
+	if err != nil {
+		return nil, err
+	}
 
-// 	updatedItem := entity.Item{
-// 		ID:           isItem.ID,
-// 		Name:         request.Name,
-// 		Description:  request.Description,
-// 		Quantity:     request.Quantity,
-// 		Availability: request.Availability,
-// 		LocationID:   request.LocationID,
-// 		CategoryID:   request.CategoryID,
-// 		UserID:       request.UserID,
-// 		CreatedAt:    isItem.CreatedAt,
-// 		UpdatedAt:    request.UpdatedAt,
-// 	}
+	responses := make([]models.GetItemResponse, len(rows))
 
-// 	err = service.itemRepository.Update(&updatedItem)
-// 	if err != nil {
-// 		return models.CreateItemResponse{}, err
-// 	}
+	for key, item := range rows {
+		responses[key] = models.GetItemResponse{
+			ID:           item.ID,
+			Name:         item.Name,
+			Description:  item.Description,
+			Quantity:     item.Quantity,
+			Availability: item.Availability,
+			CategoryID:   item.CategoryID,
+			UserID:       item.UserID,
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+		}
+	}
 
-// 	response := models.CreateItemResponse{
-// 		ID:           updatedItem.ID,
-// 		Name:         updatedItem.Name,
-// 		Description:  updatedItem.Description,
-// 		Quantity:     updatedItem.Quantity,
-// 		Availability: updatedItem.Availability,
-// 		LocationID:   updatedItem.LocationID,
-// 		CategoryID:   updatedItem.CategoryID,
-// 		UserID:       updatedItem.UserID,
-// 		CreatedAt:    updatedItem.CreatedAt,
-// 		UpdatedAt:    updatedItem.UpdatedAt,
-// 	}
+	return responses, nil
+}
 
-// 	return response, nil
-// }
+func (service *itemServiceImpl) GetCompleteByID(ctx context.Context, itmID uuid.UUID) (models.GetCompleteItemResponse, error) {
+	item, err := service.itemRepository.FindCompleteByID(ctx, itmID)
+	if err != nil {
+		return models.GetCompleteItemResponse{}, err
+	}
 
-// func (service *itemServiceImpl) Delete(itmID uuid.UUID) error {
-// 	item, err := service.itemRepository.FindByID(itmID)
-// 	if err != nil {
-// 		return err
-// 	}
+	response := models.GetCompleteItemResponse{
+		ID:           item.ID,
+		Name:         item.Name,
+		Description:  item.Description,
+		Quantity:     item.Quantity,
+		Availability: item.Availability,
+		CategoryID:   item.CategoryID,
+		UserID:       item.UserID,
+		CreatedAt:    item.CreatedAt,
+		UpdatedAt:    item.UpdatedAt,
+		Category:     item.Category,
+		User:         item.User,
+		Location:     item.Location,
+	}
 
-// 	err = service.itemRepository.Delete(item.ID)
-// 	if err != nil {
-// 		return err
-// 	}
+	return response, nil
+}
 
-// 	return nil
-// }
+func (service *itemServiceImpl) Update(ctx context.Context, request models.UpdateItemRequest) (models.CreateItemResponse, error) {
+	err := helpers.ValidateRequest(request)
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
+
+	item, err := service.itemRepository.FindByID(ctx, request.ID)
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
+
+	tx, err := service.database.Begin()
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
+	defer helpers.CommitOrRollBack(tx)
+
+	updatedAt := time.Now()
+	request.UpdatedAt = updatedAt
+
+	updatedItem := entity.Item{
+		ID:           item.ID,
+		Name:         request.Name,
+		Description:  request.Description,
+		Quantity:     request.Quantity,
+		Availability: request.Availability,
+		CategoryID:   request.CategoryID,
+		UserID:       request.UserID,
+		CreatedAt:    item.CreatedAt,
+		UpdatedAt:    request.UpdatedAt,
+		Category:     nil,
+		User:         nil,
+		Location:     nil,
+	}
+
+	err = service.itemRepository.Update(ctx, tx, &updatedItem)
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
+
+	response := models.CreateItemResponse{
+		ID:           updatedItem.ID,
+		Name:         updatedItem.Name,
+		Description:  updatedItem.Description,
+		Quantity:     updatedItem.Quantity,
+		Availability: updatedItem.Availability,
+		CategoryID:   updatedItem.CategoryID,
+		UserID:       updatedItem.UserID,
+		CreatedAt:    updatedItem.CreatedAt,
+		UpdatedAt:    updatedItem.UpdatedAt,
+	}
+
+	return response, nil
+}
+
+func (service *itemServiceImpl) Delete(ctx context.Context, itmID uuid.UUID) error {
+	item, err := service.itemRepository.FindByID(ctx, itmID)
+	if err != nil {
+		return err
+	}
+
+	tx, err := service.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer helpers.CommitOrRollBack(tx)
+
+	err = service.itemRepository.Delete(ctx, tx, item.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

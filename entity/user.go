@@ -16,3 +16,9 @@ type User struct {
 	UpdatedAt time.Time
 	Role      *RoleFiltered
 }
+
+type UserFiltered struct {
+	ID       uuid.UUID `json:"id"`
+	Username string    `json:"username"`
+	Contact  string    `json:"contact"`
+}

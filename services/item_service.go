@@ -1,15 +1,18 @@
 package services
 
-// import (
-// 	"github.com/dkhaii/warehouse-api/models"
-// 	"github.com/google/uuid"
-// )
+import (
+	"context"
 
-// type ItemService interface {
-// 	Create(request models.CreateItemRequest) (models.CreateItemResponse, error)
-// 	GetAll() ([]models.GetItemResponse, error)
-// 	GetByID(itmID uuid.UUID) (models.GetItemResponse, error)
-// 	GetByName(name string) ([]models.GetItemResponse, error)
-// 	Update(request models.CreateItemRequest) (models.CreateItemResponse, error)
-// 	Delete(itmID uuid.UUID) error
-// }
+	"github.com/dkhaii/warehouse-api/models"
+	"github.com/google/uuid"
+)
+
+type ItemService interface {
+	Create(ctx context.Context, request models.CreateItemRequest) (models.CreateItemResponse, error)
+	GetAll(ctx context.Context) ([]models.GetItemResponse, error)
+	GetByID(ctx context.Context, itmID uuid.UUID) (models.GetItemResponse, error)
+	GetByName(ctx context.Context, name string) ([]models.GetItemResponse, error)
+	GetCompleteByID(ctx context.Context, itmID uuid.UUID) (models.GetCompleteItemResponse, error)
+	Update(ctx context.Context, request models.UpdateItemRequest) (models.CreateItemResponse, error)
+	Delete(ctx context.Context, itmID uuid.UUID) error
+}

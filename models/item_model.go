@@ -3,31 +3,30 @@ package models
 import (
 	"time"
 
+	"github.com/dkhaii/warehouse-api/entity"
 	"github.com/google/uuid"
 )
 
 type CreateItemRequest struct {
-	ID           uuid.UUID `json:"id" validate:"required"`
+	ID           uuid.UUID `json:"id"`
 	Name         string    `json:"name" validate:"required"`
 	Description  string    `json:"description" validate:"required"`
 	Quantity     int       `json:"quantity" validate:"required"`
 	Availability bool      `json:"availability" validate:"required"`
-	LocationID   string    `json:"location_id" validate:"required"`
 	CategoryID   string    `json:"category_id" validate:"required"`
-	UserID       uuid.UUID `json:"category" validate:"required"`
+	UserID       uuid.UUID `json:"user_id" validate:"required"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type CreateItemResponse struct {
-	ID           uuid.UUID `param:"id"`
+	ID           uuid.UUID `json:"id"`
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`
 	Quantity     int       `json:"quantity"`
 	Availability bool      `json:"availability"`
-	LocationID   string    `json:"location_id"`
 	CategoryID   string    `json:"category_id"`
-	UserID       uuid.UUID `json:"category"`
+	UserID       uuid.UUID `json:"user_id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
@@ -37,15 +36,45 @@ type GetItemRequest struct {
 	Name string    `query:"name"`
 }
 
+type GetItemByIDParamRequest struct {
+	ID uuid.UUID `param:"id"`
+}
+
 type GetItemResponse struct {
 	ID           uuid.UUID `json:"id"`
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`
 	Quantity     int       `json:"quantity"`
 	Availability bool      `json:"availability"`
-	LocationID   string    `json:"location_id"`
 	CategoryID   string    `json:"category_id"`
-	UserID       uuid.UUID `json:"category"`
+	UserID       uuid.UUID `json:"user_id"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type GetCompleteItemResponse struct {
+	ID           uuid.UUID                `json:"id"`
+	Name         string                   `json:"name"`
+	Description  string                   `json:"description"`
+	Quantity     int                      `json:"quantity"`
+	Availability bool                     `json:"availability"`
+	CategoryID   string                   `json:"category_id"`
+	UserID       uuid.UUID                `json:"user_id"`
+	CreatedAt    time.Time                `json:"created_at"`
+	UpdatedAt    time.Time                `json:"updated_at"`
+	Category     *entity.CategoryFiltered `json:"category"`
+	User         *entity.UserFiltered     `json:"user"`
+	Location     *entity.LocationFiltered `json:"location"`
+}
+
+type UpdateItemRequest struct {
+	ID           uuid.UUID `param:"id"`
+	Name         string    `json:"name" validate:"required"`
+	Description  string    `json:"description" validate:"required"`
+	Quantity     int       `json:"quantity" validate:"required"`
+	Availability bool      `json:"availability" validate:"required"`
+	CategoryID   string    `json:"category_id" validate:"required"`
+	UserID       uuid.UUID `json:"user_id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }

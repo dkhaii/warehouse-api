@@ -3,12 +3,9 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/dkhaii/warehouse-api/entity"
 )
-
-var ErrCategoryNotFound = errors.New("category not found")
 
 type CategoryRepository interface {
 	Insert(ctx context.Context, tx *sql.Tx, category *entity.Category) (*entity.Category, error)

@@ -145,8 +145,8 @@ func (controller *LocationController) Delete(app echo.Context) error {
 
 	err = controller.LocationService.Delete(app.Request().Context(), urlParam.ID)
 	if err != nil {
-		return app.JSON(http.StatusBadRequest, models.WebResponse{
-			Code:   http.StatusBadRequest,
+		return app.JSON(http.StatusNotFound, models.WebResponse{
+			Code:   http.StatusNotFound,
 			Status: "FAIL",
 			Data:   err.Error(),
 		})
