@@ -39,8 +39,8 @@ type GetOrderResponse struct {
 	CreatedAt           time.Time `json:"created_at"`
 }
 
-type GetOrderByIDParamRequest struct {
-	ID uuid.UUID `param:"id"`
+type GetOrderByIDQueryRequest struct {
+	ID uuid.UUID `query:"id"`
 }
 
 type GetCompleteOrderResponse struct {
