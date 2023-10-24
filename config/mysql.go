@@ -3,21 +3,15 @@ package config
 import (
 	"database/sql"
 	"fmt"
-	"strconv"
 	"time"
 )
 
-func NewMySQLDatabase(configuration Config) (*sql.DB, error) {
-	username := configuration.Get("DB_USERNAME")
-	password := configuration.Get("DB_PASSWORD")
-	host := configuration.Get("DB_HOST")
-	portStr := configuration.Get("DB_PORT")
-	dbName := configuration.Get("DB_DATABASE")
-
-	port, err := strconv.Atoi(portStr)
-	if err != nil {
-		return nil, err
-	}
+func NewMySQLDatabase(cfg Config) (*sql.DB, error) {
+	username := cfg.GetString("DB_USERNAME")
+	password := cfg.GetString("DB_PASSWORD")
+	host := cfg.GetString("DB_HOST")
+	port := cfg.GetInt("DB_PORT")
+	dbName := cfg.GetString("DB_DATABASE")
 
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", username, password, host, port, dbName)
 

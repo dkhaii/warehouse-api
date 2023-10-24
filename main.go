@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	configuration, err := config.New()
+	configuration, err := config.Init()
 	if err != nil {
 		fmt.Println("error:", err)
 		return

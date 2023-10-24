@@ -34,12 +34,12 @@ func JWTMiddleware() echo.MiddlewareFunc {
 
 			tokenString = splitToken[1]
 
-			config, err := config.New()
+			config, err := config.Init()
 			if err != nil {
 				return err
 			}
 
-			jwtSecret := config.Get("JWT_SECRET")
+			jwtSecret := config.GetString("JWT_SECRET")
 
 			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 				return []byte(jwtSecret), nil

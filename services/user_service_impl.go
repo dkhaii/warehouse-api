@@ -219,12 +219,12 @@ func (service *userServiceImpl) Login(ctx context.Context, request models.LoginU
 	}
 
 	if subtle.ConstantTimeCompare([]byte(request.Username), []byte(user.Username)) == 1 && helpers.ComparePassword(user.Password, request.Password) {
-		config, err := config.New()
+		config, err := config.Init()
 		if err != nil {
 			return models.TokenResponse{}, err
 		}
 
-		jwtSecret := config.Get("JWT_SECRET")
+		jwtSecret := config.GetString("JWT_SECRET")
 
 		token, err := helpers.CreateAccessToken(user, jwtSecret, 24)
 		if err != nil {
