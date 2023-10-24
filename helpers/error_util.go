@@ -9,4 +9,5 @@ var (
 	ErrItemNotFound = errors.New("item not found")
 	ErrCategoryNotFound = errors.New("category not found")
 	ErrLocationNotFound = errors.New("location not found")
+	ErrOrderNotFound = errors.New("order not found")
 )

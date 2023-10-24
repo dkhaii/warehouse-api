@@ -20,3 +20,11 @@ type Item struct {
 	User         *UserFiltered     // has one relation
 	Location     *LocationFiltered // has one relation
 }
+
+type ItemFiltered struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	Availability bool      `json:"availability"`
+	CategoryID   string    `json:"category_id"`
+}

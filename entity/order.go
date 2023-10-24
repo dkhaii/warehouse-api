@@ -14,5 +14,6 @@ type Order struct {
 	Notes               string
 	RequestTransferDate time.Time
 	CreatedAt           time.Time
-	Item                []Item
+	User                *UserFiltered
+	Item                []ItemFiltered
 }
