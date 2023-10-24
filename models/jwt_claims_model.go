@@ -12,3 +12,8 @@ type JWTClaims struct {
 	RoleID   int       `json:"role_id"`
 	jwt.RegisteredClaims
 }
+
+type RequestData struct {
+	Token string
+	Data  interface{}
+}

@@ -22,3 +22,10 @@ type UserFiltered struct {
 	Username string    `json:"username"`
 	Contact  string    `json:"contact"`
 }
+
+type UserClaim struct {
+	ID       uuid.UUID
+	Username string
+	Contact  string
+	RoleID   int
+}

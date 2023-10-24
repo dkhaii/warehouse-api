@@ -121,5 +121,9 @@ func (controller *UserController) Login(app echo.Context) error {
 	if err != nil {
 		return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
 	}
+
+	// cookie := helpers.CreateCookie(tokenResponse.Token, 24)
+	// app.SetCookie(cookie)
+
 	return helpers.CreateResponse(app, http.StatusOK, tokenResponse)
 }

@@ -14,7 +14,7 @@ type CreateItemRequest struct {
 	Quantity     int       `json:"quantity" validate:"required"`
 	Availability bool      `json:"availability" validate:"required"`
 	CategoryID   string    `json:"category_id" validate:"required"`
-	UserID       uuid.UUID `json:"user_id" validate:"required"`
+	UserID       uuid.UUID `json:"user_id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
