@@ -8,7 +8,7 @@ import (
 )
 
 type OrderService interface {
-	Create(ctx context.Context, request models.CreateOrderRequest) (models.CreateOrderResponse, error)
+	Create(ctx context.Context, request models.CreateOrderRequest, currentUserToken string) (models.CreateOrderResponse, error)
 	GetAll(ctx context.Context) ([]models.GetOrderResponse, error)
 	GetCompleteByID(ctx context.Context, ordID uuid.UUID) (models.GetCompleteOrderResponse, error)
 }

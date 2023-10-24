@@ -10,7 +10,7 @@ import (
 type CreateOrderRequest struct {
 	ID                  uuid.UUID `json:"id"`
 	ItemID              uuid.UUID `json:"item_id" validate:"required"`
-	UserID              uuid.UUID `json:"user_id" validate:"required"`
+	UserID              uuid.UUID `json:"user_id"`
 	Quantity            int       `json:"quantity" validate:"required"`
 	RequestTransferDate time.Time `json:"request_transfer_date" validate:"required"`
 	Notes               string    `json:"notes" validate:"required"`

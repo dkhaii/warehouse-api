@@ -29,7 +29,12 @@ func (controller *OrderController) Create(app echo.Context) error {
 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
 	}
 
-	response, err := controller.OrderService.Create(app.Request().Context(), request)
+	currentUserToken, err := helpers.GetSplitedToken(app)
+	if err != nil {
+		return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
+	}
+
+	response, err := controller.OrderService.Create(app.Request().Context(), request, currentUserToken)
 	if err != nil {
 		return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
 	}

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/dkhaii/warehouse-api/config"
 	"github.com/dkhaii/warehouse-api/entity"
 	"github.com/dkhaii/warehouse-api/helpers"
 	"github.com/dkhaii/warehouse-api/models"
@@ -24,7 +25,7 @@ func NewOrderService(orderRepository repositories.OrderRepository, database *sql
 	}
 }
 
-func (service *orderServiceImpl) Create(ctx context.Context, request models.CreateOrderRequest) (models.CreateOrderResponse, error) {
+func (service *orderServiceImpl) Create(ctx context.Context, request models.CreateOrderRequest, currentUserToken string) (models.CreateOrderResponse, error) {
 	err := helpers.ValidateRequest(request)
 	if err != nil {
 		return models.CreateOrderResponse{}, err
@@ -36,9 +37,21 @@ func (service *orderServiceImpl) Create(ctx context.Context, request models.Crea
 	}
 	defer helpers.CommitOrRollBack(tx)
 
+	config, err := config.Init()
+	if err != nil {
+		return models.CreateOrderResponse{}, err
+	}
+
+	currentUser, err := helpers.GetUserClaimsFromToken(currentUserToken, config.GetString("JWT_SECRET"))
+	if err != nil {
+		return models.CreateOrderResponse{}, err
+	}
+
 	orderID := uuid.New()
+	userID := currentUser.ID
 	createdAt := time.Now()
 	request.ID = orderID
+	request.UserID = userID
 	request.CreatedAt = createdAt
 
 	order := entity.Order{
