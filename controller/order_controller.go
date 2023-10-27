@@ -48,7 +48,7 @@ func (controller *OrderController) GetOrder(app echo.Context) error {
 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
 	}
 
-	ctx, cancle := context.WithTimeout(app.Request().Context(), 10*time.Second)
+	ctx, cancle := context.WithTimeout(app.Request().Context(), 30*time.Second)
 	defer cancle()
 
 	if urlParam.ID != uuid.Nil {

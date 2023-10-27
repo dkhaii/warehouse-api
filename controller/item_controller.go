@@ -48,7 +48,7 @@ func (controller *ItemController) GetItem(app echo.Context) error {
 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
 	}
 
-	ctx, cancle := context.WithTimeout(app.Request().Context(), 10*time.Second)
+	ctx, cancle := context.WithTimeout(app.Request().Context(), 30*time.Second)
 	defer cancle()
 
 	if queryParam.ID != uuid.Nil {
@@ -90,7 +90,7 @@ func (controller *ItemController) GetCompleteByID(app echo.Context) error {
 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
 	}
 
-	ctx, cancle := context.WithTimeout(app.Request().Context(), 10*time.Second)
+	ctx, cancle := context.WithTimeout(app.Request().Context(), 30*time.Second)
 	defer cancle()
 
 	response, err := controller.ItemService.GetCompleteByID(ctx, urlParam.ID)

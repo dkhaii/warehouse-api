@@ -42,7 +42,7 @@ func (controller *LocationController) GetLocation(app echo.Context) error {
 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
 	}
 
-	ctx, cancel := context.WithTimeout(app.Request().Context(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(app.Request().Context(), 30*time.Second)
 	defer cancel()
 
 	if queryParam.ID == "" {
