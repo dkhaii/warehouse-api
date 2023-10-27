@@ -26,7 +26,7 @@ func (repository *locationRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx
 	(?, ?, ?, ?)
 	`
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		loc.ID,
@@ -159,7 +159,8 @@ func (repository *locationRepositoryImpl) Update(ctx context.Context, tx *sql.Tx
 	WHERE id = ?
 	`
 
-	_, err := repository.database.Exec(
+	_, err := tx.ExecContext(
+		ctx,
 		query,
 		loc.Description,
 		loc.UpdatedAt,
@@ -178,7 +179,7 @@ func (repository *locationRepositoryImpl) Update(ctx context.Context, tx *sql.Tx
 func (repository *locationRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, locID string) error {
 	query := "DELETE FROM locations WHERE id = ?"
 
-	_, err := repository.database.Exec(query, locID)
+	_, err := tx.ExecContext(ctx, query, locID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ErrLocationNotFound

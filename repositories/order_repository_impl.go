@@ -27,7 +27,7 @@ func (repository *orderRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, o
 	(?, ?, ?, ?, ?, ?, ?)
 	`
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		ord.ID,

@@ -26,7 +26,7 @@ func (repository *itemRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, it
 	(?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		itm.ID,
@@ -226,7 +226,7 @@ func (repository *itemRepositoryImpl) FindCompleteByID(ctx context.Context, itmI
 func (repository *itemRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, itm *entity.Item) error {
 	query := "UPDATE items SET name = ?, description = ?, quantity = ?, availability = ?, category_id = ?, user_id = ?, updated_at = ? WHERE id = ?"
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		itm.Name,
@@ -252,7 +252,7 @@ func (repository *itemRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, it
 func (repository *itemRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, itmID uuid.UUID) error {
 	query := "DELETE FROM items WHERE id = ?"
 
-	_, err := repository.database.ExecContext(ctx, query, itmID)
+	_, err := tx.ExecContext(ctx, query, itmID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ErrUserNotFound

@@ -26,7 +26,7 @@ func (repository *categoryRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx
 	(?, ?, ?, ?, ?, ?)
 	`
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		ctg.ID,
@@ -185,7 +185,7 @@ func (repository *categoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx
 	WHERE id = ?
 	`
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		ctg.Name,
@@ -207,7 +207,7 @@ func (repository *categoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx
 func (repository *categoryRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, ctgID string) error {
 	query := "DELETE FROM categories WHERE id = ?"
 
-	_, err := repository.database.ExecContext(ctx, query, ctgID)
+	_, err := tx.ExecContext(ctx, query, ctgID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return helpers.ErrCategoryNotFound

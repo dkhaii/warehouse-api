@@ -26,7 +26,7 @@ func (repository *userRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, us
 	(?, ?, ?, ?, ?, ?, ?)
 	`
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		usr.ID,
@@ -214,7 +214,7 @@ func (repository *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, us
 	WHERE id = ?
 	`
 
-	_, err := repository.database.ExecContext(
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		usr.Username,
@@ -237,7 +237,7 @@ func (repository *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, us
 func (repository *userRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, usrID uuid.UUID) error {
 	query := "DELETE FROM users WHERE id = ?"
 
-	_, err := repository.database.ExecContext(ctx, query, usrID)
+	_, err := tx.ExecContext(ctx, query, usrID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ErrUserNotFound
