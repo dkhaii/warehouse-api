@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func ProtectedCategoryRoutes(app *echo.Echo, controller *controller.CategoryController) {
+func ProtectedCategoryRoutes(app *echo.Echo, controller controller.CategoryController) {
 	routes := app.Group("api/v1/auth/category")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())

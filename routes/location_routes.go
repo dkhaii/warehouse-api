@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func ProtectedLocationRoutes(app *echo.Echo, controller *controller.LocationController) {
+func ProtectedLocationRoutes(app *echo.Echo, controller controller.LocationController) {
 	routes := app.Group("/api/v1/auth/location")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())

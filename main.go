@@ -49,12 +49,12 @@ func main() {
 	app := echo.New()
 
 	// router
-	routes.PublicUserRoutes(app, &userController)
-	routes.ProtectedUserRoutes(app, &userController)
-	routes.ProtectedItemRoutes(app, &itemController)
-	routes.ProtectedCategoryRoutes(app, &categoryController)
-	routes.ProtectedLocationRoutes(app, &locationController)
-	routes.ProtectedOrderRoutes(app, &orderController)
+	routes.PublicUserRoutes(app, userController)
+	routes.ProtectedUserRoutes(app, userController)
+	routes.ProtectedItemRoutes(app, itemController)
+	routes.ProtectedCategoryRoutes(app, categoryController)
+	routes.ProtectedLocationRoutes(app, locationController)
+	routes.ProtectedOrderRoutes(app, orderController)
 
 	app.Logger.Fatal(app.Start(":8080"))
 }

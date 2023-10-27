@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func PublicUserRoutes(app *echo.Echo, controller *controller.UserController) {
+func PublicUserRoutes(app *echo.Echo, controller controller.UserController) {
 	routes := app.Group("api/v1/users")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
@@ -16,7 +16,7 @@ func PublicUserRoutes(app *echo.Echo, controller *controller.UserController) {
 	routes.POST("/register", controller.Create)
 }
 
-func ProtectedUserRoutes(app *echo.Echo, controller *controller.UserController) {
+func ProtectedUserRoutes(app *echo.Echo, controller controller.UserController) {
 	routes := app.Group("api/v1/auth/users")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
