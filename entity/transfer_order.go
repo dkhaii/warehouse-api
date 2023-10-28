@@ -7,13 +7,12 @@ import (
 )
 
 type TransferOrder struct {
-	ID            uuid.UUID `json:"id"`
-	OrderID       uuid.UUID `json:"order_id"`
-	UserID        uuid.UUID `json:"user_id"`
-	Status        int       `json:"status"`
-	FulfilledDate time.Time `json:"fulfilled_date"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID            uuid.UUID
+	OrderID       uuid.UUID
+	UserID        uuid.UUID
+	Status        string
+	FulfilledDate time.Time
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 	Order         *Order
-	User          *UserFiltered
 }

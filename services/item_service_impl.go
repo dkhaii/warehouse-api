@@ -185,7 +185,7 @@ func (service *itemServiceImpl) GetCompleteByID(ctx context.Context, itmID uuid.
 	return response, nil
 }
 
-func (service *itemServiceImpl) Update(ctx context.Context, request models.UpdateItemRequest) (models.CreateItemResponse, error) {
+func (service *itemServiceImpl) Update(ctx context.Context, request models.UpdateItemRequest, currentUserToken string) (models.CreateItemResponse, error) {
 	err := helpers.ValidateRequest(request)
 	if err != nil {
 		return models.CreateItemResponse{}, err
@@ -202,8 +202,19 @@ func (service *itemServiceImpl) Update(ctx context.Context, request models.Updat
 	}
 	defer helpers.CommitOrRollBack(tx)
 
+	config, err := config.Init()
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
+
+	currentUser, err := helpers.GetUserClaimsFromToken(currentUserToken, config.GetString("JWT_SECRET"))
+	if err != nil {
+		return models.CreateItemResponse{}, err
+	}
+
 	updatedAt := time.Now()
 	request.UpdatedAt = updatedAt
+	request.UserID = currentUser.ID
 
 	updatedItem := entity.Item{
 		ID:           item.ID,

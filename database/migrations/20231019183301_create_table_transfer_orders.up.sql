@@ -2,9 +2,9 @@ CREATE TABLE transfer_orders
 (
     id VARCHAR(255) NOT NULL,
     order_id VARCHAR(255) NOT NULL,
-    user_id VARCHAR(255) NOT NULL,
-    status INT(10) NOT NULL,
-    fullfilled_date TIMESTAMP,
+    user_id VARCHAR(255),
+    status ENUM('Pending', 'Proccessed', 'Finished') NOT NULL,
+    fulfilled_date TIMESTAMP,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     PRIMARY KEY (id),

@@ -22,7 +22,7 @@ func NewTransferOrderRepository(database *sql.DB) TransferOrderRepository {
 func (repository *transferOrderRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, trfOrd *entity.TransferOrder) (*entity.TransferOrder, error) {
 	query := `
 	INSERT INTO transfer_orders
-	(id, order_id, user_id, status, fullfilled_date, created_at, updated_at)
+	(id, order_id, user_id, status, fulfilled_date, created_at, updated_at)
 	VALUES
 	(?, ?, ?, ?, ?, ?, ?)
 	`
@@ -109,7 +109,6 @@ func (repository *transferOrderRepositoryImpl) FindByID(ctx context.Context, trf
 func (repository *transferOrderRepositoryImpl) FindCompleteByID(ctx context.Context, trfOrdID uuid.UUID) (*entity.TransferOrder, error) {
 	var to entity.TransferOrder
 	var order entity.Order
-	// var user entity.UserFiltered
 
 	query := `
 	SELECT to.*, o.*
@@ -198,7 +197,7 @@ func (repository *transferOrderRepositoryImpl) FindCompleteByID(ctx context.Cont
 func (repository *transferOrderRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, trfOrd *entity.TransferOrder) (*entity.TransferOrder, error) {
 	query := `
 	UPDATE transfer_orders
-	SET user_id = ?, status = ?, fullfilled_date = ?, update_at = ?
+	SET user_id = ?, status = ?, filled_date = ?, update_at = ?
 	WHERE id = ?
 	`
 
