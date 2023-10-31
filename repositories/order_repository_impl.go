@@ -113,7 +113,7 @@ func (repository *orderRepositoryImpl) FindCompleteByID(ctx context.Context, ord
 		SELECT i.id, i.name, i.description, i.availability, i.category_id
 		FROM items i
 		LEFT JOIN order_carts oc ON i.id = oc.item_id
-		LEFT JOIN order o ON o.id = oc.order_id
+		LEFT JOIN orders o ON o.id = oc.order_id
 		WHERE o.id = ?
 	`
 

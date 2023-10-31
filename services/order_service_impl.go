@@ -73,39 +73,6 @@ func (service *orderServiceImpl) Create(ctx context.Context, request models.Crea
 		return models.CreateOrderResponse{}, err
 	}
 
-	// orderCart := make([]entity.OrderCart, len(request.ItemID))
-
-	// for index, itemID := range request.ItemID {
-	// 	orderCart[index] = entity.OrderCart{
-	// 		ID:       uID,
-	// 		OrderID:  createdOrder.ID,
-	// 		ItemID:   itemID,
-	// 		Quantity: request.Quantity,
-	// 	}
-
-	// 	_, err = service.orderCartRepository.Insert(ctx, tx, &orderCart[index])
-
-	// 	if err != nil {
-	// 		return models.CreateOrderResponse{}, nil
-	// 	}
-	// }
-
-	// transferOrder := entity.TransferOrder{
-	// 	ID:            uID,
-	// 	OrderID:       createdOrder.ID,
-	// 	UserID:        currentUser.ID,
-	// 	Status:        "Pending",
-	// 	FulfilledDate: time.Time{},
-	// 	CreatedAt:     createdAt,
-	// 	UpdatedAt:     createdAt,
-	// 	Order:         nil,
-	// }
-
-	// _, err = service.transferOrderRepository.Insert(ctx, tx, &transferOrder)
-	// if err != nil {
-	// 	return models.CreateOrderResponse{}, err
-	// }
-
 	response := models.CreateOrderResponse{
 		ID:                  createdOrder.ID,
 		UserID:              createdOrder.UserID,

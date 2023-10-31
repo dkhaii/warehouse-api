@@ -32,9 +32,6 @@ func (controller *userExternalControllerImpl) CreateOrder(app echo.Context) erro
 
 	requestOrderCart.ItemID = make([]uuid.UUID, len(requestOrder.ItemID))
 
-	// for _, itemID := range requestOrder.ItemID {
-	// 	requestOrderCart.ItemID = append(requestOrderCart.ItemID, itemID)
-	// }
 	requestOrderCart.ItemID = append(requestOrderCart.ItemID, requestOrder.ItemID...)
 
 	var requestTransferOrder models.CreateTransferOrderRequest

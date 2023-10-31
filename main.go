@@ -49,7 +49,7 @@ func main() {
 	itemController := controller.NewItemController(itemService)
 	categoryController := controller.NewCategoryController(categoryService)
 	locationController := controller.NewLocationController(locationService)
-	// orderController := controller.NewOrderController(orderService, orderCartService)
+	orderController := controller.NewOrderController(orderService)
 	userExternalController := controller.NewUserExternalController(userExternalService)
 
 	app := echo.New()
@@ -60,8 +60,7 @@ func main() {
 	routes.ProtectedItemRoutes(app, itemController)
 	routes.ProtectedCategoryRoutes(app, categoryController)
 	routes.ProtectedLocationRoutes(app, locationController)
-	// routes.ProtectedOrderRoutes(app, orderController)
-	routes.ProtectedUserExternalRoutes(app, userExternalController)
+	routes.ProtectedOrderRoutes(app, orderController, userExternalController)
 
 	app.Logger.Fatal(app.Start(":8080"))
 }

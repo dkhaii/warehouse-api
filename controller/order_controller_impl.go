@@ -14,37 +14,33 @@ import (
 
 type orderControllerImpl struct {
 	orderService services.OrderService
-	orderCartService services.OrderCartService
-	// transferOrderService services.TransferOrderService
 }
 
-func NewOrderController(orderService services.OrderService, orderCartService services.OrderCartService) OrderController {
+func NewOrderController(orderService services.OrderService) OrderController {
 	return &orderControllerImpl{
 		orderService: orderService,
-		orderCartService: orderCartService,
-	// 	transferOrderService: transferOrderService,
 	}
 }
 
-func (controller *orderControllerImpl) Create(app echo.Context) error {
-	var requestOrder models.CreateOrderRequest
-	err := app.Bind(&requestOrder)
-	if err != nil {
-		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
-	}
+// func (controller *orderControllerImpl) Create(app echo.Context) error {
+// 	var requestOrder models.CreateOrderRequest
+// 	err := app.Bind(&requestOrder)
+// 	if err != nil {
+// 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
+// 	}
 
-	currentUserToken, err := helpers.GetSplitedToken(app)
-	if err != nil {
-		return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
-	}
+// 	currentUserToken, err := helpers.GetSplitedToken(app)
+// 	if err != nil {
+// 		return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
+// 	}
 
-	response, err := controller.orderService.Create(app.Request().Context(), requestOrder, currentUserToken)
-	if err != nil {
-		return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
-	}
+// 	response, err := controller.orderService.Create(app.Request().Context(), requestOrder, currentUserToken)
+// 	if err != nil {
+// 		return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
+// 	}
 
-	return helpers.CreateResponse(app, http.StatusCreated, response)
-}
+// 	return helpers.CreateResponse(app, http.StatusCreated, response)
+// }
 
 func (controller *orderControllerImpl) GetOrder(app echo.Context) error {
 	var urlParam models.GetOrderByIDQueryRequest
