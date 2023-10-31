@@ -25,51 +25,61 @@ func NewTransferOrderService(transferOrderRepository repositories.TransferOrderR
 	}
 }
 
-func (service *transferOrderServiceImpl) Create(ctx context.Context, requestTrfOrd models.CreateTransferOrderRequest, requestOrder models.GetOrderByIDQueryRequest) (models.CreateTransferOrderResponse, error) {
-	err := helpers.ValidateRequest(requestTrfOrd)
-	if err != nil {
-		return models.CreateTransferOrderResponse{}, err
-	}
-
+func (service *transferOrderServiceImpl) Create(ctx context.Context, request models.CreateTransferOrderRequest, currenUserToken string) (models.CreateTransferOrderResponse, error) {
 	tx, err := service.database.Begin()
 	if err != nil {
 		return models.CreateTransferOrderResponse{}, err
 	}
 	defer helpers.CommitOrRollBack(tx)
 
-	toID := uuid.New()
-	userID := uuid.Nil
-	status := "Pending"
-	CreatedAt := time.Now()
-	requestTrfOrd.ID = toID
-	requestTrfOrd.UserID = userID
-	requestTrfOrd.Status = status
-	requestTrfOrd.CreatedAt = CreatedAt
-	requestTrfOrd.UpdatedAt = requestTrfOrd.CreatedAt
-
-	transferOrder := entity.TransferOrder{
-		ID:            requestTrfOrd.ID,
-		OrderID:       requestOrder.ID,
-		UserID:        requestTrfOrd.UserID,
-		Status:        requestTrfOrd.Status,
-		FulfilledDate: requestTrfOrd.FulfilledDate,
-		CreatedAt:     requestTrfOrd.CreatedAt,
-		UpdatedAt:     requestTrfOrd.UpdatedAt,
+	config, err := config.Init()
+	if err != nil {
+		return models.CreateTransferOrderResponse{}, err
 	}
 
-	createdTrfOrd, err := service.transferOrderRepository.Insert(ctx, tx, &transferOrder)
+	currentUser, err := helpers.GetUserClaimsFromToken(currenUserToken, config.GetString("JWT_SECRET"))
+	if err != nil {
+		return models.CreateTransferOrderResponse{}, err
+	}
+
+	toID := uuid.New()
+	userID := currentUser.ID
+	status := "Pending"
+	timeLayout := "2006-01-02T15:04:05.999Z"
+	fulfilledDate, err := time.Parse(timeLayout, timeLayout)
+	if err != nil {
+		return models.CreateTransferOrderResponse{}, err
+	}
+	CreatedAt := time.Now()
+	request.ID = toID
+	request.UserID = userID
+	request.Status = status
+	request.CreatedAt = CreatedAt
+	request.UpdatedAt = request.CreatedAt
+
+	transferOrder := entity.TransferOrder{
+		ID:            toID,
+		OrderID:       request.OrderID,
+		UserID:        userID,
+		Status:        status,
+		FulfilledDate: fulfilledDate,
+		CreatedAt:     CreatedAt,
+		UpdatedAt:     CreatedAt,
+	}
+
+	createdTransferOrder, err := service.transferOrderRepository.Insert(ctx, tx, &transferOrder)
 	if err != nil {
 		return models.CreateTransferOrderResponse{}, err
 	}
 
 	response := models.CreateTransferOrderResponse{
-		ID:            createdTrfOrd.ID,
-		OrderID:       createdTrfOrd.ID,
-		UserID:        createdTrfOrd.UserID,
-		Status:        createdTrfOrd.Status,
-		FulfilledDate: createdTrfOrd.FulfilledDate,
-		CreatedAt:     createdTrfOrd.CreatedAt,
-		UpdatedAt:     createdTrfOrd.UpdatedAt,
+		ID:            createdTransferOrder.ID,
+		OrderID:       createdTransferOrder.OrderID,
+		UserID:        createdTransferOrder.UserID,
+		Status:        createdTransferOrder.Status,
+		FulfilledDate: createdTransferOrder.FulfilledDate,
+		CreatedAt:     createdTransferOrder.CreatedAt,
+		UpdatedAt:     createdTransferOrder.UpdatedAt,
 	}
 
 	return response, nil

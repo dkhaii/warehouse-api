@@ -4,7 +4,7 @@ CREATE TABLE transfer_orders
     order_id VARCHAR(255) NOT NULL,
     user_id VARCHAR(255),
     status ENUM('Pending', 'Proccessed', 'Finished') NOT NULL,
-    fulfilled_date TIMESTAMP,
+    fulfilled_date DATE,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     PRIMARY KEY (id),

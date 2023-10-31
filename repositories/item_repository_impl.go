@@ -20,10 +20,11 @@ func NewItemRepository(database *sql.DB) ItemRepository {
 }
 
 func (repository *itemRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, itm *entity.Item) (*entity.Item, error) {
-	query := `INSERT INTO items 
-	(id, name, description, quantity, availability, category_id, user_id, created_at, updated_at) 
-	VALUES 
-	(?, ?, ?, ?, ?, ?, ?, ?, ?)
+	query := `
+		INSERT INTO items 
+		(id, name, description, quantity, availability, category_id, user_id, created_at, updated_at) 
+		VALUES 
+		(?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err := tx.ExecContext(
@@ -163,11 +164,11 @@ func (repository *itemRepositoryImpl) FindCompleteByID(ctx context.Context, itmI
 	var user entity.UserFiltered
 
 	query := `
-	SELECT i.*, c.id, c.name, c.description, u.id, u.username, u.contact
-	FROM items i
-	LEFT JOIN categories c ON c.id = i.category_id
-	LEFT JOIN users u ON u.id = i.user_id
-	WHERE i.id = ?
+		SELECT i.*, c.id, c.name, c.description, u.username, u.contact
+		FROM items i
+		LEFT JOIN categories c ON c.id = i.category_id
+		LEFT JOIN users u ON u.id = i.user_id
+		WHERE i.id = ?
 	`
 
 	err := repository.database.QueryRowContext(ctx, query, itmID).Scan(
@@ -183,7 +184,6 @@ func (repository *itemRepositoryImpl) FindCompleteByID(ctx context.Context, itmI
 		&category.ID,
 		&category.Name,
 		&category.Description,
-		&user.ID,
 		&user.Username,
 		&user.Contact,
 	)
@@ -200,11 +200,11 @@ func (repository *itemRepositoryImpl) FindCompleteByID(ctx context.Context, itmI
 	var location entity.LocationFiltered
 
 	query2 := `
-	SELECT c.id, c.location_id, l.id, l.description
-	FROM categories c
-	LEFT JOIN locations l
-	ON l.id = c.location_id
-	WHERE c.id = ?
+		SELECT l.id, l.description
+		FROM categories c
+		LEFT JOIN locations l
+		ON l.id = c.location_id
+		WHERE c.id = ?
 	`
 
 	err = repository.database.QueryRowContext(ctx, query2, category.ID).Scan(

@@ -20,10 +20,10 @@ func NewUserRepository(database *sql.DB) UserRepository {
 
 func (repository *userRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, usr *entity.User) (*entity.User, error) {
 	query := `
-	INSERT INTO users 
-	(id, username, password, contact, role_id, created_at, updated_at) 
-	VALUES 
-	(?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO users 
+		(id, username, password, contact, role_id, created_at, updated_at) 
+		VALUES 
+		(?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err := tx.ExecContext(
@@ -111,12 +111,12 @@ func (repository *userRepositoryImpl) FindCompleteByID(ctx context.Context, usrI
 	var role entity.RoleFiltered
 
 	query := `
-	SELECT usr.id, usr.username, usr.contact, usr.role_id, usr.created_at, usr. updated_at,
-	r.id, r.name 
-	FROM users usr
-	LEFT JOIN roles r
-	ON r.id = usr.role_id
-	WHERE usr.id = ?
+		SELECT usr.id, usr.username, usr.contact, usr.role_id, usr.created_at, usr. updated_at,
+		r.id, r.name 
+		FROM users usr
+		LEFT JOIN roles r
+		ON r.id = usr.role_id
+		WHERE usr.id = ?
 	`
 
 	err := repository.database.QueryRowContext(ctx, query, usrID).Scan(
@@ -209,9 +209,9 @@ func (repository *userRepositoryImpl) FindByUsername(ctx context.Context, name s
 
 func (repository *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, usr *entity.User) (*entity.User, error) {
 	query := `
-	UPDATE users 
-	SET username = ?, password = ?, contact = ?, role_id = ?, updated_at = ? 
-	WHERE id = ?
+		UPDATE users 
+		SET username = ?, password = ?, contact = ?, role_id = ?, updated_at = ? 
+		WHERE id = ?
 	`
 
 	_, err := tx.ExecContext(

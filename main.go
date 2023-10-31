@@ -31,20 +31,26 @@ func main() {
 	categoryRepository := repositories.NewCategoryRepository(database)
 	locationRepository := repositories.NewLocationRepository(database)
 	orderRepository := repositories.NewOrderRepository(database)
+	orderCartRepository := repositories.NewOrderCartRepository(database)
+	transferOrderRepository := repositories.NewTransferOrderRepository(database)
 
 	// service dependency injection
 	userService := services.NewUserService(userRepository, database)
 	itemService := services.NewItemService(itemRepository, database)
 	categoryService := services.NewCategoryService(categoryRepository, database)
 	locationService := services.NewLocationService(locationRepository, database)
-	orderService := services.NewOrderService(orderRepository, database)
+	transferOrderService := services.NewTransferOrderService(transferOrderRepository, database)
+	orderService := services.NewOrderService(orderRepository, orderCartRepository, transferOrderRepository, database)
+	orderCartService := services.NewOrderCartService(orderCartRepository, database)
+	userExternalService := services.NewUserExternalService(orderService, orderCartService, transferOrderService, database)
 
 	// controller dependency injection
 	userController := controller.NewUserController(userService)
 	itemController := controller.NewItemController(itemService)
 	categoryController := controller.NewCategoryController(categoryService)
 	locationController := controller.NewLocationController(locationService)
-	orderController := controller.NewOrderController(orderService)
+	// orderController := controller.NewOrderController(orderService, orderCartService)
+	userExternalController := controller.NewUserExternalController(userExternalService)
 
 	app := echo.New()
 
@@ -54,7 +60,8 @@ func main() {
 	routes.ProtectedItemRoutes(app, itemController)
 	routes.ProtectedCategoryRoutes(app, categoryController)
 	routes.ProtectedLocationRoutes(app, locationController)
-	routes.ProtectedOrderRoutes(app, orderController)
+	// routes.ProtectedOrderRoutes(app, orderController)
+	routes.ProtectedUserExternalRoutes(app, userExternalController)
 
 	app.Logger.Fatal(app.Start(":8080"))
 }

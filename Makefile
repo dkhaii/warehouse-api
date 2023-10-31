@@ -4,6 +4,9 @@ mysql-start:
 	sudo service mysql start
 	sudo mysql -u development -p
 
+mysql:
+	sudo mysql -u development -p
+
 run:
 	go run main.go
 

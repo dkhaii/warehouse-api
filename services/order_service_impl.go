@@ -14,14 +14,18 @@ import (
 )
 
 type orderServiceImpl struct {
-	orderRepository repositories.OrderRepository
-	database        *sql.DB
+	orderRepository         repositories.OrderRepository
+	orderCartRepository     repositories.OrderCartRepository
+	transferOrderRepository repositories.TransferOrderRepository
+	database                *sql.DB
 }
 
-func NewOrderService(orderRepository repositories.OrderRepository, database *sql.DB) OrderService {
+func NewOrderService(orderRepository repositories.OrderRepository, orderCartRepository repositories.OrderCartRepository, transferOrderRepository repositories.TransferOrderRepository, database *sql.DB) OrderService {
 	return &orderServiceImpl{
-		orderRepository: orderRepository,
-		database:        database,
+		orderRepository:         orderRepository,
+		orderCartRepository:     orderCartRepository,
+		transferOrderRepository: transferOrderRepository,
+		database:                database,
 	}
 }
 
@@ -47,23 +51,21 @@ func (service *orderServiceImpl) Create(ctx context.Context, request models.Crea
 		return models.CreateOrderResponse{}, err
 	}
 
-	orderID := uuid.New()
+	uID := uuid.New()
 	userID := currentUser.ID
 	createdAt := time.Now()
-	request.ID = orderID
+	request.ID = uID
 	request.UserID = userID
 	request.CreatedAt = createdAt
 
 	order := entity.Order{
 		ID:                  request.ID,
-		ItemID:              request.ItemID,
 		UserID:              request.UserID,
-		Quantity:            request.Quantity,
 		Notes:               request.Notes,
 		RequestTransferDate: request.RequestTransferDate,
 		CreatedAt:           request.CreatedAt,
 		User:                nil,
-		Item:                nil,
+		Items:               nil,
 	}
 
 	createdOrder, err := service.orderRepository.Insert(ctx, tx, &order)
@@ -71,11 +73,42 @@ func (service *orderServiceImpl) Create(ctx context.Context, request models.Crea
 		return models.CreateOrderResponse{}, err
 	}
 
+	// orderCart := make([]entity.OrderCart, len(request.ItemID))
+
+	// for index, itemID := range request.ItemID {
+	// 	orderCart[index] = entity.OrderCart{
+	// 		ID:       uID,
+	// 		OrderID:  createdOrder.ID,
+	// 		ItemID:   itemID,
+	// 		Quantity: request.Quantity,
+	// 	}
+
+	// 	_, err = service.orderCartRepository.Insert(ctx, tx, &orderCart[index])
+
+	// 	if err != nil {
+	// 		return models.CreateOrderResponse{}, nil
+	// 	}
+	// }
+
+	// transferOrder := entity.TransferOrder{
+	// 	ID:            uID,
+	// 	OrderID:       createdOrder.ID,
+	// 	UserID:        currentUser.ID,
+	// 	Status:        "Pending",
+	// 	FulfilledDate: time.Time{},
+	// 	CreatedAt:     createdAt,
+	// 	UpdatedAt:     createdAt,
+	// 	Order:         nil,
+	// }
+
+	// _, err = service.transferOrderRepository.Insert(ctx, tx, &transferOrder)
+	// if err != nil {
+	// 	return models.CreateOrderResponse{}, err
+	// }
+
 	response := models.CreateOrderResponse{
 		ID:                  createdOrder.ID,
-		ItemID:              createdOrder.ItemID,
 		UserID:              createdOrder.UserID,
-		Quantity:            createdOrder.Quantity,
 		Notes:               createdOrder.Notes,
 		RequestTransferDate: createdOrder.RequestTransferDate,
 		CreatedAt:           createdOrder.CreatedAt,
@@ -95,9 +128,7 @@ func (service *orderServiceImpl) GetAll(ctx context.Context) ([]models.GetOrderR
 	for key, order := range rows {
 		orders[key] = models.GetOrderResponse{
 			ID:                  order.ID,
-			ItemID:              order.ItemID,
 			UserID:              order.UserID,
-			Quantity:            order.Quantity,
 			Notes:               order.Notes,
 			RequestTransferDate: order.RequestTransferDate,
 			CreatedAt:           order.CreatedAt,
@@ -111,18 +142,16 @@ func (service *orderServiceImpl) GetCompleteByID(ctx context.Context, ordID uuid
 	order, err := service.orderRepository.FindCompleteByID(ctx, ordID)
 	if err != nil {
 		return models.GetCompleteOrderResponse{}, err
-	} 
+	}
 
 	response := models.GetCompleteOrderResponse{
-		ID: order.ID,
-		ItemID: order.ItemID,
-		UserID: order.UserID,
-		Quantity: order.Quantity,
-		Notes: order.Notes,
+		ID:                  order.ID,
+		UserID:              order.UserID,
+		Notes:               order.Notes,
 		RequestTransferDate: order.RequestTransferDate,
-		CreatedAt: order.CreatedAt,
-		User: order.User,
-		Item: order.Item,
+		CreatedAt:           order.CreatedAt,
+		User:                order.User,
+		Items:               order.Items,
 	}
 
 	return response, nil

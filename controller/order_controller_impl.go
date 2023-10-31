@@ -14,17 +14,21 @@ import (
 
 type orderControllerImpl struct {
 	orderService services.OrderService
+	orderCartService services.OrderCartService
+	// transferOrderService services.TransferOrderService
 }
 
-func NewOrderController(orderService services.OrderService) OrderController {
+func NewOrderController(orderService services.OrderService, orderCartService services.OrderCartService) OrderController {
 	return &orderControllerImpl{
 		orderService: orderService,
+		orderCartService: orderCartService,
+	// 	transferOrderService: transferOrderService,
 	}
 }
 
 func (controller *orderControllerImpl) Create(app echo.Context) error {
-	var request models.CreateOrderRequest
-	err := app.Bind(&request)
+	var requestOrder models.CreateOrderRequest
+	err := app.Bind(&requestOrder)
 	if err != nil {
 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
 	}
@@ -34,10 +38,11 @@ func (controller *orderControllerImpl) Create(app echo.Context) error {
 		return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
 	}
 
-	response, err := controller.orderService.Create(app.Request().Context(), request, currentUserToken)
+	response, err := controller.orderService.Create(app.Request().Context(), requestOrder, currentUserToken)
 	if err != nil {
 		return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
 	}
+
 	return helpers.CreateResponse(app, http.StatusCreated, response)
 }
 

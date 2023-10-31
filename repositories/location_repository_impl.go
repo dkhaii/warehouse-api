@@ -20,10 +20,10 @@ func NewLocationRepository(database *sql.DB) LocationRepository {
 
 func (repository *locationRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, loc *entity.Location) (*entity.Location, error) {
 	query := `
-	INSERT INTO locations 
-	(id, description, created_at, updated_at) 
-	VALUES 
-	(?, ?, ?, ?)
+		INSERT INTO locations 
+		(id, description, created_at, updated_at) 
+		VALUES 
+		(?, ?, ?, ?)
 	`
 
 	_, err := tx.ExecContext(
@@ -102,11 +102,11 @@ func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, 
 	var categories []entity.CategoryFiltered
 
 	query := `
-	SELECT loc.*, ctg.id, ctg.name, ctg.description
-	FROM locations loc 
-	LEFT JOIN categories ctg
-	ON loc.id  = ctg.location_id
-	WHERE loc.id = ?
+		SELECT loc.*, ctg.id, ctg.name, ctg.description
+		FROM locations loc 
+		LEFT JOIN categories ctg
+		ON loc.id  = ctg.location_id
+		WHERE loc.id = ?
 	`
 
 	rows, err := repository.database.QueryContext(ctx, query, locID)
@@ -154,9 +154,9 @@ func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, 
 
 func (repository *locationRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, loc *entity.Location) (*entity.Location, error) {
 	query := `
-	UPDATE locations 
-	SET category_id = ?, description = ?, updated_at = ? 
-	WHERE id = ?
+		UPDATE locations 
+		SET category_id = ?, description = ?, updated_at = ? 
+		WHERE id = ?
 	`
 
 	_, err := tx.ExecContext(

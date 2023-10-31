@@ -21,19 +21,17 @@ func NewOrderRepository(database *sql.DB) OrderRepository {
 
 func (repository *orderRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, ord *entity.Order) (*entity.Order, error) {
 	query := `
-	INSER INTO orders
-	(id, item_id, user_id, quantity, notes, request_transfer_date, created_at)
+	INSERT INTO orders
+	(id, user_id, notes, request_transfer_date, created_at)
 	VALUES
-	(?, ?, ?, ?, ?, ?, ?)
+	(?, ?, ?, ?, ?)
 	`
 
 	_, err := tx.ExecContext(
 		ctx,
 		query,
 		ord.ID,
-		ord.ItemID,
 		ord.UserID,
-		ord.Quantity,
 		ord.Notes,
 		ord.RequestTransferDate,
 		ord.CreatedAt,
@@ -61,9 +59,7 @@ func (repository *orderRepositoryImpl) FindAll(ctx context.Context) ([]*entity.O
 
 		err := rows.Scan(
 			&order.ID,
-			&order.ItemID,
 			&order.UserID,
-			&order.Quantity,
 			&order.Notes,
 			&order.RequestTransferDate,
 			&order.CreatedAt,
@@ -85,25 +81,22 @@ func (repository *orderRepositoryImpl) FindAll(ctx context.Context) ([]*entity.O
 
 func (repository *orderRepositoryImpl) FindCompleteByID(ctx context.Context, ordID uuid.UUID) (*entity.Order, error) {
 	var order entity.Order
-	var user entity.UserFiltered	
-	
+	var user entity.UserFiltered
+
 	query := `
-	SELECT o.*, u.id, u.username, u.contact
+	SELECT o.*, u.username, u.contact
 	FROM orders o
 	LEFT JOIN users u
 	ON u.id = o.user_id
 	WHERE o.id = ? 
 	`
-	
+
 	err := repository.database.QueryRowContext(ctx, query, ordID).Scan(
 		&order.ID,
-		&order.ItemID,
 		&order.UserID,
-		&order.Quantity,
 		&order.Notes,
 		&order.RequestTransferDate,
 		&order.CreatedAt,
-		&user.ID,
 		&user.Username,
 		&user.Contact,
 	)
@@ -116,28 +109,25 @@ func (repository *orderRepositoryImpl) FindCompleteByID(ctx context.Context, ord
 
 	order.User = &user
 
-	var items []entity.ItemFiltered
-	
 	query2 := `
-	SELECT o.id, o.item_id, i.id, i.name, i.description, i.availability, i.categoy_id
-	FROM orders o
-	LEFT JOIN items i
-	ON i.id = o.item_id
-	WHERE o.id = ?
-	` 
+		SELECT i.id, i.name, i.description, i.availability, i.category_id
+		FROM items i
+		LEFT JOIN order_carts oc ON i.id = oc.item_id
+		LEFT JOIN order o ON o.id = oc.order_id
+		WHERE o.id = ?
+	`
 
 	rows, err := repository.database.QueryContext(ctx, query2, ordID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+
+	var listOfItems []entity.ItemFiltered
 
 	for rows.Next() {
 		var item entity.ItemFiltered
 
 		err := rows.Scan(
-			&order.ID,
-			&order.ItemID,
 			&item.ID,
 			&item.Name,
 			&item.Description,
@@ -148,10 +138,15 @@ func (repository *orderRepositoryImpl) FindCompleteByID(ctx context.Context, ord
 			return nil, err
 		}
 
-		items = append(items, item)
+		listOfItems = append(listOfItems, item)
 	}
 
-	order.Item = items
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	order.Items = listOfItems
 
 	return &order, nil
 }

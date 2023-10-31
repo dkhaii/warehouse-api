@@ -20,10 +20,10 @@ func NewCategoryRepository(database *sql.DB) CategoryRepository {
 
 func (repository *categoryRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, ctg *entity.Category) (*entity.Category, error) {
 	query := `
-	INSERT INTO categories 
-	(id, name, description, location_id, created_at, updated_at) 
-	VALUES 
-	(?, ?, ?, ?, ?, ?)
+		INSERT INTO categories 
+		(id, name, description, location_id, created_at, updated_at) 
+		VALUES 
+		(?, ?, ?, ?, ?, ?)
 	`
 
 	_, err := tx.ExecContext(
@@ -149,11 +149,11 @@ func (repository *categoryRepositoryImpl) FindByIDWithJoin(ctx context.Context, 
 	var location entity.Location
 
 	query := `
-	SELECT ctg.*, loc.* 
-	FROM categories ctg
-	LEFT JOIN locations loc
-	ON loc.id = ctg.location_id
-	WHERE ctg.id = ?
+		SELECT ctg.*, loc.* 
+		FROM categories ctg
+		LEFT JOIN locations loc
+		ON loc.id = ctg.location_id
+		WHERE ctg.id = ?
 	`
 
 	err := repository.database.QueryRowContext(ctx, query, ctgID).Scan(
@@ -180,9 +180,9 @@ func (repository *categoryRepositoryImpl) FindByIDWithJoin(ctx context.Context, 
 
 func (repository *categoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, ctg *entity.Category) (*entity.Category, error) {
 	query := `
-	UPDATE categories 
-	SET name = ?, description = ?, updated_at = ? 
-	WHERE id = ?
+		UPDATE categories 
+		SET name = ?, description = ?, updated_at = ? 
+		WHERE id = ?
 	`
 
 	_, err := tx.ExecContext(
