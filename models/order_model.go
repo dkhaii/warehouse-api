@@ -8,13 +8,13 @@ import (
 )
 
 type CreateOrderRequest struct {
-	ID                  uuid.UUID   `json:"id"`
-	UserID              uuid.UUID   `json:"user_id"`
-	ItemID              []uuid.UUID `json:"item_id"`
-	Quantity            int         `json:"quantity" validate:"required"`
-	RequestTransferDate time.Time   `json:"request_transfer_date" validate:"required"`
-	Notes               string      `json:"notes" validate:"required"`
-	CreatedAt           time.Time   `json:"created_at"`
+	ID       uuid.UUID   `json:"id"`
+	UserID   uuid.UUID   `json:"user_id"`
+	ItemID   []uuid.UUID `json:"item_id"`
+	Quantity []int       `json:"quantity" validate:"required"`
+	RequestTransferDate time.Time `json:"request_transfer_date" validate:"required"`
+	Notes               string    `json:"notes" validate:"required"`
+	CreatedAt           time.Time `json:"created_at"`
 }
 
 type CreateOrderResponse struct {

@@ -35,12 +35,12 @@ func (service *orderCartServiceImpl) Create(ctx context.Context, request models.
 
 	var listOfOrderCart []entity.OrderCart
 
-	for _, itemID := range request.ItemID {
+	for itemID, quantity := range request.ItemIDWithQuantity {
 		orderCart := entity.OrderCart{
-			ID:      request.ID,
-			OrderID: request.OrderID,
-			ItemID:  itemID,
-			Quantity: request.Quantity,
+			ID:       request.ID,
+			OrderID:  request.OrderID,
+			ItemID:   itemID,
+			Quantity: quantity,
 		}
 
 		listOfOrderCart = append(listOfOrderCart, orderCart)

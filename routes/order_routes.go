@@ -13,6 +13,6 @@ func ProtectedOrderRoutes(app *echo.Echo, ctrlOrder controller.OrderController, 
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
 
-	routes.GET("/create", ctrlUserExternal.CreateOrder)
+	routes.POST("/create", ctrlUserExternal.CreateOrder)
 	routes.GET("/find", ctrlOrder.GetOrder)
 }

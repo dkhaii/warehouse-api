@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/dkhaii/warehouse-api/helpers"
@@ -27,15 +28,23 @@ func (controller *userExternalControllerImpl) CreateOrder(app echo.Context) erro
 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
 	}
 
-	var requestOrderCart models.CreateOrderCartRequest
-	requestOrderCart.OrderID = requestOrder.ID
+	requestOrderCart := models.CreateOrderCartRequest{
+		OrderID:            requestOrder.ID,
+		ItemIDWithQuantity: make(map[uuid.UUID]int),
+	}
 
-	requestOrderCart.ItemID = make([]uuid.UUID, len(requestOrder.ItemID))
+	if len(requestOrder.ItemID) != len(requestOrder.Quantity) {
+		errReqItemIDNotEqualToReqQuantity := errors.New("item id must be equal length to quantity")
+		return helpers.CreateResponseError(app, http.StatusBadRequest, errReqItemIDNotEqualToReqQuantity)
+	}
 
-	requestOrderCart.ItemID = append(requestOrderCart.ItemID, requestOrder.ItemID...)
+	for index, itemID := range requestOrder.ItemID {
+		requestOrderCart.ItemIDWithQuantity[itemID] = requestOrder.Quantity[index]
+	}
 
-	var requestTransferOrder models.CreateTransferOrderRequest
-	requestTransferOrder.OrderID = requestOrder.ID
+	requestTransferOrder := models.CreateTransferOrderRequest{
+		OrderID: requestOrder.ID,
+	}
 
 	currentUser, err := helpers.GetSplitedToken(app)
 	if err != nil {

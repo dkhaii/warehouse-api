@@ -31,9 +31,9 @@ func (service *userExternalServiceImpl) CreateOrder(ctx context.Context, request
 	}
 
 	ocItemID := requestOrder.ItemID
-	for _, itemID := range ocItemID {
+	for index, itemID := range ocItemID {
 		requestOrderCart.OrderID = order.ID
-		requestOrderCart.ItemID = []uuid.UUID{itemID}
+		requestOrderCart.ItemIDWithQuantity = map[uuid.UUID]int{itemID: requestOrder.Quantity[index]}
 
 		err := service.orderCartService.Create(ctx, requestOrderCart)
 		if err != nil {
