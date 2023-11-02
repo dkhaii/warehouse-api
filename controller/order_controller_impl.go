@@ -22,26 +22,6 @@ func NewOrderController(orderService services.OrderService) OrderController {
 	}
 }
 
-// func (controller *orderControllerImpl) Create(app echo.Context) error {
-// 	var requestOrder models.CreateOrderRequest
-// 	err := app.Bind(&requestOrder)
-// 	if err != nil {
-// 		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
-// 	}
-
-// 	currentUserToken, err := helpers.GetSplitedToken(app)
-// 	if err != nil {
-// 		return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
-// 	}
-
-// 	response, err := controller.orderService.Create(app.Request().Context(), requestOrder, currentUserToken)
-// 	if err != nil {
-// 		return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
-// 	}
-
-// 	return helpers.CreateResponse(app, http.StatusCreated, response)
-// }
-
 func (controller *orderControllerImpl) GetOrder(app echo.Context) error {
 	var urlParam models.GetOrderByIDQueryRequest
 	err := app.Bind(&urlParam)

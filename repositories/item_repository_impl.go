@@ -239,6 +239,7 @@ func (repository *itemRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, it
 		itm.CategoryID,
 		itm.UserID,
 		itm.UpdatedAt,
+		itm.ID,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
