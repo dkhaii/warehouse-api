@@ -12,6 +12,7 @@ func ProtectedLocationRoutes(app *echo.Echo, controller controller.LocationContr
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
+	routes.Use(middlewares.AdminMiddleware())
 
 	routes.POST("/create", controller.Create)
 	routes.GET("/find", controller.GetLocation)

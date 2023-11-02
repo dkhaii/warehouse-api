@@ -171,6 +171,8 @@ func (repository *transferOrderRepositoryImpl) FindCompleteByOrderID(ctx context
 			&item.ID,
 			&item.Name,
 			&item.Description,
+			&item.Quantity,
+			&item.Quantity,
 			&item.Availability,
 			&item.CategoryID,
 		)

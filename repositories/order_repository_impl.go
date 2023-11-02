@@ -131,6 +131,8 @@ func (repository *orderRepositoryImpl) FindCompleteByID(ctx context.Context, ord
 			&item.ID,
 			&item.Name,
 			&item.Description,
+			&item.Quantity,
+			&item.Quantity,
 			&item.Availability,
 			&item.CategoryID,
 		)

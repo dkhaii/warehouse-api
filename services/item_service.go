@@ -13,6 +13,7 @@ type ItemService interface {
 	GetByID(ctx context.Context, itmID uuid.UUID) (models.GetItemResponse, error)
 	GetByName(ctx context.Context, name string) ([]models.GetItemResponse, error)
 	GetCompleteByID(ctx context.Context, itmID uuid.UUID) (models.GetCompleteItemResponse, error)
+	GetByCategoryName(ctx context.Context, ctgName string) ([]models.GetItemResponse, error)
 	Update(ctx context.Context, request models.UpdateItemRequest, currentUserToken string) (models.CreateItemResponse, error)
 	Delete(ctx context.Context, itmID uuid.UUID) error
 }

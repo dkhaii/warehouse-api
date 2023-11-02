@@ -226,6 +226,50 @@ func (repository *itemRepositoryImpl) FindCompleteByID(ctx context.Context, itmI
 	return &item, nil
 }
 
+func (repository *itemRepositoryImpl) FindByCategoryName(ctx context.Context, ctgName string) ([]*entity.Item, error) {
+	query := "SELECT * FROM items WHERE category_id LIKE ?"
+	ctgName = ctgName + "%"
+
+	rows, err := repository.database.QueryContext(ctx, query, ctgName)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, helpers.ErrItemNotFound
+		}
+		return nil, err
+	}
+	defer rows.Close()
+
+	var listOfItems []*entity.Item
+
+	for rows.Next() {
+		var item entity.Item
+
+		err := rows.Scan(
+			&item.ID,
+			&item.Name,
+			&item.Description,
+			&item.Quantity,
+			&item.Availability,
+			&item.CategoryID,
+			&item.UserID,
+			&item.CreatedAt,
+			&item.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		listOfItems = append(listOfItems, &item)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return listOfItems, nil
+}
+
 func (repository *itemRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, itm *entity.Item) error {
 	query := "UPDATE items SET name = ?, description = ?, quantity = ?, availability = ?, category_id = ?, user_id = ?, updated_at = ? WHERE id = ?"
 

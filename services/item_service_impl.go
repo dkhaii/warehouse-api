@@ -144,8 +144,8 @@ func (service *itemServiceImpl) GetByName(ctx context.Context, name string) ([]m
 
 	responses := make([]models.GetItemResponse, len(rows))
 
-	for key, item := range rows {
-		responses[key] = models.GetItemResponse{
+	for index, item := range rows {
+		responses[index] = models.GetItemResponse{
 			ID:           item.ID,
 			Name:         item.Name,
 			Description:  item.Description,
@@ -183,6 +183,31 @@ func (service *itemServiceImpl) GetCompleteByID(ctx context.Context, itmID uuid.
 	}
 
 	return response, nil
+}
+
+func (service *itemServiceImpl) GetByCategoryName(ctx context.Context, ctgName string) ([]models.GetItemResponse, error) {
+	rows, err := service.itemRepository.FindByCategoryName(ctx, ctgName)
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]models.GetItemResponse, len(rows))
+
+	for index, item := range rows {
+		responses[index] = models.GetItemResponse{
+			ID:           item.ID,
+			Name:         item.Name,
+			Description:  item.Description,
+			Quantity:     item.Quantity,
+			Availability: item.Availability,
+			CategoryID:   item.CategoryID,
+			UserID:       item.UserID,
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+		}
+	}
+
+	return responses, nil
 }
 
 func (service *itemServiceImpl) Update(ctx context.Context, request models.UpdateItemRequest, currentUserToken string) (models.CreateItemResponse, error) {

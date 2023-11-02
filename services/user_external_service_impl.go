@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/google/uuid"
@@ -12,15 +11,15 @@ type userExternalServiceImpl struct {
 	orderService         OrderService
 	orderCartService     OrderCartService
 	transferOrderService TransferOrderService
-	database             *sql.DB
+	itemService          ItemService
 }
 
-func NewUserExternalService(orderService OrderService, orderCartService OrderCartService, transferOrderService TransferOrderService, database *sql.DB) UserExternalService {
+func NewUserExternalService(orderService OrderService, orderCartService OrderCartService, transferOrderService TransferOrderService, itemService ItemService) UserExternalService {
 	return &userExternalServiceImpl{
 		orderService:         orderService,
 		orderCartService:     orderCartService,
 		transferOrderService: transferOrderService,
-		database:             database,
+		itemService:          itemService,
 	}
 }
 
@@ -48,4 +47,79 @@ func (service *userExternalServiceImpl) CreateOrder(ctx context.Context, request
 	}
 
 	return order, nil
+}
+
+func (service *userExternalServiceImpl) GetAllOrder(ctx context.Context, currentUserToken string) ([]models.GetOrderResponse, error) {
+	rows, err := service.orderService.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return rows, nil
+}
+
+func (service *userExternalServiceImpl) GetAllItem(ctx context.Context) ([]models.GetItemFilteredResponse, error) {
+	rows, err := service.itemService.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]models.GetItemFilteredResponse, len(rows))
+
+	for index, item := range rows {
+		responses[index] = models.GetItemFilteredResponse{
+			ID:           item.ID,
+			Name:         item.Name,
+			Description:  item.Description,
+			Quantity:     item.Quantity,
+			Availability: item.Availability,
+			CategoryID:   item.CategoryID,
+		}
+	}
+
+	return responses, nil
+}
+
+func (service *userExternalServiceImpl) FindItemByName(ctx context.Context, itmName string) ([]models.GetItemFilteredResponse, error) {
+	rows, err := service.itemService.GetByName(ctx, itmName)
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]models.GetItemFilteredResponse, len(rows))
+
+	for index, item := range rows {
+		responses[index] = models.GetItemFilteredResponse{
+			ID:           item.ID,
+			Name:         item.Name,
+			Description:  item.Description,
+			Quantity:     item.Quantity,
+			Availability: item.Availability,
+			CategoryID:   item.CategoryID,
+		}
+	}
+
+	return responses, nil
+}
+
+func (service *userExternalServiceImpl) FindItemByCategory(ctx context.Context, ctgName string) ([]models.GetItemFilteredResponse, error) {
+	rows, err := service.itemService.GetByCategoryName(ctx, ctgName)
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]models.GetItemFilteredResponse, len(rows))
+
+	for index, item := range rows {
+		responses[index] = models.GetItemFilteredResponse{
+			ID:           item.ID,
+			Name:         item.Name,
+			Description:  item.Description,
+			Quantity:     item.Quantity,
+			Availability: item.Availability,
+			CategoryID:   item.CategoryID,
+		}
+	}
+
+	return responses, nil
 }

@@ -25,6 +25,7 @@ type ItemFiltered struct {
 	ID           uuid.UUID `json:"id"`
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`
+	Quantity     int       `json:"quantity"`
 	Availability bool      `json:"availability"`
 	CategoryID   string    `json:"category_id"`
 }

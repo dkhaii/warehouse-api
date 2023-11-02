@@ -74,7 +74,7 @@ func (service *transferOrderServiceImpl) Create(ctx context.Context, request mod
 	return response, nil
 }
 
-func (service *transferOrderServiceImpl) FindAll(ctx context.Context) ([]models.GetTransferOrderResponse, error) {
+func (service *transferOrderServiceImpl) GetAll(ctx context.Context) ([]models.GetTransferOrderResponse, error) {
 	rows, err := service.transferOrderRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (service *transferOrderServiceImpl) FindAll(ctx context.Context) ([]models.
 	return responses, nil
 }
 
-func (service *transferOrderServiceImpl) FindByID(ctx context.Context, trfOrdID uuid.UUID) (models.GetTransferOrderResponse, error) {
+func (service *transferOrderServiceImpl) GetByID(ctx context.Context, trfOrdID uuid.UUID) (models.GetTransferOrderResponse, error) {
 	to, err := service.transferOrderRepository.FindByID(ctx, trfOrdID)
 	if err != nil {
 		return models.GetTransferOrderResponse{}, err
@@ -116,7 +116,7 @@ func (service *transferOrderServiceImpl) FindByID(ctx context.Context, trfOrdID 
 	return response, nil
 }
 
-func (service *transferOrderServiceImpl) FindCompleteByOrderID(ctx context.Context, ordID uuid.UUID) (models.GetCompleteTransferOrderResponse, error) {
+func (service *transferOrderServiceImpl) GetCompleteByOrderID(ctx context.Context, ordID uuid.UUID) (models.GetCompleteTransferOrderResponse, error) {
 	to, err := service.transferOrderRepository.FindCompleteByOrderID(ctx, ordID)
 	if err != nil {
 		return models.GetCompleteTransferOrderResponse{}, err

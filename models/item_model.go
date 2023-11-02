@@ -52,6 +52,15 @@ type GetItemResponse struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
+type GetItemFilteredResponse struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	Quantity     int       `json:"quantity"`
+	Availability bool      `json:"availability"`
+	CategoryID   string    `json:"category_id"`
+}
+
 type GetCompleteItemResponse struct {
 	ID           uuid.UUID                `json:"id"`
 	Name         string                   `json:"name"`

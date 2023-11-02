@@ -14,6 +14,7 @@ type ItemRepository interface {
 	FindByID(ctx context.Context, itmID uuid.UUID) (*entity.Item, error)
 	FindByName(ctx context.Context, name string) ([]*entity.Item, error)
 	FindCompleteByID(ctx context.Context, itmID uuid.UUID) (*entity.Item, error)
+	FindByCategoryName(ctx context.Context, ctgName string) ([]*entity.Item, error)
 	Update(ctx context.Context, tx *sql.Tx, item *entity.Item) error
 	Delete(ctx context.Context, tx *sql.Tx, itmID uuid.UUID) error
 }

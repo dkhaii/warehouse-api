@@ -33,7 +33,7 @@ func (controller *transferOrderControllerImpl) GetTransferOrder(app echo.Context
 	defer cancle()
 
 	if queryParam.ID != uuid.Nil {
-		response, err := controller.transferOrderService.FindByID(ctx, queryParam.ID)
+		response, err := controller.transferOrderService.GetByID(ctx, queryParam.ID)
 		if err != nil {
 			if err == context.DeadlineExceeded {
 				return helpers.CreateResponseError(app, http.StatusRequestTimeout, helpers.ErrRequestTimedOut)
@@ -44,7 +44,7 @@ func (controller *transferOrderControllerImpl) GetTransferOrder(app echo.Context
 	}
 
 	if queryParam.OrderID != uuid.Nil {
-		response, err := controller.transferOrderService.FindCompleteByOrderID(ctx, queryParam.OrderID)
+		response, err := controller.transferOrderService.GetCompleteByOrderID(ctx, queryParam.OrderID)
 		if err != nil {
 			if err == context.DeadlineExceeded {
 				return helpers.CreateResponseError(app, http.StatusRequestTimeout, helpers.ErrRequestTimedOut)
@@ -54,7 +54,7 @@ func (controller *transferOrderControllerImpl) GetTransferOrder(app echo.Context
 		return helpers.CreateResponse(app, http.StatusFound, response)
 	}
 
-	response, err := controller.transferOrderService.FindAll(ctx)
+	response, err := controller.transferOrderService.GetAll(ctx)
 	if err != nil {
 		if err == context.DeadlineExceeded {
 			return helpers.CreateResponseError(app, http.StatusRequestTimeout, helpers.ErrRequestTimedOut)
