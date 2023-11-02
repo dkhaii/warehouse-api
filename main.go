@@ -51,6 +51,7 @@ func main() {
 	locationController := controller.NewLocationController(locationService)
 	orderController := controller.NewOrderController(orderService)
 	userExternalController := controller.NewUserExternalController(userExternalService)
+	transferOrderController := controller.NewTransferOrderController(transferOrderService)
 
 	app := echo.New()
 
@@ -61,6 +62,7 @@ func main() {
 	routes.ProtectedCategoryRoutes(app, categoryController)
 	routes.ProtectedLocationRoutes(app, locationController)
 	routes.ProtectedOrderRoutes(app, orderController, userExternalController)
+	routes.ProtectedTransferOrderRoutes(app, transferOrderController)
 
 	app.Logger.Fatal(app.Start(":8080"))
 }

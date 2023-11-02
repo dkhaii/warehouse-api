@@ -106,18 +106,23 @@ func (repository *transferOrderRepositoryImpl) FindByID(ctx context.Context, trf
 	return &to, nil
 }
 
-func (repository *transferOrderRepositoryImpl) FindCompleteByID(ctx context.Context, trfOrdID uuid.UUID) (*entity.TransferOrder, error) {
+func (repository *transferOrderRepositoryImpl) FindCompleteByOrderID(ctx context.Context, ordID uuid.UUID) (*entity.TransferOrder, error) {
 	var to entity.TransferOrder
 	var order entity.Order
+	var orderUser entity.UserFiltered
 
 	query := `
-		SELECT to.*, o.*
-		FROM transfer_orders to
-		LEFT JOIN orders o ON o.id = to.order_id
-		WHERE to.id = ?
+		SELECT 
+			trford.*,
+			o.*,
+			u.username, u.contact
+		FROM transfer_orders trford
+		LEFT JOIN orders o ON o.id = trford.order_id
+		LEFT JOIN users u ON u.id = o.user_id
+		WHERE trford.order_id = ?
 	`
 
-	err := repository.database.QueryRowContext(ctx, query, trfOrdID).Scan(
+	err := repository.database.QueryRowContext(ctx, query, ordID).Scan(
 		&to.ID,
 		&to.OrderID,
 		&to.UserID,
@@ -130,6 +135,8 @@ func (repository *transferOrderRepositoryImpl) FindCompleteByID(ctx context.Cont
 		&order.Notes,
 		&order.RequestTransferDate,
 		&order.CreatedAt,
+		&orderUser.Username,
+		&orderUser.Contact,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -138,17 +145,20 @@ func (repository *transferOrderRepositoryImpl) FindCompleteByID(ctx context.Cont
 		return nil, err
 	}
 
+	to.Order = &order
+	to.Order.User = &orderUser
+
 	var items []entity.ItemFiltered
 
 	query2 := `
 		SELECT i.id, i.name, i.description, i.availability, i.category_id
-		FROM items i
-		LEFT JOIN order_carts oc ON i.id = oc.item_id
-		LEFT JOIN order o ON o.id = oc.order_id
-		WHERE o.id = ?
+		FROM order_carts oc
+		LEFT JOIN orders o ON o.id = oc.order_id
+		LEFT JOIN items i ON i.id = oc.item_id
+		WHERE oc.order_id = ?
 	`
 
-	rows, err := repository.database.QueryContext(ctx, query2, order.ID)
+	rows, err := repository.database.QueryContext(ctx, query2, to.OrderID)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +181,6 @@ func (repository *transferOrderRepositoryImpl) FindCompleteByID(ctx context.Cont
 		items = append(items, item)
 	}
 
-	to.Order = &order
 	to.Order.Items = items
 
 	return &to, nil
@@ -185,7 +194,7 @@ func (repository *transferOrderRepositoryImpl) Update(ctx context.Context, tx *s
 	`
 
 	_, err := tx.ExecContext(
-		ctx, 
+		ctx,
 		query,
 		trfOrd.UserID,
 		trfOrd.Status,

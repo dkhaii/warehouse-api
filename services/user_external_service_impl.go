@@ -42,7 +42,7 @@ func (service *userExternalServiceImpl) CreateOrder(ctx context.Context, request
 	}
 
 	requestTransferOrder.OrderID = order.ID
-	_, err = service.transferOrderService.Create(ctx, requestTransferOrder, currentUserToken)
+	_, err = service.transferOrderService.Create(ctx, requestTransferOrder)
 	if err != nil {
 		return models.CreateOrderResponse{}, err
 	}

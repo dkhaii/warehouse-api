@@ -25,25 +25,25 @@ func NewTransferOrderService(transferOrderRepository repositories.TransferOrderR
 	}
 }
 
-func (service *transferOrderServiceImpl) Create(ctx context.Context, request models.CreateTransferOrderRequest, currenUserToken string) (models.CreateTransferOrderResponse, error) {
+func (service *transferOrderServiceImpl) Create(ctx context.Context, request models.CreateTransferOrderRequest) (models.CreateTransferOrderResponse, error) {
 	tx, err := service.database.Begin()
 	if err != nil {
 		return models.CreateTransferOrderResponse{}, err
 	}
 	defer helpers.CommitOrRollBack(tx)
 
-	config, err := config.Init()
-	if err != nil {
-		return models.CreateTransferOrderResponse{}, err
-	}
+	// config, err := config.Init()
+	// if err != nil {
+	// 	return models.CreateTransferOrderResponse{}, err
+	// }
 
-	currentUser, err := helpers.GetUserClaimsFromToken(currenUserToken, config.GetString("JWT_SECRET"))
-	if err != nil {
-		return models.CreateTransferOrderResponse{}, err
-	}
+	// currentUser, err := helpers.GetUserClaimsFromToken(currenUserToken, config.GetString("JWT_SECRET"))
+	// if err != nil {
+	// 	return models.CreateTransferOrderResponse{}, err
+	// }
 
 	toID := uuid.New()
-	userID := currentUser.ID
+	userID := uuid.Nil
 	status := "Pending"
 	timeLayout := "2006-01-02T15:04:05.999Z"
 	fulfilledDate, err := time.Parse(timeLayout, timeLayout)
@@ -60,7 +60,7 @@ func (service *transferOrderServiceImpl) Create(ctx context.Context, request mod
 	transferOrder := entity.TransferOrder{
 		ID:            toID,
 		OrderID:       request.OrderID,
-		UserID:        userID,
+		UserID:        request.UserID,
 		Status:        status,
 		FulfilledDate: fulfilledDate,
 		CreatedAt:     CreatedAt,
@@ -127,10 +127,10 @@ func (service *transferOrderServiceImpl) FindByID(ctx context.Context, trfOrdID 
 	return response, nil
 }
 
-func (service *transferOrderServiceImpl) FindCompleteByID(ctx context.Context, trfOrdID uuid.UUID) (models.GetCompleteTransferOrderResponse, error) {
-	to, err := service.transferOrderRepository.FindCompleteByID(ctx, trfOrdID)
+func (service *transferOrderServiceImpl) FindCompleteByOrderID(ctx context.Context, ordID uuid.UUID) (models.GetCompleteTransferOrderResponse, error) {
+	to, err := service.transferOrderRepository.FindCompleteByOrderID(ctx, ordID)
 	if err != nil {
-		return models.GetCompleteTransferOrderResponse{}, nil
+		return models.GetCompleteTransferOrderResponse{}, err
 	}
 
 	response := models.GetCompleteTransferOrderResponse{

@@ -115,7 +115,8 @@ func (repository *itemRepositoryImpl) FindByID(ctx context.Context, itmID uuid.U
 }
 
 func (repository *itemRepositoryImpl) FindByName(ctx context.Context, name string) ([]*entity.Item, error) {
-	query := "SELECT * FROM items WHERE name = ?"
+	query := "SELECT * FROM items WHERE name LIKE ?"
+	name = name + "%"
 
 	rows, err := repository.database.QueryContext(ctx, query, name)
 	if err != nil {
@@ -164,7 +165,9 @@ func (repository *itemRepositoryImpl) FindCompleteByID(ctx context.Context, itmI
 	var user entity.UserFiltered
 
 	query := `
-		SELECT i.*, c.id, c.name, c.description, u.username, u.contact
+		SELECT 
+			i.*,
+			c.id, c.name, c.description, u.username, u.contact
 		FROM items i
 		LEFT JOIN categories c ON c.id = i.category_id
 		LEFT JOIN users u ON u.id = i.user_id

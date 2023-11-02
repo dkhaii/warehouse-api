@@ -144,7 +144,7 @@ func (repository *categoryRepositoryImpl) FindByName(ctx context.Context, name s
 	return listOfCategories, nil
 }
 
-func (repository *categoryRepositoryImpl) FindByIDWithJoin(ctx context.Context, ctgID string) (*entity.Category, error) {
+func (repository *categoryRepositoryImpl) FindCompleteByID(ctx context.Context, ctgID string) (*entity.Category, error) {
 	var category entity.Category
 	var location entity.Location
 
