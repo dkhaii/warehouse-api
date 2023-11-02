@@ -32,21 +32,10 @@ func (service *transferOrderServiceImpl) Create(ctx context.Context, request mod
 	}
 	defer helpers.CommitOrRollBack(tx)
 
-	// config, err := config.Init()
-	// if err != nil {
-	// 	return models.CreateTransferOrderResponse{}, err
-	// }
-
-	// currentUser, err := helpers.GetUserClaimsFromToken(currenUserToken, config.GetString("JWT_SECRET"))
-	// if err != nil {
-	// 	return models.CreateTransferOrderResponse{}, err
-	// }
-
 	toID := uuid.New()
 	userID := uuid.Nil
 	status := "Pending"
-	timeLayout := "2006-01-02T15:04:05.999Z"
-	fulfilledDate, err := time.Parse(timeLayout, timeLayout)
+	fulfilledDate, err := helpers.DefaultNullTime()
 	if err != nil {
 		return models.CreateTransferOrderResponse{}, err
 	}
@@ -175,10 +164,14 @@ func (service *transferOrderServiceImpl) Update(ctx context.Context, request mod
 	}
 
 	updatedAt := time.Now()
+	fulfilledDate, err := helpers.DefaultNullTime()
+	if err != nil {
+		return models.CreateTransferOrderResponse{}, err
+	}
 	request.ID = to.ID
 	request.OrderID = to.OrderID
 	request.UserID = currentUser.ID
-	request.FulfilledDate = time.Time{}
+	request.FulfilledDate = fulfilledDate
 	request.CreatedAt = to.CreatedAt
 	request.UpdatedAt = updatedAt
 

@@ -189,7 +189,7 @@ func (repository *transferOrderRepositoryImpl) FindCompleteByOrderID(ctx context
 func (repository *transferOrderRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, trfOrd *entity.TransferOrder) (*entity.TransferOrder, error) {
 	query := `
 		UPDATE transfer_orders
-		SET user_id = ?, status = ?, filled_date = ?, update_at = ?
+		SET user_id = ?, status = ?, fulfilled_date = ?, updated_at = ?
 		WHERE id = ?
 	`
 
