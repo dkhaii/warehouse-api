@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func ProtectedLocationRoutes(app *echo.Echo, controller controller.LocationController) {
-	routes := app.Group("/api/v1/auth/location")
+func AdminUserLocationRoutes(app *echo.Echo, controller controller.LocationController) {
+	routes := app.Group("/api/v1/admin/location")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
@@ -18,4 +18,14 @@ func ProtectedLocationRoutes(app *echo.Echo, controller controller.LocationContr
 	routes.GET("/find", controller.GetLocation)
 	routes.PUT("/update/:id", controller.Update)
 	routes.DELETE("/delete/:id", controller.Delete)
+}
+
+func StaffUserLocationRoutes(app *echo.Echo, controller controller.LocationController) {
+	routes := app.Group("/api/v1/staff/location")
+	routes.Use(middleware.Logger())
+	routes.Use(middleware.Recover())
+	routes.Use(middlewares.JWTMiddleware())
+	routes.Use(middlewares.StaffMiddleware())
+
+	routes.GET("/find", controller.GetLocation)
 }

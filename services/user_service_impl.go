@@ -226,7 +226,7 @@ func (service *userServiceImpl) Login(ctx context.Context, request models.LoginU
 
 		jwtSecret := config.GetString("JWT_SECRET")
 
-		token, err := helpers.CreateAccessToken(user, jwtSecret, 24)
+		token, err := helpers.CreateAccessToken(user, jwtSecret, 2)
 		if err != nil {
 			return models.TokenResponse{}, err
 		}

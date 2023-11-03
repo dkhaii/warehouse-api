@@ -7,12 +7,23 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func ProtectedOrderRoutes(app *echo.Echo, ctrlOrder controller.OrderController, ctrlUserExternal controller.UserExternalController) {
+func ExternalUserOrderRoutes(app *echo.Echo, controller controller.UserExternalController) {
 	routes := app.Group("/api/v1/auth/order")
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
+	routes.Use(middlewares.ExternalMiddleware())
 
-	routes.POST("/create", ctrlUserExternal.CreateOrder)
-	routes.GET("/find", ctrlOrder.GetOrder)
+	routes.POST("/create", controller.CreateOrder)
+	routes.GET("/find", controller.GetAllOrder)
+}
+
+func StaffUserOrderRoutes(app *echo.Echo, controller controller.OrderController) {
+	routes := app.Group("/api/v1/staff/order")
+	routes.Use(middleware.Logger())
+	routes.Use(middleware.Recover())
+	routes.Use(middlewares.JWTMiddleware())
+	routes.Use(middlewares.ExternalMiddleware())
+
+	routes.POST("/find", controller.GetOrder)
 }

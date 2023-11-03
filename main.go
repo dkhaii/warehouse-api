@@ -5,6 +5,7 @@ import (
 
 	"github.com/dkhaii/warehouse-api/config"
 	"github.com/dkhaii/warehouse-api/controller"
+	"github.com/dkhaii/warehouse-api/database/seeder"
 	"github.com/dkhaii/warehouse-api/repositories"
 	"github.com/dkhaii/warehouse-api/routes"
 	"github.com/dkhaii/warehouse-api/services"
@@ -13,13 +14,28 @@ import (
 )
 
 func main() {
+	// configuration initialization
 	configuration, err := config.Init()
 	if err != nil {
 		fmt.Println("error:", err)
 		return
 	}
 
+	// database initialization
 	database, err := config.NewMySQLDatabase(configuration)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
+	// database seeder
+	err = seeder.RolesSeed(database)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
+	err = seeder.AdminUserSeed(database)
 	if err != nil {
 		fmt.Println("error:", err)
 		return
@@ -42,7 +58,7 @@ func main() {
 	transferOrderService := services.NewTransferOrderService(transferOrderRepository, database)
 	orderService := services.NewOrderService(orderRepository, orderCartRepository, transferOrderRepository, database)
 	orderCartService := services.NewOrderCartService(orderCartRepository, database)
-	userExternalService := services.NewUserExternalService(orderService, orderCartService, transferOrderService, database)
+	userExternalService := services.NewUserExternalService(orderService, orderCartService, transferOrderService, itemService)
 
 	// controller dependency injection
 	userController := controller.NewUserController(userService)
@@ -57,12 +73,19 @@ func main() {
 
 	// router
 	routes.PublicUserRoutes(app, userController)
-	routes.ProtectedUserRoutes(app, userController)
-	routes.ProtectedItemRoutes(app, itemController)
-	routes.ProtectedCategoryRoutes(app, categoryController)
-	routes.ProtectedLocationRoutes(app, locationController)
-	routes.ProtectedOrderRoutes(app, orderController, userExternalController)
-	routes.ProtectedTransferOrderRoutes(app, transferOrderController)
+
+	routes.AdminUserRoutes(app, userController)
+	routes.AdminUserLocationRoutes(app, locationController)
+	routes.AdminUserCategoryRoutes(app, categoryController)
+
+	routes.StaffUserItemRoutes(app, itemController)
+	routes.StaffUserCategoryRoutes(app, categoryController)
+	routes.StaffUserLocationRoutes(app, locationController)
+	routes.StaffUserOrderRoutes(app, orderController)
+	routes.StaffUserTransferOrderRoutes(app, transferOrderController)
+
+	routes.ExternalUserItemRoutes(app, userExternalController)
+	routes.ExternalUserOrderRoutes(app, userExternalController)
 
 	app.Logger.Fatal(app.Start(":8080"))
 }

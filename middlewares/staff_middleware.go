@@ -46,7 +46,7 @@ func StaffMiddleware() echo.MiddlewareFunc {
 				return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
 			}
 
-			if currentUser.RoleID == 2 {
+			if currentUser.RoleID == 1 || currentUser.RoleID == 2 {
 				return next(app)
 			}
 

@@ -36,6 +36,11 @@ type GetItemRequest struct {
 	Name string    `query:"name"`
 }
 
+type GetItemByNameCategoryRequest struct {
+	Name     string `query:"name"`
+	Category string `query:"category"`
+}
+
 type GetItemByIDParamRequest struct {
 	ID uuid.UUID `param:"id"`
 }

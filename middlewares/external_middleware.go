@@ -46,7 +46,7 @@ func ExternalMiddleware() echo.MiddlewareFunc {
 				return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
 			}
 
-			if currentUser.RoleID == 3 {
+			if currentUser.RoleID == 1 || currentUser.RoleID == 3 {
 				return next(app)
 			}
 

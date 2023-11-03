@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/dkhaii/warehouse-api/helpers"
 	"github.com/dkhaii/warehouse-api/models"
@@ -57,4 +59,65 @@ func (controller *userExternalControllerImpl) CreateOrder(app echo.Context) erro
 	}
 
 	return helpers.CreateResponse(app, http.StatusCreated, response)
+}
+
+func (controller *userExternalControllerImpl) GetAllOrder(app echo.Context) error {
+	ctx, cancle := context.WithTimeout(app.Request().Context(), 30*time.Second)
+	defer cancle()
+
+	currentUser, err := helpers.GetSplitedToken(app)
+	if err != nil {
+		return helpers.CreateResponseError(app, http.StatusUnauthorized, err)
+	}
+
+	responses, err := controller.userExternalService.GetAllOrder(ctx, currentUser)
+	if err != nil {
+		if err == context.DeadlineExceeded {
+			return helpers.CreateResponseError(app, http.StatusRequestTimeout, helpers.ErrRequestTimedOut)
+		}
+		return helpers.CreateResponseError(app, http.StatusNotFound, err)
+	}
+	return helpers.CreateResponse(app, http.StatusFound, responses)
+}
+
+func (controller *userExternalControllerImpl) GetItem(app echo.Context) error {
+	var queryParam models.GetItemByNameCategoryRequest
+	err := app.Bind(&queryParam)
+	if err != nil {
+		return helpers.CreateResponseError(app, http.StatusBadRequest, err)
+	}
+
+	ctx, cancle := context.WithTimeout(app.Request().Context(), 30*time.Second)
+	defer cancle()
+
+	if queryParam.Name != "" {
+		responses, err := controller.userExternalService.FindItemByName(ctx, queryParam.Name)
+		if err != nil {
+			if err == context.DeadlineExceeded {
+				return helpers.CreateResponseError(app, http.StatusRequestTimeout, helpers.ErrRequestTimedOut)
+			}
+			return helpers.CreateResponseError(app, http.StatusNotFound, err)
+		}
+		return helpers.CreateResponse(app, http.StatusFound, responses)
+	}
+
+	if queryParam.Category != "" {
+		responses, err := controller.userExternalService.FindItemByCategory(ctx, queryParam.Category)
+		if err != nil {
+			if err == context.DeadlineExceeded {
+				return helpers.CreateResponseError(app, http.StatusRequestTimeout, helpers.ErrRequestTimedOut)
+			}
+			return helpers.CreateResponseError(app, http.StatusNotFound, err)
+		}
+		return helpers.CreateResponse(app, http.StatusFound, responses)
+	}
+
+	responses, err := controller.userExternalService.GetAllItem(ctx)
+	if err != nil {
+		if err == context.DeadlineExceeded {
+			return helpers.CreateResponseError(app, http.StatusRequestTimeout, helpers.ErrRequestTimedOut)
+		}
+		return helpers.CreateResponseError(app, http.StatusNotFound, err)
+	}
+	return helpers.CreateResponse(app, http.StatusFound, responses)
 }
