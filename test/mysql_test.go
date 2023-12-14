@@ -26,6 +26,18 @@ func (c mockConfig) GetInt(key string) int {
 	// return 0
 }
 
+func (c mockConfig) GetCloudENV(key string) string {
+    // Mengembalikan nilai default berdasarkan key jika diperlukan
+    switch key {
+    case "PORT":
+        return "8080" // Nilai port default untuk pengujian
+    case "DB_USERNAME":
+        return "testuser" // Nilai username database default untuk pengujian
+    default:
+        return "" // Mengembalikan string kosong untuk kunci yang tidak diatur dalam pengujian
+    }
+}
+
 func TestNewMySQLDatabase(t *testing.T) {
 	type testCase struct {
 		name          string
@@ -40,7 +52,7 @@ func TestNewMySQLDatabase(t *testing.T) {
 				values: map[string]string{
 					"DB_USERNAME": "root",
 					"DB_PASSWORD": "",
-					"DB_HOST":     "127.0.0.1",
+					"DB_HOST":     "0.0.0.0",
 					"DB_PORT":     "3306",
 					"DB_DATABASE": "cozy_warehouse",
 				},
@@ -53,7 +65,7 @@ func TestNewMySQLDatabase(t *testing.T) {
 				values: map[string]string{
 					"DB_USERNAME": "root",
 					"DB_PASSWORD": "",
-					"DB_HOST":     "127.0.0.1",
+					"DB_HOST":     "0.0.0.0",
 					"DB_PORT":     "3306",
 					"DB_DATABASE": "cozy_warehouse",
 				},

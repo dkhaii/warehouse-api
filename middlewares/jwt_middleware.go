@@ -1,7 +1,9 @@
 package middlewares
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/dkhaii/warehouse-api/config"
@@ -34,12 +36,22 @@ func JWTMiddleware() echo.MiddlewareFunc {
 
 			tokenString = splitToken[1]
 
-			config, err := config.Init()
+			cfg, err := config.Init()
 			if err != nil {
 				return err
 			}
 
-			jwtSecret := config.GetString("JWT_SECRET")
+			appENV := cfg.GetString("APP_ENV")
+			var jwtSecret string
+
+			switch appENV {
+			case "development":
+				jwtSecret = cfg.GetString("JWT_SECRET")
+			case "production":
+				jwtSecret = os.Getenv("JWT_SECRET")
+			default:
+				log.Fatalf("unknown environment")
+			}
 
 			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 				return []byte(jwtSecret), nil

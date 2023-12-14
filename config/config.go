@@ -9,7 +9,7 @@ type Config interface {
 	GetInt(key string) int
 }
 
-type configImpl struct{
+type configImpl struct {
 	viper *viper.Viper
 }
 

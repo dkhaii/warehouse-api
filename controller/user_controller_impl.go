@@ -22,6 +22,14 @@ func NewUserController(userService services.UserService) UserController {
 	}
 }
 
+// @Summary Create an user endpoint
+// @Tags users
+// @Accept json
+// @Produce json
+// @Router /admin/users/register [post]
+// @Param request body CreateUserRequest true "Payload Body [RAW]"
+// @Success 201 {object} models.CreateUserResponse
+// @Failure 
 func (controller *userControllerImpl) Create(app echo.Context) error {
 	var request models.CreateUserRequest
 	err := app.Bind(&request)
