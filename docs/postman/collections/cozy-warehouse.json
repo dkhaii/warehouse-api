@@ -1,0 +1,1171 @@
+{
+	"info": {
+		"_postman_id": "6eac0771-b640-4f43-a4c5-551f1e42c733",
+		"name": "cozy-warehouse",
+		"description": "RESTful API dari sebuah aplikasi inventory untuk keperluan pencatatan bahan baku kosmetik",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "24680518-6eac0771-b640-4f43-a4c5-551f1e42c733"
+	},
+	"item": [
+		{
+			"name": "[USER] Login",
+			"id": "4a016190-1665-4f32-b73b-272cc9070042",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/users/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] Register",
+			"id": "6027171d-1ae8-4279-9888-bda6846ac2e8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3NGEwODM1LWMxODMtNDUyNy1iZTU5LTQ0NmViYzhmYjc1NyIsInVzZXJuYW1lIjoiZ2VyaW4iLCJjb250YWN0IjoiZ2VyaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MywiZXhwIjoxNjk5MDg2MDcxfQ.N7WSS0hSE9pp8yGQg2YYn3x1nrPf_e0kDmQPVZlveRY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"gerin\",\r\n    \"password\": \"gerin123\",\r\n    \"contact\": \"gerin@gmail.com\",\r\n    \"role_id\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/admin/users/register",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Find User By Query Params",
+			"id": "545fee6a-b4a8-469b-9410-2624f2c2d56e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZlNGEyOTJhLTY2NzgtNDYzNC1hOWQ2LTZkNjgwMTJkNWMyZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW4iLCJyb2xlX2lkIjoxLCJleHAiOjE3MDI1NTA4ODV9.C1bJWXtm6c5cdmjQ-iCxE_mZ2NFuVCYkl3NR6zawRf4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNhNzRlNzViLWIwMzMtNGJmZC1iNTQ2LWM5ZTllODYzNjViMyIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4MjU3MzgwfQ.RLu76BTbEyZO61ITH67CWB005oGFxWRVM8timdd5fBo",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{url}}/api/v1/admin/users/find",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"users",
+						"find"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "admin",
+							"disabled": true
+						},
+						{
+							"key": "id",
+							"value": "87e9b0fc-9c44-43b4-87e0-bc4e765d1503",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Update User By ID",
+			"id": "4b995aed-f81f-41ee-a7d2-5f610e7737a9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhYWM2M2I2LTg5NGQtNDQ0NC04MmZmLTM1Yjk4YTQ0OTVhMCIsInVzZXJuYW1lIjoiZ2VyaW4iLCJjb250YWN0IjoiZ2VyaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk3ODkwNDUyfQ.y5ZqHgIYDqNdMj7mJdsUwPBC98emOoj23VJ2eJhy_fI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"gerin\",\r\n    \"password\": \"riris123\",\r\n    \"contact\": \"riris@gmail.com\",\r\n    \"role_id\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/admin/users/update/faac63b6-894d-4444-82ff-35b98a4495a0",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"users",
+						"update",
+						"faac63b6-894d-4444-82ff-35b98a4495a0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Delete User By ID",
+			"id": "79d7fd8b-3de4-4a19-ac53-d21499bf50a6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhYWM2M2I2LTg5NGQtNDQ0NC04MmZmLTM1Yjk4YTQ0OTVhMCIsInVzZXJuYW1lIjoiZ2VyaW4iLCJjb250YWN0IjoiZ2VyaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk3ODkwNDUyfQ.y5ZqHgIYDqNdMj7mJdsUwPBC98emOoj23VJ2eJhy_fI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/admin/users/delete/3588a70f-e5b2-4f07-be09-b209112d7ec7",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"users",
+						"delete",
+						"3588a70f-e5b2-4f07-be09-b209112d7ec7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Create Category",
+			"id": "e9ea2806-20ff-40e5-bd8b-4ce061e683aa",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"KRG-57\",\r\n    \"name\": \"dfghfghfgh\",\r\n    \"description\": \"biasanya di isi sama basahsdf boy\",\r\n    \"location_id\": \"E56\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/admin/category/create",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"category",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Find Category",
+			"id": "22d82f1e-1d37-4c05-a326-2f8885749944",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhmMWM5YjEyLWFlNmYtNDdhMC1iY2FiLTc4MzQ5YWY5YTUyZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQwMDIxfQ.oZyGXv7kaYKQ_8WoSSxod_vM1mmaRSH0HdwpeJSM5sM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/admin/category/find?id=KRG-55",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"category",
+						"find"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "KRG-55"
+						},
+						{
+							"key": "name",
+							"value": "kering",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Find Category",
+			"id": "5b5321d3-db1b-4fc2-916a-ed75131b1672",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhmMWM5YjEyLWFlNmYtNDdhMC1iY2FiLTc4MzQ5YWY5YTUyZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQwMDIxfQ.oZyGXv7kaYKQ_8WoSSxod_vM1mmaRSH0HdwpeJSM5sM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/staff/category/find?id=KRG-55",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"category",
+						"find"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "KRG-55"
+						},
+						{
+							"key": "name",
+							"value": "kering",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Update Category",
+			"id": "d0190403-a011-41e4-9ec3-424f851f6685",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OTRiNmFiLTVmMGEtNGFiMi05MTE2LThiN2NkMmM4OWFkNCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6MSwiZXhwIjoxNjk3NTY4OTY3fQ.PICa4EuVgYPK6qnvJ6o6dfgEa0FtZTigA-Cik1WxaLA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"basah kuyp\",\r\n    \"description\": \"asdklflasjf\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/admin/category/update/BSH-54",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"category",
+						"update",
+						"BSH-54"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Delete Category",
+			"id": "5b86ce6d-80a8-4f60-8545-933d5b058c02",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OTRiNmFiLTVmMGEtNGFiMi05MTE2LThiN2NkMmM4OWFkNCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6MSwiZXhwIjoxNjk3NTY4OTY3fQ.PICa4EuVgYPK6qnvJ6o6dfgEa0FtZTigA-Cik1WxaLA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/admin/category/delete/GG-12",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"category",
+						"delete",
+						"GG-12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Create Location",
+			"id": "584244bf-e071-4151-8411-3f22a97a1e75",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMzNjk1NWE5LTk0MDYtNDI0OS1iZmIwLWNmYzM3NGZjYWYxYSIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk5MDI1MTg2fQ.m8dUZpbN4kxkCLpzkct3gFOt5sr8YIgIsYTMVeaQu8M",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"E55\",\r\n    \"description\": \"kusus bahan basah\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/admin/location/create",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"location",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Find Location",
+			"id": "4662efd4-2b0e-4360-8ebb-7715dd4b587f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhmMWM5YjEyLWFlNmYtNDdhMC1iY2FiLTc4MzQ5YWY5YTUyZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQwMDIxfQ.oZyGXv7kaYKQ_8WoSSxod_vM1mmaRSH0HdwpeJSM5sM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/admin/location/find?id=E55",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"location",
+						"find"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "E55"
+						},
+						{
+							"key": "id",
+							"value": "E56",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Find Location",
+			"id": "c42f88b7-905a-4832-88ec-c25bbc51dc2b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhmMWM5YjEyLWFlNmYtNDdhMC1iY2FiLTc4MzQ5YWY5YTUyZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQwMDIxfQ.oZyGXv7kaYKQ_8WoSSxod_vM1mmaRSH0HdwpeJSM5sM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/staff/location/find?id=E55",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"location",
+						"find"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "E55"
+						},
+						{
+							"key": "id",
+							"value": "E56",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Update Location",
+			"id": "c4eea089-66c5-4888-babb-a81a14a0dcd4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA1OGRhMTBhLWRhNTEtNGM0NS1hM2U3LTBhNWVhMGE0NzU0ZCIsInVzZXJuYW1lIjoiZ2VyaW4iLCJjb250YWN0IjoiZ2VyaW5AZ21haWwuY29tIiwicm9sZSI6MSwiZXhwIjoxNjk3NzA3MDM3fQ.BFBHeQ73e7vT18OrrPtixOz_dtTw9IMZhm8a6_WImzo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"category_id\": \"KRG-55\",\r\n    \"description\": \"basah-basahan\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/admin/location/update/RAK-55",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"location",
+						"update",
+						"RAK-55"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "RAK-55",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ADMIN] Delete Location",
+			"id": "ced76cfa-cabc-48ab-814f-3cb8dc12867d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA1OGRhMTBhLWRhNTEtNGM0NS1hM2U3LTBhNWVhMGE0NzU0ZCIsInVzZXJuYW1lIjoiZ2VyaW4iLCJjb250YWN0IjoiZ2VyaW5AZ21haWwuY29tIiwicm9sZSI6MSwiZXhwIjoxNjk3NzA3MDM3fQ.BFBHeQ73e7vT18OrrPtixOz_dtTw9IMZhm8a6_WImzo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/admin/location/delete/RAK-56",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"location",
+						"delete",
+						"RAK-56"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Create Item",
+			"id": "dce047f7-e781-48ea-a629-3bf1ccf3b175",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Air\",\r\n    \"description\": \"yaa ini Air\",\r\n    \"quantity\": 10,\r\n    \"availability\": true,\r\n    \"category_id\": \"KRG-56\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/staff/item/create",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"item",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Find Item",
+			"id": "90f27b1f-7e0f-4e1b-8ea1-0212c7bbd94c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTk0ODkzfQ.HuSk60KizDljPSC9QJ_9WfS4t8Sxo9PNRlCuG51g0kU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/staff/item/find",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"item",
+						"find"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] Find Item",
+			"id": "8b401483-d3fb-46a1-b829-707c5da09533",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTk0ODkzfQ.HuSk60KizDljPSC9QJ_9WfS4t8Sxo9PNRlCuG51g0kU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/auth/item/find",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"item",
+						"find"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Find Complete Item By ID",
+			"id": "155863ce-0892-4922-a580-4dfceb28be10",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhmMWM5YjEyLWFlNmYtNDdhMC1iY2FiLTc4MzQ5YWY5YTUyZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQwMDIxfQ.oZyGXv7kaYKQ_8WoSSxod_vM1mmaRSH0HdwpeJSM5sM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/staff/item/find/d88e8d5a-d3b2-4e28-ae69-68b7eb4760f7",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"item",
+						"find",
+						"d88e8d5a-d3b2-4e28-ae69-68b7eb4760f7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Update Item",
+			"id": "1dcfed23-08b1-40e3-9fa4-56989737c334",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"sarang walet\",\r\n    \"description\": \"yaa ini sarang walet\",\r\n    \"quantity\": 20,\r\n    \"availability\": true,\r\n    \"category_id\": \"KRG-56\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/staff/item/update/09fffe95-0fe0-44db-b10b-2d2fd44bbf3b",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"item",
+						"update",
+						"09fffe95-0fe0-44db-b10b-2d2fd44bbf3b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Delete Item",
+			"id": "1acde475-e2aa-4a48-baa6-dad5ffb6a31e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTk0ODkzfQ.HuSk60KizDljPSC9QJ_9WfS4t8Sxo9PNRlCuG51g0kU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/staff/item/delete/09fffe95-0fe0-44db-b10b-2d2fd44bbf3b",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"item",
+						"delete",
+						"09fffe95-0fe0-44db-b10b-2d2fd44bbf3b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] Create Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "236e4a42-977c-4afd-8b95-fb3f17f61c7b",
+						"exec": [
+							"// let current = new Date();\r",
+							"// let year = current.getFullYear();\r",
+							"// let month = current.getMonth() + 1;\r",
+							"// let day = current.getDate();\r",
+							"// let cDate = year + '/' + month + '/' + day;\r",
+							"\r",
+							"// pm.environment.set(\"current_date\", cDate);\r",
+							"\r",
+							"// const moment = require('moment');\r",
+							"// pm.environment.set(\"current_date\", moment());\r",
+							"\r",
+							"// const dateNow= new Date();\r",
+							"// pm.environment.set(\"current_date\", dateNow.toISOString());\r",
+							"\r",
+							"// const dateNow = new Date();\r",
+							"// const jsonDateNow = JSON.stringify(dateNow);\r",
+							"// pm.environment.set(\"current_date\", jsonDateNow);\r",
+							"\r",
+							"// const dateNow = new Date();\r",
+							"// const isoDate = dateNow.toISOString().split('T')[0];\r",
+							"// const jsonDate = JSON.stringify(isoDate)\r",
+							"// pm.environment.set(\"current_date\", jsonDate);\r",
+							"\r",
+							"const dateNow = new Date();\r",
+							"const isoDate = dateNow.toISOString();\r",
+							"const jsonDate = JSON.stringify(isoDate)\r",
+							"pm.environment.set(\"current_date\", jsonDate);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "95140153-6fad-4efd-897b-866857dc6df0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"item_id\": [\r\n        \"9e8405e5-3b1c-462d-9730-b0229d84841c\",\r\n        \"8c6549dc-cfea-426b-ab70-5520264299a9\"\r\n    ],\r\n    \"quantity\": [\r\n        2,\r\n        4\r\n    ],\r\n    \"notes\": \"cepet yaa\",\r\n    \"request_transfer_date\": {{current_date}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/auth/order/create",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"order",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] Find Order",
+			"id": "34b96ee3-5894-4028-8f97-84e6080cb4ce",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/auth/order/find",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"order",
+						"find"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "560d82fd-c695-4538-b857-b554b60174e2",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Find Order",
+			"id": "b957bd22-5faf-4764-b4e9-bf2603f1acb0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/staff/order/find",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"order",
+						"find"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "560d82fd-c695-4538-b857-b554b60174e2",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Find Complete Transfer Order By Order ID",
+			"id": "16109756-ede1-40b5-af6d-3d9a169817b5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/staff/transfer-order/find?order_id=19867162-f87e-4437-9d95-351dbf1a5b84",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"transfer-order",
+						"find"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "012784ac-88c8-40d8-a79b-aaafc9efef0c",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "order_id",
+							"value": "560d82fd-c695-4538-b857-b554b60174e2",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "order_id",
+							"value": "19867162-f87e-4437-9d95-351dbf1a5b84"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[STAFF] Update Transfer Order",
+			"id": "0cbf851d-2dad-4fed-b110-7cba10f324bd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYyMDg5NzllLTM0YTUtNGUxMS05MjQ0LTI5MWIxZjNhMWUwOCIsInVzZXJuYW1lIjoiYWRtaW4iLCJjb250YWN0IjoiYWRtaW5AZ21haWwuY29tIiwicm9sZV9pZCI6MSwiZXhwIjoxNjk4OTQ1NDU1fQ.M7Vxf5LJPS5JQrqc-AOETdEvah3A2SK3v7nNeEinu1s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\": \"Finished\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/staff/transfer-order/update/012784ac-88c8-40d8-a79b-aaafc9efef0c",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"staff",
+						"transfer-order",
+						"update",
+						"012784ac-88c8-40d8-a79b-aaafc9efef0c"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
