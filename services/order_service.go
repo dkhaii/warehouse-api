@@ -10,5 +10,6 @@ import (
 type OrderService interface {
 	Create(ctx context.Context, request models.CreateOrderRequest, currentUserToken string) (models.CreateOrderResponse, error)
 	GetAll(ctx context.Context) ([]models.GetOrderResponse, error)
+	GetAllCompleteByUserID(ctx context.Context, usrID uuid.UUID) ([]models.GetCompleteOrderResponse, error)
 	GetCompleteByID(ctx context.Context, ordID uuid.UUID) (models.GetCompleteOrderResponse, error)
 }

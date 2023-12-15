@@ -152,3 +152,90 @@ func (repository *orderRepositoryImpl) FindCompleteByID(ctx context.Context, ord
 
 	return &order, nil
 }
+
+func (repository *orderRepositoryImpl) FindAllByUserID(ctx context.Context, usrID uuid.UUID) ([]*entity.Order, error) {
+	query := `
+	SELECT o.*, u.username, u.contact
+	FROM orders o
+	LEFT JOIN users u
+	ON u.id = o.user_id
+	WHERE u.id = ? 
+	`
+
+	orderRows, err := repository.database.QueryContext(ctx, query, usrID)
+	if err != nil {
+		return nil, err
+	}
+
+	var listOfOrders []*entity.Order
+
+	for orderRows.Next() {
+		var order entity.Order
+		var user entity.UserFiltered
+
+		err := orderRows.Scan(
+			&order.ID,
+			&order.UserID,
+			&order.Notes,
+			&order.RequestTransferDate,
+			&order.CreatedAt,
+			&user.Username,
+			&user.Contact,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		order.User = &user
+
+		query2 := `
+		SELECT i.id, i.name, i.description, i.availability, i.category_id
+		FROM items i
+		LEFT JOIN order_carts oc ON i.id = oc.item_id
+		LEFT JOIN orders o ON o.id = oc.order_id
+		WHERE o.id = ?
+	`
+
+		itemRows, err := repository.database.QueryContext(ctx, query2, order.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		var listOfItems []entity.ItemFiltered
+
+		for itemRows.Next() {
+			var item entity.ItemFiltered
+
+			err := itemRows.Scan(
+				&item.ID,
+				&item.Name,
+				&item.Description,
+				&item.Quantity,
+				&item.Quantity,
+				&item.Availability,
+				&item.CategoryID,
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			listOfItems = append(listOfItems, item)
+		}
+
+		err = itemRows.Err()
+		if err != nil {
+			return nil, err
+		}
+
+		order.Items = listOfItems
+
+		listOfOrders = append(listOfOrders, &order)
+	}
+
+	err = orderRows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return listOfOrders, nil
+}

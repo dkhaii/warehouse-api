@@ -14,5 +14,5 @@ type UserService interface {
 	GetByUsername(ctx context.Context, name string) ([]models.GetUserResponse, error)
 	Update(ctx context.Context, request models.UpdateUserRequest) (models.CreateUserResponse, error)
 	Delete(ctx context.Context, usrID uuid.UUID) error
-	Login(ctx context.Context, request models.LoginUserRequest) (models.TokenResponse, error)
+	Login(ctx context.Context, request models.LoginUserRequest) (models.LoginUserResponse, error)
 }

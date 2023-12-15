@@ -12,7 +12,8 @@ func ExternalUserItemRoutes(app *echo.Echo, controller controller.UserExternalCo
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.ExternalMiddleware())
+	// routes.Use(middlewares.ExternalMiddleware())
+	routes.Use(middlewares.AuthMiddleware(3))
 
 	routes.GET("/find", controller.GetItem)
 }
@@ -22,7 +23,8 @@ func StaffUserItemRoutes(app *echo.Echo, controller controller.ItemController) {
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.StaffMiddleware())
+	// routes.Use(middlewares.StaffMiddleware())
+	routes.Use(middlewares.AuthMiddleware(1, 2))
 
 	routes.POST("/create", controller.Create)
 	routes.GET("/find", controller.GetItem)

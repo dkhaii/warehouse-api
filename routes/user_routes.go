@@ -20,7 +20,8 @@ func AdminUserRoutes(app *echo.Echo, controller controller.UserController) {
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.AdminMiddleware())
+	// routes.Use(middlewares.AdminMiddleware())
+	routes.Use(middlewares.AuthMiddleware(1))
 
 	routes.POST("/register", controller.Create)
 	routes.GET("/find", controller.GetUser)

@@ -207,34 +207,41 @@ func (service *userServiceImpl) Delete(ctx context.Context, usrID uuid.UUID) err
 	return nil
 }
 
-func (service *userServiceImpl) Login(ctx context.Context, request models.LoginUserRequest) (models.TokenResponse, error) {
+func (service *userServiceImpl) Login(ctx context.Context, request models.LoginUserRequest) (models.LoginUserResponse, error) {
 	err := helpers.ValidateRequest(request)
 	if err != nil {
-		return models.TokenResponse{}, err
+		return models.LoginUserResponse{}, err
 	}
 
 	user, err := service.userRepository.FindByUsername(ctx, request.Username)
 	if err != nil {
-		return models.TokenResponse{}, err
+		return models.LoginUserResponse{}, err
 	}
 
 	if subtle.ConstantTimeCompare([]byte(request.Username), []byte(user.Username)) == 1 && helpers.ComparePassword(user.Password, request.Password) {
 		config, err := config.Init()
 		if err != nil {
-			return models.TokenResponse{}, err
+			return models.LoginUserResponse{}, err
 		}
 
 		jwtSecret := config.GetString("JWT_SECRET")
 
 		token, err := helpers.CreateAccessToken(user, jwtSecret, 2)
 		if err != nil {
-			return models.TokenResponse{}, err
+			return models.LoginUserResponse{}, err
 		}
 
-		return models.TokenResponse{
-			Token: token,
+		userClaim, err := helpers.GetUserClaimsFromToken(token, jwtSecret)
+		if err != nil {
+			return models.LoginUserResponse{}, err
+		}
+
+		return models.LoginUserResponse{
+			Username: userClaim.Username,
+			RoleID:   userClaim.RoleID,
+			Token:    token,
 		}, nil
 	}
 
-	return models.TokenResponse{}, jwt.ErrTokenMalformed
+	return models.LoginUserResponse{}, jwt.ErrTokenMalformed
 }

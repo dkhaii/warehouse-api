@@ -105,6 +105,29 @@ func (service *orderServiceImpl) GetAll(ctx context.Context) ([]models.GetOrderR
 	return orders, nil
 }
 
+func (service *orderServiceImpl) GetAllCompleteByUserID(ctx context.Context, usrID uuid.UUID) ([]models.GetCompleteOrderResponse, error) {
+	rows, err := service.orderRepository.FindAllByUserID(ctx, usrID)
+	if err != nil {
+		return nil, err
+	}
+
+	orders := make([]models.GetCompleteOrderResponse, len(rows))
+
+	for key, order := range rows {
+		orders[key] = models.GetCompleteOrderResponse{
+			ID:                  order.ID,
+			UserID:              order.UserID,
+			Notes:               order.Notes,
+			RequestTransferDate: order.RequestTransferDate,
+			CreatedAt:           order.CreatedAt,
+			User:                order.User,
+			Items:               order.Items,
+		}
+	}
+
+	return orders, nil
+}
+
 func (service *orderServiceImpl) GetCompleteByID(ctx context.Context, ordID uuid.UUID) (models.GetCompleteOrderResponse, error) {
 	order, err := service.orderRepository.FindCompleteByID(ctx, ordID)
 	if err != nil {
