@@ -53,7 +53,7 @@ func (controller *categoryControllerImpl) GetCategory(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	if queryParam.Name != "" {
@@ -64,7 +64,7 @@ func (controller *categoryControllerImpl) GetCategory(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	response, err := controller.categoryService.GetAll(ctx)
@@ -74,7 +74,7 @@ func (controller *categoryControllerImpl) GetCategory(app echo.Context) error {
 		}
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
-	return helpers.CreateResponse(app, http.StatusFound, response)
+	return helpers.CreateResponse(app, http.StatusOK, response)
 }
 
 func (controller *categoryControllerImpl) Update(app echo.Context) error {

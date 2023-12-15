@@ -40,7 +40,7 @@ func (controller *transferOrderControllerImpl) GetTransferOrder(app echo.Context
 			}
 			return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	if queryParam.OrderID != uuid.Nil {
@@ -51,7 +51,7 @@ func (controller *transferOrderControllerImpl) GetTransferOrder(app echo.Context
 			}
 			return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	response, err := controller.transferOrderService.GetAll(ctx)
@@ -62,7 +62,7 @@ func (controller *transferOrderControllerImpl) GetTransferOrder(app echo.Context
 		return helpers.CreateResponseError(app, http.StatusInternalServerError, err)
 	}
 
-	return helpers.CreateResponse(app, http.StatusFound, response)
+	return helpers.CreateResponse(app, http.StatusOK, response)
 }
 
 func (controller *transferOrderControllerImpl) Update(app echo.Context) error {

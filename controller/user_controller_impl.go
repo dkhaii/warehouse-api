@@ -62,7 +62,7 @@ func (controller *userControllerImpl) GetUser(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	if queryParam.Username != "" {
@@ -73,7 +73,7 @@ func (controller *userControllerImpl) GetUser(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	response, err := controller.userService.GetAll(ctx)
@@ -83,7 +83,7 @@ func (controller *userControllerImpl) GetUser(app echo.Context) error {
 		}
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
-	return helpers.CreateResponse(app, http.StatusFound, response)
+	return helpers.CreateResponse(app, http.StatusOK, response)
 }
 
 func (controller *userControllerImpl) Update(app echo.Context) error {

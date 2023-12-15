@@ -40,7 +40,7 @@ func (controller *orderControllerImpl) GetOrder(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	response, err := controller.orderService.GetAll(ctx)
@@ -50,5 +50,5 @@ func (controller *orderControllerImpl) GetOrder(app echo.Context) error {
 		}
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
-	return helpers.CreateResponse(app, http.StatusFound, response)
+	return helpers.CreateResponse(app, http.StatusOK, response)
 }

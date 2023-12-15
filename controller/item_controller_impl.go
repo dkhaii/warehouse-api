@@ -59,7 +59,7 @@ func (controller *itemControllerImpl) GetItem(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	if queryParam.Name != "" {
@@ -70,7 +70,7 @@ func (controller *itemControllerImpl) GetItem(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	response, err := controller.itemService.GetAll(ctx)
@@ -80,7 +80,7 @@ func (controller *itemControllerImpl) GetItem(app echo.Context) error {
 		}
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
-	return helpers.CreateResponse(app, http.StatusFound, response)
+	return helpers.CreateResponse(app, http.StatusOK, response)
 }
 
 func (controller *itemControllerImpl) GetCompleteByID(app echo.Context) error {
@@ -100,7 +100,7 @@ func (controller *itemControllerImpl) GetCompleteByID(app echo.Context) error {
 		}
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
-	return helpers.CreateResponse(app, http.StatusFound, response)
+	return helpers.CreateResponse(app, http.StatusOK, response)
 }
 
 func (controller *itemControllerImpl) Update(app echo.Context) error {

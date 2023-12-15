@@ -97,7 +97,7 @@ func (controller *userExternalControllerImpl) GetAllOrderByUser(app echo.Context
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
 
-	return helpers.CreateResponse(app, http.StatusFound, responses)
+	return helpers.CreateResponse(app, http.StatusOK, responses)
 }
 
 func (controller *userExternalControllerImpl) GetItem(app echo.Context) error {
@@ -118,7 +118,7 @@ func (controller *userExternalControllerImpl) GetItem(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, responses)
+		return helpers.CreateResponse(app, http.StatusOK, responses)
 	}
 
 	if queryParam.Category != "" {
@@ -129,7 +129,7 @@ func (controller *userExternalControllerImpl) GetItem(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, responses)
+		return helpers.CreateResponse(app, http.StatusOK, responses)
 	}
 
 	responses, err := controller.userExternalService.GetAllItem(ctx)
@@ -139,5 +139,5 @@ func (controller *userExternalControllerImpl) GetItem(app echo.Context) error {
 		}
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
-	return helpers.CreateResponse(app, http.StatusFound, responses)
+	return helpers.CreateResponse(app, http.StatusOK, responses)
 }

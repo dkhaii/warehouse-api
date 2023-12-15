@@ -53,7 +53,7 @@ func (controller *locationControllerImpl) GetLocation(app echo.Context) error {
 			}
 			return helpers.CreateResponseError(app, http.StatusNotFound, err)
 		}
-		return helpers.CreateResponse(app, http.StatusFound, response)
+		return helpers.CreateResponse(app, http.StatusOK, response)
 	}
 
 	response, err := controller.locationService.GetCompleteByID(ctx, queryParam.ID)
@@ -63,7 +63,7 @@ func (controller *locationControllerImpl) GetLocation(app echo.Context) error {
 		}
 		return helpers.CreateResponseError(app, http.StatusNotFound, err)
 	}
-	return helpers.CreateResponse(app, http.StatusFound, response)
+	return helpers.CreateResponse(app, http.StatusOK, response)
 }
 
 func (controller *locationControllerImpl) Update(app echo.Context) error {

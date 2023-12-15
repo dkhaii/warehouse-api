@@ -16,6 +16,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
@@ -108,6 +109,9 @@ func main() {
 	transferOrderController := controller.NewTransferOrderController(transferOrderService)
 
 	app := echo.New()
+
+	// cors
+	app.Use(middleware.CORS())
 
 	// swagger
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
