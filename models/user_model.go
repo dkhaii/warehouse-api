@@ -50,8 +50,14 @@ type LoginUserRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
-type TokenResponse struct {
-	Token string `json:"token"`
+// type TokenResponse struct {
+// 	Token string `json:"token"`
+// }
+
+type LoginUserResponse struct {
+	Username string `json:"username"`
+	RoleID   int    `json:"role_id"`
+	Token    string `json:"token"`
 }
 
 type GetUserIDRequest struct {

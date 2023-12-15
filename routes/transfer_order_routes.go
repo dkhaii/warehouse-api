@@ -12,7 +12,8 @@ func StaffUserTransferOrderRoutes(app *echo.Echo, controller controller.Transfer
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.StaffMiddleware())
+	// routes.Use(middlewares.StaffMiddleware())
+	routes.Use(middlewares.AuthMiddleware(1, 2))
 
 	routes.GET("/find", controller.GetTransferOrder)
 	routes.PUT("/update/:id", controller.Update)

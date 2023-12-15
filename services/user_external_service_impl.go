@@ -3,6 +3,8 @@ package services
 import (
 	"context"
 
+	"github.com/dkhaii/warehouse-api/config"
+	"github.com/dkhaii/warehouse-api/helpers"
 	"github.com/dkhaii/warehouse-api/models"
 	"github.com/google/uuid"
 )
@@ -49,13 +51,46 @@ func (service *userExternalServiceImpl) CreateOrder(ctx context.Context, request
 	return order, nil
 }
 
-func (service *userExternalServiceImpl) GetAllOrder(ctx context.Context, currentUserToken string) ([]models.GetOrderResponse, error) {
-	rows, err := service.orderService.GetAll(ctx)
+// func (service *userExternalServiceImpl) GetAllOrder(ctx context.Context, currentUserToken string) ([]models.GetOrderResponse, error) {
+// 	rows, err := service.orderService.GetAll(ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return rows, nil
+// }
+
+func (service *userExternalServiceImpl) GetAllOrderCompleteByUserID(ctx context.Context, currentUserToken string) ([]models.GetCompleteOrderResponse, error) {
+	config, err := config.Init()
 	if err != nil {
 		return nil, err
 	}
 
-	return rows, nil
+	currentUser, err := helpers.GetUserClaimsFromToken(currentUserToken, config.GetString("JWT_SECRET"))
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := service.orderService.GetAllCompleteByUserID(ctx, currentUser.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	orders := make([]models.GetCompleteOrderResponse, len(rows))
+
+	for key, order := range rows {
+		orders[key] = models.GetCompleteOrderResponse{
+			ID:                  order.ID,
+			UserID:              order.UserID,
+			Notes:               order.Notes,
+			RequestTransferDate: order.RequestTransferDate,
+			CreatedAt:           order.CreatedAt,
+			User:                order.User,
+			Items:               order.Items,
+		}
+	}
+
+	return orders, nil
 }
 
 func (service *userExternalServiceImpl) GetAllItem(ctx context.Context) ([]models.GetItemFilteredResponse, error) {

@@ -12,7 +12,8 @@ func AdminUserCategoryRoutes(app *echo.Echo, controller controller.CategoryContr
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.AdminMiddleware())
+	// routes.Use(middlewares.AdminMiddleware())
+	routes.Use(middlewares.AuthMiddleware(1))
 
 	routes.POST("/create", controller.Create)
 	routes.GET("/find", controller.GetCategory)
@@ -25,7 +26,8 @@ func StaffUserCategoryRoutes(app *echo.Echo, controller controller.CategoryContr
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.StaffMiddleware())
+	// routes.Use(middlewares.StaffMiddleware())
+	routes.Use(middlewares.AuthMiddleware(2))
 
 	routes.GET("/find", controller.GetCategory)
 }

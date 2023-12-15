@@ -12,10 +12,11 @@ func ExternalUserOrderRoutes(app *echo.Echo, controller controller.UserExternalC
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.ExternalMiddleware())
+	// routes.Use(middlewares.ExternalMiddleware())
+	routes.Use(middlewares.AuthMiddleware(1, 2, 3))
 
 	routes.POST("/create", controller.CreateOrder)
-	routes.GET("/find", controller.GetAllOrder)
+	routes.GET("/find", controller.GetAllOrderByUser)
 }
 
 func StaffUserOrderRoutes(app *echo.Echo, controller controller.OrderController) {
@@ -23,7 +24,8 @@ func StaffUserOrderRoutes(app *echo.Echo, controller controller.OrderController)
 	routes.Use(middleware.Logger())
 	routes.Use(middleware.Recover())
 	routes.Use(middlewares.JWTMiddleware())
-	routes.Use(middlewares.ExternalMiddleware())
+	// routes.Use(middlewares.ExternalMiddleware())
+	routes.Use(middlewares.AuthMiddleware(1, 2))
 
 	routes.POST("/find", controller.GetOrder)
 }
