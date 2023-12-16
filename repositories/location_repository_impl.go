@@ -155,7 +155,7 @@ func (repository *locationRepositoryImpl) FindCompleteByID(ctx context.Context, 
 func (repository *locationRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, loc *entity.Location) (*entity.Location, error) {
 	query := `
 		UPDATE locations 
-		SET category_id = ?, description = ?, updated_at = ? 
+		SET description = ?, updated_at = ? 
 		WHERE id = ?
 	`
 
